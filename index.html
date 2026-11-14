@@ -3899,6 +3899,7 @@ function startReferenceMission(id,options={}){
  const q=id=>overlay.querySelector("#"+id),canvas=q("actionCanvas"),ctx=canvas.getContext("2d"),hud=q("actionHud"),brief=q("missionBrief"),pauseMessage=q("pauseMessage"),result=q("missionResult"),actionButton=q("pulseAction"),pauseButton=q("pauseAction");
  const input={keys:Object.create(null),target:null};
  const session={id,game,overlay,options,fx,input,started:false,paused:false,done:false,raf:0,last:0,lastDraw:0,dragging:false,cleanups:[],lastApplied:false};
+ let unsubscribeSettings=()=>{};
  referenceMissionSession=session;
  const listen=(target,type,fn,opts)=>{target.addEventListener(type,fn,opts);session.cleanups.push(()=>target.removeEventListener(type,fn,opts));};
  function clearInput(){
@@ -3909,11 +3910,11 @@ function startReferenceMission(id,options={}){
  function applyPreferences(){
   const prefs=GameSettings.get();
   SpaceMusic.setVolume(prefs.musicVolume);
-  if(referenceMissionSession===session&&session.started&&!session.paused){hud.textContent=game.hud?game.hud():"Mission active";}
+  if(referenceMissionSession===session&&session.started&&!session.paused){hud.textContent=game.hud?game.hud():"Mission active";actionButton.textContent=game.actionLabel?referenceSoloText(game.actionLabel()):"HOLD TO ACT";}
   const label=q("missionControlHint");if(label)label.textContent="Controls: "+GameSettings.labels("solo");
  }
  function cleanup(){
-  stopFrame();clearInput();session.cleanups.forEach(fn=>{try{fn()}catch(_){}});session.cleanups=[];
+  stopFrame();clearInput();unsubscribeSettings();unsubscribeSettings=()=>{};session.cleanups.forEach(fn=>{try{fn()}catch(_){}});session.cleanups=[];
   if(referenceMissionSession===session)referenceMissionSession=null;
   overlay.remove();
  }
@@ -4020,14 +4021,14 @@ function startReferenceMission(id,options={}){
  listen(canvas,"pointercancel",()=>{session.dragging=false;input.target=null;});
  listen(canvas,"lostpointercapture",()=>{session.dragging=false;input.target=null;});
  ctx.fillStyle="#080e20";ctx.fillRect(0,0,900,500);referenceDrawWithControls(ctx,game);hud.textContent=game.hud?game.hud():"Mission ready";
- SpaceMusic.play("menu");GameSettings.subscribe(applyPreferences);q("startAction").focus();
+ SpaceMusic.play("menu");unsubscribeSettings=GameSettings.subscribe(applyPreferences);q("startAction").focus();
  return true;
 }
 function openSettings(){
  if(referenceMissionSession&&!referenceMissionSession.done&&!referenceMissionSession.paused){
   referenceMissionSession.paused=true;referenceMissionSession.input.keys={};referenceMissionSession.input.target=null;
   if(referenceMissionSession.raf)cancelAnimationFrame(referenceMissionSession.raf);
-  referenceMissionSession.raf=0;referenceMissionSession.overlay.querySelector("#pauseMessage").hidden=false;
+  referenceMissionSession.raf=0;SpaceMusic.play("menu");referenceMissionSession.overlay.querySelector("#pauseMessage").hidden=false;
   referenceMissionSession.overlay.querySelector("#missionBrief").hidden=true;
   referenceMissionSession.overlay.querySelector("#pauseAction").textContent="▶ Resume · P";
  }
@@ -4046,7 +4047,7 @@ function startLandingChallenge(){
  startReferenceMission("landing",{onOutcome:outcome=>{
   const l=state.landing||{};
   state.landingSuccess=!!outcome.success;
-  state.landing={done:true,speed:Math.abs(Number(referenceMissionSession?.game?.vy)||0),offset:Math.abs(Number(referenceMissionSession?.game?.vx)||0),fuel:Number(referenceMissionSession?.game?.fuel??100),label:"STANDARD"};
+  state.landing={done:true,speed:Math.abs(Number(game.vy)||0),offset:Math.abs(Number(game.vx)||0),fuel:Number(game.fuel??100),label:"STANDARD"};
   if(state.landingSuccess){
    state.battery=clamp(state.battery+2,0,batteryCapacity());awardCadetXP(12,"pilot",2);addCadetBadge("soft-landing");log("Soft touchdown • +2 starting battery reserve");
   }else{

@@ -730,7 +730,7 @@ function renderFieldOps(){
   return '<article class="field-task"><div class="task-icon">'+t.icon+'</div><b>'+t.name+'</b><p>'+t.desc+'</p><button class="secondary-btn" data-field-task="'+t.id+'" '+(disabled?"disabled":"")+'>'+(disabled?reason:"Start operation →")+'</button></article>';
  }).join("");
  $("field-task-grid").querySelectorAll("[data-field-task]").forEach(b=>b.addEventListener("click",()=>startFieldTask(b.dataset.fieldTask)));
- $("field-ops-note").textContent=f.slots===0?"All three daily operations slots have been used. More return next Sol.":(f.roverExtraDistance?"The last rover experiment failed. The next traverse is "+f.roverExtraDistance*100+" metres longer. ":"")+"Use the remaining time for repairs, exploration and outpost construction.";
+ $("field-ops-note").textContent=f.slots===0?"All three daily operations slots have been used. More return next Sol.":(f.roverExtraDistance?"The last rover experiment failed. The next traverse adds about "+f.roverExtraDistance+" game metres. ":"")+"Use the remaining time for repairs, exploration and outpost construction.";
  $("field-ops-progress").textContent=f.completed+" operations · "+(f.successful||0)+" successful · "+(f.failedRuns||0)+" rover failures · "+f.samples+" samples";
 }
 function spendFieldSlot(key){
@@ -1893,7 +1893,7 @@ function endMission(completed){
   (state.incidentLog||[]).forEach(item=>causes.push("Sol "+item.sol+" decision: "+item.message));
   if(state.fieldOps?.relayOnline===false)causes.push("The communications relay remained offline. The Sol 23 shelter alert carried an additional late-warning penalty.");
   if((state.fieldOps?.samples||0)>(state.fieldOps?.studied||0))causes.push((state.fieldOps.samples-state.fieldOps.studied)+" sample(s) were collected but not analyzed before the mission ended.");
-  if(state.fieldOps?.lastRoverReport?.failed)causes.push("Sol "+state.fieldOps.lastRoverReport.sol+" rover experiment failed: "+state.fieldOps.lastRoverReport.title+". The crew walked the rover home; a 400-metre longer follow-up traverse was queued for the next Sol.");
+  if(state.fieldOps?.lastRoverReport?.failed)causes.push("Sol "+state.fieldOps.lastRoverReport.sol+" rover experiment failed: "+state.fieldOps.lastRoverReport.title+". The crew walked the rover home; an about-400-game-metre route extension was queued for the next Sol.");
   else if(state.fieldOps?.lastRoverReport)causes.push("Last rover expedition: "+state.fieldOps.lastRoverReport.title+"; "+state.fieldOps.lastRoverReport.navFrames+" simulated Navcam frames, "+state.fieldOps.lastRoverReport.wheelMoves+" wheel-odometry steps and "+state.fieldOps.lastRoverReport.medaReadings+" MEDA-style environmental data sets were logged.");
   if(state.fieldOps?.completed)causes.push("The crew attempted "+state.fieldOps.completed+" field operation(s), using scarce EVA time on panel cleaning, rover exploration, laboratory analysis or communications repair.");
   taskDefinitions.forEach(task=>{

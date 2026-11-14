@@ -526,6 +526,7 @@ function render(){
   $("outpost-panel").classList.toggle("storm",state.dustStormSols>0||state.shelterDrillPending);
   $("habitat-status").textContent=state.safety<50?"CREW ALERT":state.shelterDrillPending?"SHELTER ALERT":state.heaterFault>0?"HEATER FAULT":state.pressureLeak>0?"PRESSURE LEAK":state.filterClog>.08?"FILTER CLOG":state.cropBlight>.08?"CROP BLIGHT":state.dust>.12?"DUST ON ARRAYS":"ALL SYSTEMS ONLINE";
   $("scene-caption").textContent=(state.siteName||"GALE CRATER").toUpperCase()+" • "+(state.dustStormSols>0?"REGIONAL DUST STORM":state.dust>.12?"DUST ACCUMULATING ON ARRAYS":"HABITAT ARES-01 • SYSTEMS UNDER WATCH");
+  if($("mission-site-label"))$("mission-site-label").textContent=(state.siteName||"GALE CRATER").toUpperCase()+" • HABITAT ARES-01";
   $("brief-tag").textContent="SOL "+String(state.sol).padStart(2,"0");
   $("mission-meta").textContent="Crew of 5 • "+(state.safety<50?"Crew safety needs attention":"30-Sol campaign active")+" • "+state.upgrades.length+" cargo upgrades";
   if($("mission-site-label"))$("mission-site-label").textContent=(state.siteName||"Gale Crater").toUpperCase()+" • HABITAT ARES-01";
@@ -691,7 +692,10 @@ function launchRoverTask(){
   const route=tier===1?[[0,0],[1,0],[2,0],[2,1],[2,2],[3,2],[3,3]]:
     tier===2?[[0,0],[1,0],[2,0],[2,1],[2,2],[3,2],[4,2],[4,3],[4,4]]:
     [[0,0],[1,0],[2,0],[2,1],[2,2],[3,2],[4,2],[4,3],[4,4],[5,4],[5,5]];
-  const maxSteps=size*2+2;
+  // Budget from the known safe route plus two spare moves, so every tier is solvable.
+  const maxSteps=route.length+1;
+  const routeIsValid=route[0][0]===0&&route[0][1]===0&&route[route.length-1][0]===size-1&&route[route.length-1][1]===size-1&&route.every(([rx,ry],i)=>rx>=0&&ry>=0&&rx<size&&ry<size&&!blocked.has(rx+","+ry)&&(i===0||Math.abs(rx-route[i-1][0])+Math.abs(ry-route[i-1][1])===1));
+  console.assert(routeIsValid,"Rover route must be a connected, obstacle-free path.");
   let x=0,y=0,steps=0,bumps=0,finished=false,visited=new Set(["0,0"]);
   function draw(){
     const markup='<p class="tiny muted">Guide the rover from BASE to the ice/sample marker. Move one square at a time; avoid craters. Tier '+tier+' route. You have '+maxSteps+' moves and two safe retries.</p><div class="rover-grid" id="rover-grid"></div><div class="power-summary"><span>ROVER BATTERY <strong id="rover-battery-readout">'+Math.round(state.fieldOps.roverBattery)+'%</strong></span><span>MOVES <strong id="rover-moves">'+steps+' / '+maxSteps+'</strong></span></div><div class="tiny muted" id="rover-hint">Start at BASE and plan a safe route around the rocks.</div><div class="puzzle-actions"><button class="secondary-btn" id="rover-cancel">Cancel</button></div>';
@@ -713,7 +717,7 @@ function launchRoverTask(){
     if(Math.abs(nx-x)+Math.abs(ny-y)!==1){$("rover-hint").textContent="Move to a neighbouring square.";return;}
     steps++;state.fieldOps.roverBattery=Math.max(0,state.fieldOps.roverBattery-4);
     const id=nx+","+ny;
-    if(blocked.has(id)){bumps++;$("rover-hint").textContent="Crater detected! The rover loses battery. Find another route.";if(bumps>=2||steps>=maxSteps){finished=true;finishFieldTask("rover",false,"The rover used its EVA window avoiding craters and returned without a sample.");return;}}
+    if(blocked.has(id)){bumps++;$("rover-hint").textContent="Crater detected! The rover loses battery. Find another route.";if(bumps>=3||steps>=maxSteps){finished=true;finishFieldTask("rover",false,"The rover used its EVA window avoiding craters and returned without a sample.");return;}}
     else{x=nx;y=ny;visited.add(id);}
     if(x===size-1&&y===size-1){finished=true;finishFieldTask("rover",true,"Rover sample collected and safely returned to the outpost.");return;}
     if(steps>=maxSteps||state.fieldOps.roverBattery<=5){finished=true;finishFieldTask("rover",false,"The rover reached its route limit before the sample site.");return;}
@@ -723,18 +727,34 @@ function launchRoverTask(){
   draw();
 }
 function launchLabTask(){
-  const tier=skillTier("science"),questions=[
-    {q:"Which rock clue most strongly suggests that water once flowed here?",opts:["Layered sediment bands","A perfectly smooth metal surface","A fresh tire mark"],a:0,why:"Sediment can settle in layers as water moves and later dries."},
-    {q:"A sample contains hydrated minerals. What is the best next step?",opts:["Record its mass and mineral signals","Throw it away","Mix it into the drinking-water tank"],a:0,why:"Careful measurement helps scientists compare minerals without contaminating life-support supplies."},
-    {q:"Why keep a sample label and location?",opts:["So researchers can trace where it came from","To make the rock heavier","It changes the rock's chemistry"],a:0,why:"A sample without context is much less useful to scientists."}
-  ];
-  const q=questions[tier-1]||questions[0];
-  openOpsModal("Science lab • sample analysis",'<p class="tiny muted">A rover sample is ready. Choose the scientifically useful next step.</p><div class="preflight-question"><h2>'+q.q+'</h2><div class="preflight-options">'+q.opts.map((o,i)=>'<button class="secondary-btn" data-lab-answer="'+i+'">'+o+'</button>').join("")+'</div><div id="lab-feedback"></div></div>');
+  const tier=skillTier("science"),sample=state.fieldOps.sampleType||"sedimentary rock";
+  const questions={
+    "ice core":[
+      {q:"What is the strongest clue that this sample contains water ice?",opts:["A spectral signal matching water ice","A shiny surface","The container feels cold"],a:0,why:"Scientists use instrument measurements and spectral signatures rather than appearance alone to identify materials."},
+      {q:"Why should an ice sample be kept carefully sealed and documented?",opts:["To limit changes and preserve where it came from","To make it brighter","To recharge the rover"],a:0,why:"Careful handling and a location record help scientists interpret the sample they collected."},
+      {q:"Why compare different layers in an ice sample?",opts:["Layers can preserve a record of changing environmental conditions","The deepest layer is always newest","Layers generate electricity"],a:0,why:"Layer patterns can preserve information about conditions when each layer formed."}
+    ],
+    "ancient lake-bed rock":[
+      {q:"Why are layered rocks interesting to a Mars science team?",opts:["Sediment can settle in layers as water moves","Layers prove plants grew there","Layers are made by solar panels"],a:0,why:"Sedimentary layers can preserve clues about environments where the material was deposited."},
+      {q:"What can the shape and arrangement of sediment layers help scientists infer?",opts:["How sediment was transported and deposited","The rock's current temperature everywhere","How much battery the rover has"],a:0,why:"Layer structures can reveal whether sediment was moved by flowing water, wind or another process."},
+      {q:"Why compare rock layers with their exact position in the crater?",opts:["Their context helps reconstruct the sequence of past environments","Position changes the mineral into water","It makes the sample easier to carry"],a:0,why:"Geologic context helps scientists understand which deposits came first and how the environment changed."}
+    ],
+    "sedimentary rock":[
+      {q:"What might rounded pebbles in a rock suggest?",opts:["The pieces were transported and worn down","The rock was grown in a greenhouse","The rock is a battery"],a:0,why:"Moving water can round fragments as they collide during transport."},
+      {q:"Why record the size and shape of grains in this sample?",opts:["They can provide clues about how the sediment was moved","They tell you the crew's oxygen level","They identify the sample's owner"],a:0,why:"Grain size and shape can help scientists reason about the energy and process that transported sediment."},
+      {q:"Why compare this rock with samples from other locations?",opts:["To test whether the deposits formed in similar environments","To make every rock identical","To change its age"],a:0,why:"Comparisons across locations help researchers test whether deposits share a geologic history."}
+    ]
+  };
+  const q=(questions[sample]||questions["sedimentary rock"])[tier-1]||questions["sedimentary rock"][0];
+  const options=q.opts.map((label,index)=>({label,correct:index===q.a}));
+  for(let i=options.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[options[i],options[j]]=[options[j],options[i]];}
+  const answerIndex=options.findIndex(option=>option.correct);
+  openOpsModal("Science lab • "+sample,'<p class="tiny muted">Sample type: <strong>'+sample+'</strong> · Training tier '+tier+'. Choose the best scientific interpretation.</p><div class="preflight-question"><h2>'+q.q+'</h2><div class="preflight-options">'+options.map((o,i)=>'<button class="secondary-btn" data-lab-answer="'+i+'">'+o.label+'</button>').join("")+'</div><div id="lab-feedback"></div></div>');
   $("ops-modal-content").querySelectorAll("[data-lab-answer]").forEach(b=>b.addEventListener("click",()=>{
-    const ok=+b.dataset.labAnswer===q.a;
+    const ok=+b.dataset.labAnswer===answerIndex;
     $("ops-modal-content").querySelectorAll("[data-lab-answer]").forEach(x=>x.disabled=true);
     $("lab-feedback").innerHTML='<div class="preflight-feedback">'+(ok?"✓ Sample correctly analyzed":"Training note")+'<br>'+q.why+'</div><button class="primary-btn" id="lab-finish">'+(ok?"Record sample & earn data":"Finish analysis")+'</button>';
-    $("lab-finish").onclick=()=>finishFieldTask("lab",ok,ok?"A sample was added to the expedition science log.":"The sample was studied, but the result was inconclusive.");
+    $("lab-finish").onclick=()=>finishFieldTask("lab",ok,ok?"A "+sample+" was added to the expedition science log.":"The "+sample+" was studied, but the result was inconclusive.");
   }));
 }
 function startFieldTask(id){

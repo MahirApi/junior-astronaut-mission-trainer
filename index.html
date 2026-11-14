@@ -1011,6 +1011,36 @@ function launchRescueTask(){
  canvas.focus();draw();requestAnimationFrame(frame);
 }
 
+function launchSignalTask(){
+ const targetAngle=68+Math.round(Math.random()*48),targetFreq=91+Math.random()*13;
+ let pulses=0,locked=false,done=false;
+ openOpsModal("Lost signal • deep-space communications",'<p class="tiny muted">Mission Control is calling, but the carrier is weak. Aim the antenna and tune its receiver until the link locks, then synchronize the three incoming packets.</p><div class="signal-readouts"><span>LINK STRENGTH <b id="signal-strength">0%</b></span><span>CARRIER <b id="signal-carrier">96.0 MHz</b></span><span>PACKETS <b id="signal-packets">0 / 3</b></span></div><div class="signal-console"><div class="signal-dish" id="signal-dish"><span>📡</span><i></i></div><div class="signal-wave" id="signal-wave"></div></div><label class="slider-row">ANTENNA AZIMUTH <output id="signal-angle-value">30°</output><input id="signal-angle" type="range" min="0" max="180" value="30"></label><label class="slider-row">RECEIVER FREQUENCY <output id="signal-freq-value">96.0 MHz</output><input id="signal-frequency" type="range" min="88" max="108" step=".1" value="96"></label><p class="tiny muted" id="signal-hint">Watch the signal-strength meter. Turn the dish and tune the carrier until the link is stable.</p><div class="puzzle-actions"><button class="primary-btn" id="signal-lock">Lock carrier</button><button class="secondary-btn" id="signal-pulse" disabled>Synchronize next packet</button></div>');
+ const angleEl=$("signal-angle"),freqEl=$("signal-frequency");
+ function update(){
+  const angle=+angleEl.value,freq=+freqEl.value;
+  const strength=Math.round(clamp(100-Math.abs(angle-targetAngle)*2.9-Math.abs(freq-targetFreq)*12,0,100));
+  $("signal-strength").textContent=strength+"%";$("signal-carrier").textContent=freq.toFixed(1)+" MHz";
+  $("signal-angle-value").textContent=angle+"°";$("signal-freq-value").textContent=freq.toFixed(1)+" MHz";
+  $("signal-dish").style.transform="rotate("+(angle-90)+"deg)";
+  $("signal-wave").style.opacity=String(.12+strength/130);$("signal-wave").style.transform="scaleX("+(0.35+strength/160)+")";
+  return strength;
+ }
+ angleEl.addEventListener("input",update);freqEl.addEventListener("input",update);
+ $("signal-lock").onclick=()=>{
+  if(locked)return;
+  if(update()<82){$("signal-hint").textContent="Carrier is still weak. Adjust the dish and receiver until the strength meter is green.";return;}
+  locked=true;$("signal-lock").disabled=true;$("signal-pulse").disabled=false;
+  $("signal-hint").textContent="Carrier locked. Three packets are arriving. Synchronize each one to rebuild the message stream.";
+ };
+ $("signal-pulse").onclick=()=>{
+  if(!locked||done)return;pulses++;$("signal-packets").textContent=pulses+" / 3";
+  $("signal-wave").style.opacity="1";$("signal-wave").style.transform="scaleX(1)";
+  if(pulses===3){done=true;finishFieldTask("signal",true,"The antenna reacquired the carrier and synchronized three packets. Mission Control's communications link is restored.");}
+  else $("signal-hint").textContent="Packet "+pulses+" received. Hold the carrier steady for the next.";
+ };
+ update();
+}
+
 function startFieldTask(id){
  if(state.fieldOps.slots<=0)return;
  const costs={clean:.03,relay:.08,lab:.02,signal:.06,cave:.08,rescue:.07,prospect:.12,emergency:.06,

@@ -2,7 +2,7 @@
 
 A browser-playable Mars outpost management game for the 2026 NASA Space Apps Challenge.
 
-**Status:** Early playable prototype. The landing and crew-assignment sequence, four one-shot commissioning minigames, 30-Sol command campaign, seven escalating crisis events, persistent system faults, resource controls, live outpost inspection, debrief, and optional NASA DONKI SEP lookup are implemented in `index.html`.
+**Status:** Early playable prototype. The landing and crew-assignment sequence, four one-shot commissioning minigames, 30-Sol command campaign, seven escalating crisis events, shared power budget, persistent system faults, three-kit repair inventory, live outpost inspection, debrief, and optional NASA DONKI SEP lookup are implemented in `index.html`.
 
 ## Run locally
 Open `index.html` in a modern browser. No build step, package install, or server is required. The game works offline; the optional NASA DONKI lookup requires an internet connection.
@@ -37,5 +37,7 @@ No license has been selected yet. Until one is added, do not assume others have 
 3. Each setup task has a distinct minigame and one attempt. A failed result is locked for that mission; there is no task retry.
 4. Failed setup leaves a persistent system problem. During the 30-Sol campaign, the captain compensates by reallocating power among maintenance, life support, greenhouse production, and shelter protection.
 5. Seven crisis beats arrive on Sols 3, 7, 11, 15, 19, 23 and 27: a dust front, clogged water filter, greenhouse blight, regional dust storm, habitat seal leak, shelter drill, and heater-control failure.
-6. Crisis effects persist until the relevant system receives attention. The default power plan is not designed to survive the entire campaign; players must change priorities and accept trade-offs.
-7. A full new mission resets task results and crisis damage and starts a fresh run.
+6. Power is a shared pool: habitat essentials draw power first, then the remaining supply is divided across life support, greenhouse, shelter and maintenance requests. Over-requesting power rations every selected system; unused supply charges the battery.
+7. Daily allocations persist until the captain changes them. A repair must be explicitly targeted from the relevant outpost component, receive enough delivered power for several Sols, and consume one spare kit when it begins.
+8. Only three spare kits are carried for four major repairable crises. The captain must choose which faults deserve a full repair and manage the others through resource priorities.
+9. A full new mission resets task results, crisis damage and repair inventory and starts a fresh run.

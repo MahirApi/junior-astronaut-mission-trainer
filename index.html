@@ -38,6 +38,16 @@
 .issue-list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.issue-item{background:#10191f;border:1px solid var(--line);border-radius:11px;padding:12px}.issue-item strong{display:block;font-size:11px;margin-bottom:5px}.issue-item p{font-size:10px;color:var(--muted);line-height:1.5;margin:0}.issue-item.failed{border-color:#805048}.issue-item.ok{border-color:#3d6750}
 @media(max-width:700px){.assignment-grid{grid-template-columns:1fr}.arrival-grid{grid-template-columns:1fr}.issue-list{grid-template-columns:1fr}.story-actions{align-items:stretch;flex-direction:column}.story-actions button{width:100%}.puzzle-grid{grid-template-columns:1fr 1fr}}
 
+
+/* Interactive live-outpost command interface */
+.main-grid{display:block;margin-bottom:14px}.outpost-panel{min-height:0;padding:18px 20px 42px;border-color:#40535d;background:radial-gradient(ellipse at 50% 45%,#34444a 0,#202d33 47%,#141f25 100%);box-shadow:0 20px 70px #0005}
+.outpost-svg{height:auto;min-height:330px;max-height:610px;width:100%;object-fit:contain}.outpost-panel .panel-head{position:relative;z-index:2}
+.component-hotspot{cursor:pointer;outline:none}.component-hotspot .hit-area{fill:#fff;fill-opacity:.001;stroke:transparent;stroke-width:3;transition:fill-opacity .2s,stroke .2s}.component-hotspot:hover .hit-area,.component-hotspot:focus .hit-area,.component-hotspot.selected .hit-area{fill:#8ed8f2;fill-opacity:.10;stroke:#a9e6ff;stroke-dasharray:7 5}.component-hotspot .hotspot-dot{fill:#a8e6ff;stroke:#10232a;stroke-width:3;filter:drop-shadow(0 0 7px #8bdcff)}.component-hotspot.has-issue .hotspot-dot{fill:#ff7169;filter:drop-shadow(0 0 7px #ff4b43);animation:issuePulse 1.15s ease-in-out infinite}.component-hotspot.has-issue .hit-area{stroke:#ff746b;stroke-dasharray:8 5;fill:#ff6258;fill-opacity:.08}
+@keyframes issuePulse{50%{opacity:.35;filter:drop-shadow(0 0 16px #ff4b43)}}
+.component-inspector{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;margin-top:12px;padding:15px 17px;border:1px solid var(--line);border-radius:14px;background:#10191f}.component-inspector h3{font-size:15px;margin:0 0 5px}.component-inspector p{font-size:11px;line-height:1.55;color:#b7c4c1;margin:0}.component-inspector .inspector-kicker{font-size:9px;color:var(--blue);font-weight:850;letter-spacing:.15em;margin-bottom:6px}.component-inspector.issue{border-color:#874a45;background:linear-gradient(110deg,#321f20,#151c21)}.inspector-action{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.inspector-action button{white-space:nowrap}.scene-hint{font-size:10px;color:var(--muted);text-align:center;margin-top:8px}
+.mission-tools,.command-console{margin:14px 0;border:1px solid var(--line);border-radius:14px;background:#121c22;overflow:hidden}.mission-tools summary,.command-console summary{list-style:none;cursor:pointer;padding:14px 17px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:850;letter-spacing:.08em}.mission-tools summary::-webkit-details-marker,.command-console summary::-webkit-details-marker{display:none}.mission-tools summary:after,.command-console summary:after{content:"＋";font-size:17px;color:var(--orange)}.mission-tools[open] summary:after,.command-console[open] summary:after{content:"−"}.mission-tools-content{padding:0 15px 15px;display:grid;grid-template-columns:1.2fr 1fr;gap:12px}.mission-tools-content .brief-panel{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mission-tools-content .event-card{grid-row:span 2}.command-console .controls{margin:0;padding:0 15px 15px}.command-console .panel{background:#17232b}#issue-panel .issue-item.failed{box-shadow:inset 3px 0 #f27f75}
+@media(max-width:760px){.outpost-panel{padding:13px 10px 42px}.outpost-svg{min-height:250px}.component-inspector{grid-template-columns:1fr}.inspector-action{justify-content:flex-start}.mission-tools-content,.mission-tools-content .brief-panel{grid-template-columns:1fr}.mission-tools-content .event-card{grid-row:auto}}
+
 </style>
 </head>
 <body>
@@ -155,7 +165,7 @@
 
   <section class="main-grid">
     <div class="panel outpost-panel" id="outpost-panel">
-      <div class="panel-head"><h2>OUTPOST STATUS • LIVE VIEW</h2><span class="tag" id="habitat-status">ALL SYSTEMS ONLINE</span></div>
+      <div class="panel-head"><div><div class="eyebrow">GALE CRATER • HABITAT ARES-01</div><h2 style="font-size:17px;margin-top:5px">OUTPOST LIVE VIEW</h2></div><span class="tag" id="habitat-status">ALL SYSTEMS ONLINE</span></div>
       <svg class="outpost-svg" viewBox="0 0 660 300" role="img" aria-label="Illustrated Mars outpost with solar panels, habitat, greenhouse and storm shelter">
         <defs>
           <linearGradient id="dome" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#b9d6d2" stop-opacity=".5"/><stop offset="1" stop-color="#6a8a8b" stop-opacity=".12"/></linearGradient>
@@ -181,11 +191,21 @@
         <g fill="#e8c4a6" font-size="10" font-family="sans-serif" letter-spacing="1"><text x="77" y="98">SOLAR</text><text x="255" y="57">HABITAT</text><text x="412" y="126">GREENHOUSE</text><text x="528" y="115">ARRAY B</text></g>
         <g class="dust-layer" fill="#c99a73"><path d="M0 0H660V300H0Z" opacity=".2"/><circle cx="108" cy="90" r="30"/><circle cx="548" cy="78" r="45"/></g>
         <g class="storm-lights"><path d="M296 76 Q390 76 390 152" stroke="#f06f68" stroke-width="6" opacity=".8" fill="none"/><circle cx="438" cy="151" r="9" fill="#f06f68"/></g>
+
+        <g class="component-hotspot" data-component="solar" tabindex="0" role="button" aria-label="Inspect solar arrays"><rect class="hit-area" x="14" y="98" width="180" height="132" rx="12"/><circle class="hotspot-dot" cx="170" cy="119" r="8"/></g>
+        <g class="component-hotspot" data-component="life" tabindex="0" role="button" aria-label="Inspect habitat life support"><rect class="hit-area" x="196" y="68" width="200" height="170" rx="18"/><circle class="hotspot-dot" cx="374" cy="91" r="8"/></g>
+        <g class="component-hotspot" data-component="green" tabindex="0" role="button" aria-label="Inspect greenhouse"><rect class="hit-area" x="390" y="128" width="96" height="110" rx="12"/><circle class="hotspot-dot" cx="470" cy="146" r="8"/></g>
+        <g class="component-hotspot" data-component="shelter" tabindex="0" role="button" aria-label="Inspect storm shelter"><rect class="hit-area" x="492" y="120" width="145" height="116" rx="12"/><circle class="hotspot-dot" cx="615" cy="139" r="8"/></g>
       </svg>
       <div class="scene-caption" id="scene-caption">GALE CRATER • HABITAT ARES-01 • SOLAR ARRAYS NOMINAL</div>
     </div>
 
-    <div class="panel brief-panel">
+
+      <div class="component-inspector" id="component-inspector"><div><div class="inspector-kicker" id="inspector-kicker">SYSTEM INSPECTOR • SELECT A MODULE</div><h3 id="inspector-title">Your outpost is online</h3><p id="inspector-copy">Move your cursor over a highlighted module, or select it, to inspect its condition and available actions. Faults will pulse red.</p></div><div class="inspector-action" id="inspector-action"><span class="tiny muted">4 interactive systems</span></div></div>
+      <div class="scene-hint">HOVER OR SELECT A MODULE TO INSPECT IT • RED PULSE = ACTIVE FAULT</div>
+    </div>
+  </section>
+  <details class="mission-tools"><summary><span>MISSION INTEL & ALERTS</span><span class="tiny muted">Events • NASA data • crew notes</span></summary><div class="mission-tools-content">    <div class="panel brief-panel">
       <div class="panel-head"><h2>FLIGHT DIRECTOR'S BRIEF</h2><span class="tag" id="brief-tag">SOL 01</span></div>
       <div class="event-card"><div class="eyebrow" id="event-kicker">DAILY PRIORITY</div><h3 id="event-title">Protect the essentials</h3><p id="event-copy">Your crew needs oxygen, water and food every Sol. Set power priorities before advancing the mission.</p></div>
       <div class="science-card">
@@ -195,9 +215,10 @@
       </div>
       <div class="science-card"><h3>COMMANDER'S NOTE</h3><p id="commander-note">A good plan has reserves. Do not spend every available power unit just because you can.</p></div>
     </div>
-  </section>
+</div></details>
 
-  <section class="controls">
+
+  <details class="command-console"><summary><span>COMMAND CONSOLE</span><span class="tiny muted">Power routing • forecasts • advance Sol</span></summary><section class="controls">
     <div class="panel">
       <div class="panel-head"><h2>POWER ROUTING</h2><span class="tag">SET PRIORITIES</span></div>
       <p class="tiny muted" style="margin:0 0 15px">Route power to the systems that matter most this Sol. Habitat basics require 4 power units before your selected allocations.</p>
@@ -221,17 +242,17 @@
       </div>
       <div class="commit-row"><span class="tiny muted" id="forecast-note">Your choices are not permanent. Adjust the sliders before advancing.</span><button class="primary-btn" id="advance-btn">Advance to Sol 02 →</button></div>
     </div>
-  </section>
+  </section></details>
 
 
-  <section class="panel log" id="issue-panel">
+  <details class="mission-tools"><summary><span>SYSTEM DIAGNOSTICS & RECOVERY PLAN</span><span class="tiny muted">Review faults and permanent setup outcomes</span></summary><div style="padding:0 15px 15px">  <section class="panel log" id="issue-panel">
     <div class="panel-head"><h2>CAPTAIN'S RECOVERY PLAN</h2><span class="tiny muted">Permanent task outcomes • Current mission</span></div>
     <div class="issue-list" id="issue-list"></div>
-  </section>
-  <section class="panel log">
+  </section></div></details>
+  <details class="mission-tools"><summary><span>MISSION EVENT LOG</span><span class="tiny muted">Recent decisions and alerts</span></summary><div style="padding:0 15px 15px">  <section class="panel log">
     <div class="panel-head"><h2>MISSION LOG</h2><span class="tiny muted">Recent decisions and events</span></div>
     <div class="log-list" id="log-list"><span class="log-chip">Mission initialized • Crew onboard</span></div>
-  </section>
+  </section></div></details>
 </main>
 
 <section class="debrief" id="debrief-view">
@@ -315,6 +336,7 @@ function forecast(){
 }
 function setForecast(id,text,good){const el=$(id);el.textContent=text;el.className=good?"up":"down";}
 function render(){
+  refreshComponentIndicators();
   $("sol-label").textContent=String(state.sol).padStart(2,"0")+" / 07";
   $("progress-fill").style.width=((state.sol-1)/7*100)+"%";
   $("v-power").textContent=state.battery;
@@ -488,6 +510,31 @@ function finishTask(success,detail){
     state.taskIndex++;if(state.taskIndex<taskDefinitions.length)renderTask();else startMission();
   });
 }
+
+const componentInfo={
+solar:{title:"Solar array network",system:"POWER GENERATION",copy:"The solar wings collect energy for every outpost system. Dust and deployment damage reduce available generation.",slider:"repair",failed:()=>state.arrayDamage>0,issue:()=>"Array bus damage: "+state.arrayDamage.toFixed(1)+" modeled units. Increase Maintenance in the Command Console to repair it over multiple Sols.",normal:"Arrays are tracking the Sun. Generation is within expected training range.",action:"Set maintenance to 2"},
+life:{title:"Habitat • life support",system:"OXYGEN & WATER RECOVERY",copy:"The habitat contains the air and water recycling equipment that keeps the crew supplied.",slider:"life",failed:()=>state.recyclerDamage>0,issue:()=>"Recycler fault: water recovery is degraded. Increase Life Support allocation to reduce the modeled water loss.",normal:"Air and water loops are operating. Watch the oxygen and water reserves.",action:"Set life support to 6"},
+green:{title:"Hydroponic greenhouse",system:"FOOD PRODUCTION",copy:"The greenhouse converts power, water and time into future harvests. Plants cannot replace all life-support equipment.",slider:"green",failed:()=>state.cropEfficiency<1,issue:()=>"Crop-bed calibration fault: growth efficiency is "+Math.round(state.cropEfficiency*100)+"%. Higher greenhouse allocation can partly compensate.",normal:"Grow beds are stable. Keep water and lighting available for the next harvest.",action:"Set greenhouse to 4"},
+shelter:{title:"Storm shelter",system:"RADIATION PROTECTION",copy:"The shelter gives the crew a protected place during the mission's simulated space-weather drill.",slider:"shelter",failed:()=>state.shieldLoss>0,issue:()=>"Shield seam fault: modeled protection is reduced by "+Math.round(state.shieldLoss)+" points. Increase Shelter allocation during the drill.",normal:"Shelter seals are intact. Keep some power available for a storm response.",action:"Set shelter to 3"}
+};
+let selectedComponent="solar";
+function componentHasIssue(key){const c=componentInfo[key];return !!(c&&c.failed());}
+function inspectComponent(key){
+ const info=componentInfo[key];if(!info)return;selectedComponent=key;
+ document.querySelectorAll(".component-hotspot").forEach(el=>el.classList.toggle("selected",el.dataset.component===key));
+ const failed=componentHasIssue(key),box=$("component-inspector");box.classList.toggle("issue",failed);
+ $("inspector-kicker").textContent=(failed?"⚠ ACTIVE FAULT • ":"SYSTEM INSPECTOR • ")+info.system;
+ $("inspector-title").textContent=info.title;$("inspector-copy").textContent=failed?info.issue():info.normal+" "+info.copy;
+ const action=$("inspector-action");
+ if(failed){action.innerHTML='<button class="secondary-btn" id="inspector-fix">'+info.action+" →</button>";
+  $("inspector-fix").addEventListener("click",()=>{const slider=sliders[info.slider];slider.value=info.slider==="repair"?2:info.slider==="life"?6:info.slider==="green"?4:3;forecast();$("forecast-note").textContent="Priority updated. Review the forecast, then advance the Sol to apply it.";action.innerHTML='<span class="tiny" style="color:var(--green)">Priority updated in Command Console ✓</span>';});
+ }else action.innerHTML='<span class="tiny muted">No active fault detected</span>';
+}
+function refreshComponentIndicators(){
+ document.querySelectorAll(".component-hotspot").forEach(el=>el.classList.toggle("has-issue",componentHasIssue(el.dataset.component)));
+ if(selectedComponent)inspectComponent(selectedComponent);
+}
+
 function renderIssues(){
   const descriptions={
     solar:{title:"Solar array deployment",failed:"Array output is permanently reduced. Assign Maintenance power on later Sols to gradually repair the damaged bus.",ok:"Array bus commissioned. +2 starting battery units."},
@@ -500,6 +547,7 @@ function renderIssues(){
     if(!result)return '<div class="issue-item"><strong>'+descriptions[task.id].title+'</strong><p>Awaiting crew report.</p></div>';
     return '<div class="issue-item '+(result.success?"ok":"failed")+'"><strong>'+(result.success?"✓ ":"⚠ ")+descriptions[task.id].title+'</strong><p>'+(result.success?descriptions[task.id].ok:descriptions[task.id].failed)+'</p></div>';
   }).join("");
+  refreshComponentIndicators();
 }
 
 function applyEventForSol(sol){
@@ -626,6 +674,13 @@ function closeScience(){$("science-modal").classList.remove("open");}
 function reset(){showOnlyStage("setup-view");$("reset-btn").classList.add("hidden");}
 
 document.querySelectorAll("#loadouts input").forEach(c=>c.addEventListener("change",updateLoadouts));
+document.querySelectorAll(".component-hotspot").forEach(el=>{
+ el.addEventListener("mouseenter",()=>inspectComponent(el.dataset.component));
+ el.addEventListener("focus",()=>inspectComponent(el.dataset.component));
+ el.addEventListener("click",()=>inspectComponent(el.dataset.component));
+ el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();inspectComponent(el.dataset.component);}});
+});
+inspectComponent("solar");
 Object.values(sliders).forEach(s=>s.addEventListener("input",()=>{forecast();}));
 $("start-btn").addEventListener("click",beginLanding);
 $("touchdown-btn").addEventListener("click",()=>{renderAssignments();showOnlyStage("assignment-view");});

@@ -151,7 +151,7 @@
 </section>
 <main class="dashboard" id="game-view">
   <div class="mission-head">
-    <div><div class="eyebrow">GALE CRATER • HABITAT ARES-01</div><div class="mission-title">Mission Control <span class="muted" style="font-weight:500">/ Mars surface</span></div><div class="mission-meta" id="mission-meta">Crew of 3 • Systems nominal • Training mission</div></div>
+    <div><div class="eyebrow">GALE CRATER • HABITAT ARES-01</div><div class="mission-title">Mission Control <span class="muted" style="font-weight:500">/ Mars surface</span></div><div class="mission-meta" id="mission-meta">Crew of 5 • Systems nominal • Training mission</div></div>
     <div class="sol-box"><strong id="sol-label">01 / 30</strong><span>MARTIAN SOL</span><div class="progress"><i id="progress-fill"></i></div></div>
   </div>
 
@@ -219,7 +219,7 @@
   <details class="command-console"><summary><span>COMMAND CONSOLE</span><span class="tiny muted">Power routing • forecasts • advance Sol</span></summary><section class="controls">
     <div class="panel">
       <div class="panel-head"><h2>POWER ROUTING</h2><span class="tag">SET PRIORITIES</span></div>
-      <p class="tiny muted" style="margin:0 0 15px">Power is a shared pool. Habitat essentials draw 4 units first; the remaining power is divided proportionally among your slider requests. If requests exceed the budget, every system gets less than requested. Unused power charges the battery.</p>
+      <p class="tiny muted" style="margin:0 0 15px">Power is a shared pool. Habitat essentials draw 4 units first; the remaining power is divided proportionally among your slider requests. If requests exceed the budget, every system gets less than requested. Unused power charges the battery. Your plan carries forward each Sol until you change it. Major repairs need a selected target, enough delivered power and one of your three spare kits.</p>
       <div class="slider-list">
         <div class="slider-row"><label for="life-slider">♡ Life support <output id="life-output">4</output></label><input id="life-slider" type="range" min="1" max="6" value="4"><div class="slider-help">Oxygen generation + water recovery</div></div>
         <div class="slider-row"><label for="green-slider">♧ Greenhouse <output id="green-output">2</output></label><input id="green-slider" type="range" min="0" max="4" value="2"><div class="slider-help">Crop growth needs power, water and time</div></div>
@@ -345,7 +345,15 @@ function forecast(){
   $("demand-value").textContent=demand+" units";
   $("available-value").textContent=available+" units";
   const shortfall=Math.max(0,demand-available);
-  $("forecast-note").textContent=baseRatio<1?"WARNING: habitat essentials are underpowered. Crew safety will deteriorate.":ratio<1?"Over budget by "+shortfall.toFixed(1)+" units. Each allocation receives "+Math.round(ratio*100)+"% of its request. Raising every slider makes every system weaker.":"All requested loads fit. Unused power is stored in the battery.";
+  let note=baseRatio<1?"WARNING: habitat essentials are underpowered. Crew safety will deteriorate.":ratio<1?"Over budget by "+shortfall.toFixed(1)+" units. Each allocation receives "+Math.round(ratio*100)+"% of its request. Raising every slider makes every system weaker.":"All requested loads fit. Unused power is stored in the battery.";
+  const repairActual={filter:v.life*ratio,blight:v.green*ratio,leak:v.repair*ratio,heater:v.repair*ratio};
+  const repairMinimum={filter:5,blight:3.5,leak:1.6,heater:1.6};
+  if(state.repairTarget&&repairMinimum[state.repairTarget]!==undefined&&!state.repairStarted[state.repairTarget]){
+    if(state.spareParts<=0)note="No spare repair kits remain. This repair cannot start; choose which other fault to leave unresolved.";
+    else if(repairActual[state.repairTarget]<repairMinimum[state.repairTarget])note="Repair not started: "+state.repairTarget+" needs "+repairMinimum[state.repairTarget]+" delivered units but currently receives "+repairActual[state.repairTarget].toFixed(1)+". Reduce other requests to prioritize it.";
+    else note="Repair ready: "+state.repairTarget+" will consume 1 spare kit. Keep the required power on it for several Sols to finish.";
+  }
+  $("forecast-note").textContent=note;
   ["life","green","shelter","repair"].forEach(k=>$(k+"-output").textContent=v[k]+" → "+(v[k]*ratio).toFixed(1));
   $("repair-target-label").textContent=state.repairTarget?({solar:"Solar arrays",filter:"Water filter",blight:"Greenhouse blight",leak:"Habitat seal",heater:"Heater controller"}[state.repairTarget]||"None selected"):"None selected";
   $("repair-parts-label").textContent=state.spareParts+" kits";
@@ -732,7 +740,7 @@ function advance(){
   if(state.oxygen<=0||state.water<=0||state.food<=0||state.safety<=0){endMission(false);return;}
   if(state.sol>=30){endMission(true);return;}
   state.sol++;
-  sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
+  // Power priorities and the selected repair target carry forward until the captain changes them.
   applyEventForSol(state.sol);render();
   $("advance-btn").textContent=state.sol===30?"Complete Sol 30 →":"Advance to Sol "+String(state.sol+1).padStart(2,"0")+" →";
 }

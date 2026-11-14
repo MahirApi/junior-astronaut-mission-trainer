@@ -38,7 +38,9 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 
 
 ## Mission progression and one-shot setup tasks
-- Preserve the landing → site confirmation → crew assignment → four commissioning minigames → 30-Sol command campaign.
+- Preserve the knowledge preflight → selectable site → landing simulator → landing confirmation → crew assignment → four commissioning minigames → 30-Sol campaign.
+- The knowledge preflight is an adaptive game setting for practice/standard/advanced minigames. Do not label it a clinical, school or psychometric assessment.
+- Cadet XP, skill progress and badges may persist locally. Mission resources, incident outcomes and one-shot minigames reset on a new run.
 - The player is the captain; four specialists each have a distinct field and are assigned one task apiece.
 - A task has one submitted attempt per run. Never add an in-task retry or silently reset a failed result.
 - The mission lasts 30 game Sols. A no-change/default allocation run should fail before the end; a thoughtful strategy should be capable of reaching Sol 30.
@@ -50,6 +52,9 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 - Power is a shared pool: serve habitat essentials first, then proportionally ration the remaining available energy across player requests. Battery surplus carries forward.
 - Daily slider allocations persist until changed by the player; do not silently reset their plan every Sol.
 - Each major repair must be selected as a target from its component inspector, meet a minimum delivered-power threshold, and consume one limited spare kit. The mission starts with three kits for four later repairable faults.
-- Keep seven escalating crisis beats on Sols 3, 7, 11, 15, 19, 23 and 27. Each must have a persistent resource or system consequence that can be mitigated by a relevant allocation.
+- Keep seven major crisis beats on Sols 3, 7, 11, 15, 19, 23 and 27, plus seven choice incidents on Sols 5, 9, 13, 17, 21, 25 and 29. Choice effects must persist and be recorded in the debrief.
+- Field operations offer two EVA slots per Sol. Panel cleaning, rover sample collection, lab analysis and communications-relay repair each consume a slot; unsuccessful attempts also consume the slot.
+- Rover battery recharges slowly. Do not allow unlimited rover trips or unlimited fieldwork in one Sol.
+- Cadet skills can tune challenge length and number of choices, but never assume a correct quiz answer proves a student's real-world capability.
 - Open the mission alert briefing when a crisis begins and show active faults on the matching outpost hotspot.
 - Keep the minigames short, accessible, keyboard/touch friendly, and explain their objective before the one-shot submission.

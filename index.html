@@ -70,6 +70,7 @@
 .stats{grid-template-columns:repeat(7,minmax(0,1fr))}
 @media(max-width:1100px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:650px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.badge-collection{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 20px}.cadet-badge{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #6b563a;border-radius:999px;background:#2b251d;color:#f1d7a5;font-size:10px;font-weight:800}.cadet-badge .badge-icon{font-size:16px}.cadet-badge.locked{border-color:var(--line);background:#10191f;color:#708086;filter:saturate(.3)}
 </style>
 </head>
 <body>
@@ -244,7 +245,7 @@
     </div>
   </section>
 <section class="panel field-ops-panel" id="field-ops-panel">
-    <div class="panel-head"><div><div class="eyebrow">CREW FIELDWORK • SCIENCE & MAINTENANCE</div><h2>FIELD OPERATIONS</h2></div><span class="tag" id="ops-slots">2 EVA / SOL</span></div>
+    <div class="panel-head"><div><div class="eyebrow">CREW FIELDWORK • SCIENCE & MAINTENANCE</div><h2>FIELD OPERATIONS</h2></div><span class="tag" id="ops-slots">2 FIELD OPS / SOL</span></div>
     <p class="tiny muted">Your crew has two field-operation slots per Sol. Clean panels, repair the communications relay, collect rover samples or study samples in the lab. Successful jobs earn science and cadet XP.</p>
     <div class="field-task-grid" id="field-task-grid"></div>
     <div class="field-ops-footer"><span class="tiny muted" id="field-ops-note">Choose field jobs carefully. Each one uses one operation slot.</span><span class="tiny muted" id="field-ops-progress">0 operations completed</span></div>
@@ -312,8 +313,9 @@
       <div class="debrief-stat"><span>HARVESTS</span><strong id="d-harvests">—</strong></div>
       <div class="debrief-stat"><span>SOLS COMPLETED</span><strong id="d-sols">—</strong></div>
       <div class="debrief-stat"><span>SCIENCE DATA</span><strong id="d-science">—</strong></div>
-      <div class="debrief-stat"><span>FIELD JOBS</span><strong id="d-field">—</strong></div>
+      <div class="debrief-stat"><span>FIELD OPS · ATTEMPTED / SUCCESSFUL</span><strong id="d-field">—</strong></div>
     </div>
+    <h2 style="font-size:16px">Cadet patches earned</h2><div class="badge-collection" id="d-badges"></div>
     <h2 style="font-size:16px">Engineering root-cause debrief</h2><div class="chain" id="debrief-chain"></div>
     <p class="tiny muted">Remember: the game uses simplified training values. The NASA record shown in the mission is real space-weather context; it is not a measurement of radiation at this outpost or a prediction of a Mars surface dose.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px"><button class="primary-btn" id="play-again">↻ Try a new strategy</button><button class="secondary-btn" id="debrief-science">Read science notes</button></div>
@@ -364,7 +366,7 @@ const state = {
   filterClogSeen:false,cropBlightSeen:false,pressureLeakSeen:false,heaterFaultSeen:false,
   spareParts:3,repairTarget:null,repairStarted:{},repairNoPartsNotified:{},
   science:0,skillAssessment:{},siteKey:"gale",landing:null,incidentLog:[],
-  fieldOps:{slots:2,completed:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0}
+  fieldOps:{slots:2,completed:0,successful:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0}
 };
 const sliders = {life:$("life-slider"),green:$("green-slider"),shelter:$("shelter-slider"),repair:$("repair-slider")};
 const crewRoster=[
@@ -381,6 +383,14 @@ const taskDefinitions=[
 ];
 let soundOn=false, audioContext=null;
 const SKILLS=["pilot","engineering","life","botany","science"];
+const BADGE_INFO={
+ "soft-landing":["🛬","Soft Landing","Bring the lander down inside the safe envelope."],
+ "mars-outpost-survivor":["🏠","Outpost Survivor","Complete the 30-Sol mission with the crew safe."],
+ "junior-scientist":["🔬","Junior Scientist","Analyze at least one rover sample."],
+ "field-operator":["🧭","Field Operator","Attempt five field operations."],
+ "science-scout":["✦","Science Scout","Earn 30 or more Science Data in one mission."],
+ "systems-specialist":["⚙","Systems Specialist","Pass all four commissioning minigames."]
+};
 let cadetProgress={xp:0,missions:0,skills:{pilot:0,engineering:0,life:0,botany:0,science:0},badges:[]};
 try{
   const saved=JSON.parse(localStorage.getItem("outpost-zero-cadet-v1")||"null");
@@ -563,7 +573,7 @@ function resolveIncident(id){
   "relay-field":()=>{f.relayOnline=false;return "The relay remains offline. A crew member can attempt a repair during a later Field Operations slot.";},
   "soil-rinse":()=>{state.water=Math.max(0,state.water-10);state.cropBlight=Math.max(0,state.cropBlight-.15);return "A small test batch was rinsed. Water reserves fell by 10 and the greenhouse recovered slightly.";},
   "soil-hydro":()=>{state.battery=Math.max(0,state.battery-3);state.food=Math.max(0,state.food-5);state.cropBlight=Math.max(0,state.cropBlight-.28);return "The sealed hydroponic tray avoided the soil sample. Battery and food reserves were used, but most of the blight was contained.";},
-  "impact-patch":()=>{if(state.spareParts<=0)return "No spare repair kit was available. The crew could not patch the seal.";state.spareParts--;state.pressureLeak=Math.max(0,state.pressureLeak-.8);return "The crew used a repair kit to patch the damaged seal. One spare kit was consumed.";},
+  "impact-patch":()=>{if(state.spareParts<=0)return "No spare repair kit was available. The crew could not patch the seal.";state.spareParts--;state.pressureLeak=Math.max(0,state.pressureLeak-1.2);return "The crew used a repair kit to patch the damaged seal. One spare kit was consumed.";},
   "impact-isolate":()=>{state.oxygen=Math.max(0,state.oxygen-8);state.pressureLeak=Math.max(0,state.pressureLeak-.4);return "The service compartment was isolated. Oxygen reserves fell by 8 and a smaller leak remains.";}
  };
  const apply=outcomes[id];if(!apply)return;
@@ -588,7 +598,7 @@ function closeOpsModal(){$("ops-modal").classList.remove("open");$("ops-modal-co
 function renderFieldOps(){
   if(!state.fieldOps||!$("field-task-grid"))return;
   const f=state.fieldOps,used=f.doneToday||{};
-  $("ops-slots").textContent=f.slots+" EVA / SOL";
+  $("ops-slots").textContent=f.slots+" FIELD OPS / SOL";
   const tasks=[
     {id:"clean",icon:"☀",name:"Scrub solar panels",desc:"Drag the brush across the array to remove accumulated dust.",ready:state.dust>.025&&!used.clean,reason:used.clean?"Completed this Sol":state.dust<=.025?"Panels are clean":"One EVA slot"},
     {id:"rover",icon:"🚙",name:"Rover sample run",desc:"Navigate around crater hazards to collect a rock or ice sample.",ready:f.roverBattery>=20&&state.sol-f.lastRoverSol>=2&&!used.rover,reason:used.rover?"Rover operation already used":f.roverBattery<20?"Rover battery low":state.sol-f.lastRoverSol<2?"Rover needs to recharge":"One EVA slot"},
@@ -598,7 +608,7 @@ function renderFieldOps(){
   $("field-task-grid").innerHTML=tasks.map(t=>'<article class="field-task"><div class="task-icon">'+t.icon+'</div><b>'+t.name+'</b><p>'+t.desc+'</p><button class="secondary-btn" data-field-task="'+t.id+'" '+(!t.ready||f.slots<=0?"disabled":"")+'>'+(t.ready&&f.slots>0?"Start task →":f.slots<=0?"No slots left":t.reason)+'</button></article>').join("");
   $("field-task-grid").querySelectorAll("[data-field-task]").forEach(b=>b.addEventListener("click",()=>startFieldTask(b.dataset.fieldTask)));
   $("field-ops-note").textContent=f.slots===0?"The crew has used both field-operation slots. More slots return next Sol.":"Choose up to two field jobs. A failed attempt still uses time and an operation slot.";
-  $("field-ops-progress").textContent=f.completed+" field jobs attempted • "+f.samples+" samples collected • "+f.studied+" studied";
+  $("field-ops-progress").textContent=f.completed+" attempts · "+(f.successful||0)+" successful • "+f.samples+" samples · "+f.studied+" analyzed";
 }
 function spendFieldSlot(key){
   const f=state.fieldOps;
@@ -610,6 +620,7 @@ function spendFieldSlot(key){
 function finishFieldTask(key,success,message){
   if(!spendFieldSlot(key)){closeOpsModal();renderFieldOps();return;}
   const f=state.fieldOps;
+  if(success)f.successful=(f.successful||0)+1;
   if(key==="clean"&&success){state.dust=clamp(state.dust-.14,0,.85);awardCadetXP(8,"engineering",1);addScience(3);log("Field job complete • solar panel scrubbed");}
   if(key==="relay"&&success){f.relayOnline=true;f.relayAttempts=0;awardCadetXP(10,"engineering",1);addScience(5);log("Radio relay restored • storm warnings are connected");}
   if(key==="relay"&&!success){f.relayAttempts++;log("Radio relay repair failed • early warning link remains offline");}
@@ -759,7 +770,7 @@ function beginLanding(){
   state.filterClogSeen=false;state.cropBlightSeen=false;state.pressureLeakSeen=false;state.heaterFaultSeen=false;
   state.spareParts=3;state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
   state.incidentLog=[];
-  state.fieldOps={slots:2,completed:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0};
+  state.fieldOps={slots:2,completed:0,successful:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0};
   state.assignments={solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"};
   state.landingSuccess=null;state.siteName=site.name;
   $("chosen-site-name").textContent=site.name;
@@ -1087,7 +1098,7 @@ function startMission(){
   state.sol=1;state.battery=clamp(state.battery,0,8);state.harvests=0;state.crop=state.crop||0;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];
   state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
   state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
-  state.fieldOps.slots=2;state.fieldOps.doneToday={};state.fieldOps.completed=0;
+  state.fieldOps.slots=2;state.fieldOps.doneToday={};state.fieldOps.completed=0;state.fieldOps.successful=0;
   showOnlyStage("game-view");$("reset-btn").classList.remove("hidden");
   sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
   log("Landing complete at "+(state.siteName||"Gale Crater")+" • crew assignments locked • Sol 1 begins");
@@ -1195,9 +1206,12 @@ function endMission(completed){
   if(success)addCadetBadge("mars-outpost-survivor");
   if((state.fieldOps?.studied||0)>0)addCadetBadge("junior-scientist");
   if((state.fieldOps?.completed||0)>=5)addCadetBadge("field-operator");
+  if((state.science||0)>=30)addCadetBadge("science-scout");
+  if(taskDefinitions.every(task=>state.taskResults[task.id]?.success))addCadetBadge("systems-specialist");
+  $("d-badges").innerHTML=Object.entries(BADGE_INFO).map(([id,b])=>'<span class="cadet-badge '+(cadetProgress.badges.includes(id)?"":"locked")+'" title="'+b[2]+'"><span class="badge-icon">'+b[0]+'</span>'+b[1]+'</span>').join("");
   $("debrief-title").textContent=success?"30 SOLS. CREW SAFE — JUST.":"MISSION REVIEW: LESSONS LEARNED.";
   $("debrief-lead").textContent=success?"Your crew completed the full 30-Sol campaign. That does not mean every system was perfect: review the damage, trade-offs and near-misses that made survival possible.":"The outpost could not meet every mission need. That is the point of the debrief: identify the chain reaction and decide what you would protect first next time.";
-  $("d-o2").textContent=Math.round(state.oxygen)+"%";$("d-water").textContent=Math.round(state.water)+"%";$("d-food").textContent=Math.round(state.food)+"%";$("d-safety").textContent=Math.round(state.safety)+"%";$("d-harvests").textContent=state.harvests;$("d-sols").textContent=state.sol;$("d-science").textContent=state.science;$("d-field").textContent=state.fieldOps?.completed||0;
+  $("d-o2").textContent=Math.round(state.oxygen)+"%";$("d-water").textContent=Math.round(state.water)+"%";$("d-food").textContent=Math.round(state.food)+"%";$("d-safety").textContent=Math.round(state.safety)+"%";$("d-harvests").textContent=state.harvests;$("d-sols").textContent=state.sol;$("d-science").textContent=state.science;$("d-field").textContent=(state.fieldOps?.completed||0)+" / "+(state.fieldOps?.successful||0);
   const causes=[];
   (state.incidentLog||[]).forEach(item=>causes.push("Sol "+item.sol+" decision: "+item.message));
   if(state.fieldOps?.relayOnline===false)causes.push("The communications relay remained offline. The Sol 23 shelter alert carried an additional late-warning penalty.");

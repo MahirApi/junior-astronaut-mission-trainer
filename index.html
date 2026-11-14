@@ -74,7 +74,7 @@
 <header class="topbar">
   <div class="brand"><div class="brand-mark">⌁</div><div><div class="brand-name">OUTPOST ZERO</div><div class="brand-sub">JUNIOR ASTRONAUT MISSION TRAINER</div></div></div>
   <div class="top-actions">
-    <span class="cadet-pill">CADET <b id="cadet-level">LV 1</b> · <span id="cadet-xp">0 XP</span></span>
+    <span class="cadet-pill">CADET <b id="cadet-level">LV 1</b> · <span id="cadet-xp">0/100 XP</span> · <span id="cadet-badges">0 badges</span></span>
     <button class="quiet-btn" id="science-open">⌁ Science & data</button>
     <button class="quiet-btn" id="sound-toggle" aria-pressed="false">♫ Sound off</button>
     <button class="quiet-btn hidden" id="reset-btn">↻ Restart</button>
@@ -187,7 +187,7 @@
 </section>
 <main class="dashboard" id="game-view">
   <div class="mission-head">
-    <div><div class="eyebrow">GALE CRATER • HABITAT ARES-01</div><div class="mission-title">Mission Control <span class="muted" style="font-weight:500">/ Mars surface</span></div><div class="mission-meta" id="mission-meta">Crew of 5 • Systems nominal • Training mission</div></div>
+    <div><div class="eyebrow" id="mission-site-label">GALE CRATER • HABITAT ARES-01</div><div class="mission-title">Mission Control <span class="muted" style="font-weight:500">/ Mars surface</span></div><div class="mission-meta" id="mission-meta">Crew of 5 • Systems nominal • Training mission</div></div>
     <div class="sol-box"><strong id="sol-label">01 / 30</strong><span>MARTIAN SOL</span><div class="progress"><i id="progress-fill"></i></div></div>
   </div>
 
@@ -308,6 +308,8 @@
       <div class="debrief-stat"><span>CREW SAFETY</span><strong id="d-safety">—</strong></div>
       <div class="debrief-stat"><span>HARVESTS</span><strong id="d-harvests">—</strong></div>
       <div class="debrief-stat"><span>SOLS COMPLETED</span><strong id="d-sols">—</strong></div>
+      <div class="debrief-stat"><span>SCIENCE DATA</span><strong id="d-science">—</strong></div>
+      <div class="debrief-stat"><span>FIELD JOBS</span><strong id="d-field">—</strong></div>
     </div>
     <h2 style="font-size:16px">Engineering root-cause debrief</h2><div class="chain" id="debrief-chain"></div>
     <p class="tiny muted">Remember: the game uses simplified training values. The NASA record shown in the mission is real space-weather context; it is not a measurement of radiation at this outpost or a prediction of a Mars surface dose.</p>
@@ -402,7 +404,9 @@ function updateCadetHeader(){
  const level=1+Math.floor(xp/100);
  if($("cadet-level"))$("cadet-level").textContent="LV "+level;
  if($("cadet-xp"))$("cadet-xp").textContent=(xp%100)+"/100 XP";
+ if($("cadet-badges"))$("cadet-badges").textContent=(cadetProgress.badges||[]).length+" badges";
 }
+function addCadetBadge(id){if(!cadetProgress.badges.includes(id)){cadetProgress.badges.push(id);saveCadetProgress();return true;}return false;}
 function awardCadetXP(amount,skill,skillPoints=0){
  cadetProgress.xp=(cadetProgress.xp||0)+amount;
  if(skill&&SKILLS.includes(skill))cadetProgress.skills[skill]=(cadetProgress.skills[skill]||0)+skillPoints;
@@ -511,6 +515,7 @@ function render(){
   $("scene-caption").textContent=(state.siteName||"GALE CRATER").toUpperCase()+" • "+(state.dustStormSols>0?"REGIONAL DUST STORM":state.dust>.12?"DUST ACCUMULATING ON ARRAYS":"HABITAT ARES-01 • SYSTEMS UNDER WATCH");
   $("brief-tag").textContent="SOL "+String(state.sol).padStart(2,"0");
   $("mission-meta").textContent="Crew of 5 • "+(state.safety<50?"Crew safety needs attention":"30-Sol campaign active")+" • "+state.upgrades.length+" cargo upgrades";
+  if($("mission-site-label"))$("mission-site-label").textContent=(state.siteName||"Gale Crater").toUpperCase()+" • HABITAT ARES-01";
   renderFieldOps();
   forecast();
 }
@@ -605,7 +610,12 @@ function finishFieldTask(key,success,message){
   if(key==="clean"&&success){state.dust=clamp(state.dust-.14,0,.85);awardCadetXP(8,"engineering",1);addScience(3);log("Field job complete • solar panel scrubbed");}
   if(key==="relay"&&success){f.relayOnline=true;f.relayAttempts=0;awardCadetXP(10,"engineering",1);addScience(5);log("Radio relay restored • storm warnings are connected");}
   if(key==="relay"&&!success){f.relayAttempts++;log("Radio relay repair failed • early warning link remains offline");}
-  if(key==="rover"&&success){f.samples++;f.lastRoverSol=state.sol;f.roverBattery=Math.max(0,f.roverBattery-30);state.battery=Math.max(0,state.battery-2);awardCadetXP(8,"science",1);log("Rover returned with a sample • +1 lab sample");}
+  if(key==="rover"&&success){
+    f.samples++;f.lastRoverSol=state.sol;f.roverBattery=Math.max(0,f.roverBattery-30);state.battery=Math.max(0,state.battery-2);
+    f.sampleType=state.siteKey==="utopia"?"ice core":state.siteKey==="jezero"?"ancient lake-bed rock":"sedimentary rock";
+    if(f.sampleType==="ice core")state.water=clamp(state.water+5,0,100);
+    awardCadetXP(8,"science",1);log("Rover returned with "+f.sampleType+" • +1 lab sample"+(f.sampleType==="ice core"?" and 5 Water":""));
+  }
   if(key==="rover"&&!success){f.lastRoverSol=state.sol;f.roverBattery=Math.max(0,f.roverBattery-25);state.battery=Math.max(0,state.battery-1);log("Rover EVA used its slot but returned without a sample");}
   if(key==="lab"&&success){f.studied++;addScience(12);awardCadetXP(12,"science",1);log("Sample analyzed • +12 Science Data");}
   if(key==="lab"&&!success){f.studied++;log("Sample analysis inconclusive • no Science Data awarded");}
@@ -776,15 +786,15 @@ function applyLandingBurn(){
   const l=state.landing;if(!l||l.done)return;
   const throttle=+$("landing-throttle").value;
   l.fuel=Math.max(0,l.fuel-(2+throttle*.065));
-  l.speed=clamp(l.speed+1.8-throttle*.048,.5,30);
+  l.speed=clamp(l.speed+1.8-throttle*.036,.5,30);
   l.offset=clamp(l.offset+l.wind+l.steer*1.8,-30,30);
   l.altitude=Math.max(0,l.altitude-200);l.turn++;
   l.wind=(Math.random()-.5)*({1:.55,2:.85,3:1.15}[l.tier])*2;
   if(l.turn>=l.turns||l.fuel<=0){
     l.done=true;
     state.landingSuccess=l.speed<=l.maxSpeed&&Math.abs(l.offset)<=l.maxOffset&&l.fuel>10;
-    if(state.landingSuccess){state.battery=clamp(state.battery+2,0,8);awardCadetXP(12,"pilot",2);log("Landing simulation passed • +2 starting battery reserve");}
-    else{state.arrayDamage=1.5;state.spareParts=Math.max(1,state.spareParts-1);state.battery=Math.max(0,state.battery-2);state.safety=92;awardCadetXP(4,"pilot",0);log("Hard touchdown • solar frame damaged and one spare kit lost");}
+    if(state.landingSuccess){state.battery=clamp(state.battery+2,0,8);awardCadetXP(12,"pilot",2);addCadetBadge("soft-landing");log("Landing simulation passed • +2 starting battery reserve");}
+    else{state.arrayDamage=1.5;state.spareParts=Math.max(0,state.spareParts-1);state.battery=Math.max(0,state.battery-2);state.safety=92;awardCadetXP(4,"pilot",0);log("Hard touchdown • solar frame damaged and one spare kit lost");}
     renderLandingChallenge();return;
   }
   renderLandingChallenge();
@@ -1171,9 +1181,15 @@ function advance(){
 function endMission(completed){
   $("game-view").style.display="none";$("debrief-view").style.display="block";
   const success=completed&&state.safety>=50&&state.oxygen>10&&state.water>10&&state.food>5;
+  cadetProgress.missions=(cadetProgress.missions||0)+1;
+  const xpGain=20+Math.max(0,state.sol-1)*2+(state.fieldOps?.completed||0)*3+Math.floor((state.science||0)/4);
+  awardCadetXP(xpGain,null,0);
+  if(success)addCadetBadge("mars-outpost-survivor");
+  if((state.fieldOps?.studied||0)>0)addCadetBadge("junior-scientist");
+  if((state.fieldOps?.completed||0)>=5)addCadetBadge("field-operator");
   $("debrief-title").textContent=success?"30 SOLS. CREW SAFE — JUST.":"MISSION REVIEW: LESSONS LEARNED.";
   $("debrief-lead").textContent=success?"Your crew completed the full 30-Sol campaign. That does not mean every system was perfect: review the damage, trade-offs and near-misses that made survival possible.":"The outpost could not meet every mission need. That is the point of the debrief: identify the chain reaction and decide what you would protect first next time.";
-  $("d-o2").textContent=Math.round(state.oxygen)+"%";$("d-water").textContent=Math.round(state.water)+"%";$("d-food").textContent=Math.round(state.food)+"%";$("d-safety").textContent=Math.round(state.safety)+"%";$("d-harvests").textContent=state.harvests;$("d-sols").textContent=state.sol;
+  $("d-o2").textContent=Math.round(state.oxygen)+"%";$("d-water").textContent=Math.round(state.water)+"%";$("d-food").textContent=Math.round(state.food)+"%";$("d-safety").textContent=Math.round(state.safety)+"%";$("d-harvests").textContent=state.harvests;$("d-sols").textContent=state.sol;$("d-science").textContent=state.science;$("d-field").textContent=state.fieldOps?.completed||0;
   const causes=[];
   taskDefinitions.forEach(task=>{
     const result=state.taskResults[task.id];

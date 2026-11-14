@@ -155,6 +155,26 @@
 @media(max-width:850px){.base-build-grid{grid-template-columns:repeat(2,1fr)}.cosmetic-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.coop-picker{align-items:flex-start;flex-direction:column}.base-campus-art{grid-template-columns:1fr 1fr;grid-template-rows:auto}.base-core{grid-column:1/3;grid-row:1;min-height:90px;border-radius:20px}.base-build-grid,.cosmetic-grid{grid-template-columns:1fr 1fr}.final-readouts{grid-template-columns:repeat(2,1fr)}}
 
+
+/* Reference mission console, settings, success effects and same-keyboard co-op skin */
+#missionOverlay{position:fixed;inset:0;z-index:30;background:#030816ee;display:grid;place-items:center;padding:16px}.missionShell{position:relative;width:min(100%,1050px);border:1px solid #345879;border-radius:20px;padding:16px;background:#101a30;max-height:100dvh;overflow:auto}.missionTop,.missionBottom{display:flex;justify-content:space-between;align-items:center;gap:12px}.missionTop b{letter-spacing:2px}#actionHud{font-weight:bold;color:#7ce6ff;padding:12px 0;white-space:pre-wrap}#actionCanvas{display:block;width:100%;max-height:65dvh;aspect-ratio:9/5;object-fit:contain;border-radius:12px;touch-action:none;background:#080e20}.missionBottom{padding-top:12px;font-size:13px;color:#9db0ce}#missionResult{position:absolute;inset:70px 20px 30px;background:#101d35f5;border:1px solid #6eeaff;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px} @media(max-width:600px){.missionShell{padding:10px}#missionOverlay{padding:5px}.missionTop b{font-size:12px}.missionBottom{flex-wrap:wrap}#actionCanvas{min-height:240px}.missionBottom button{width:100%}#missionResult{inset:65px 10px 10px}}
+
+/* Mission atlas and shared, touch-friendly flight console. */
+.simulator{margin-top:24px;padding:22px}.missionCatalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px;margin-top:18px}.missionTile{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:10px;padding:18px;background:#15233b;border:1px solid #304967;transition:transform .15s,border-color .15s}.missionTile:hover{transform:translateY(-3px);border-color:#6eeaff}.missionTile b{font-size:18px}.missionTile .mut{font-size:13px;line-height:1.55}.missionIcon{font-size:30px}.tileLink{color:#7ce6ff;font-size:13px;margin-top:auto}.missionRoute{display:flex;gap:8px;overflow-x:auto;padding:12px 0 5px}.missionRoute span{flex-shrink:0;background:#0d1a30;border:1px solid #2b4260;border-radius:9px;padding:8px 10px;font-size:12px;color:#a8bfd7}.missionRoute .current{border-color:#5dc8d3;color:#ddfaff}
+#missionOverlay{padding:12px;overscroll-behavior:contain}#missionOverlay .missionShell{width:min(100%,1000px);padding:14px;max-height:calc(100dvh - 24px);overflow:auto;box-shadow:0 30px 100px #0008}#missionOverlay .missionTop b{font-size:14px;letter-spacing:1px}#actionHud{min-height:40px;padding:10px 2px;font-size:14px;color:#b5f4ff;font-variant-numeric:tabular-nums}.canvasStage{position:relative;border-radius:12px;overflow:hidden;background:#080e20}#missionOverlay #actionCanvas{width:100%;height:auto;max-height:none;min-height:0;aspect-ratio:9/5;object-fit:fill;border-radius:12px;display:block}.stageMessage,#missionOverlay #missionResult{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0b172bf2;text-align:center;padding:20px;overflow-y:auto;gap:8px;border:1px solid #315d78;border-radius:12px}.stageMessage h2{font-size:clamp(20px,3vw,30px);margin:4px}.stageMessage p{margin:2px 0;max-width:620px;font-size:15px}.stageMessage .go{margin-top:8px;font-size:16px}.stageMessage .mut{font-size:13px}.controlHint{color:#9af0f1;padding:8px}.touchControls{display:flex;gap:14px;align-items:center;padding-top:12px}.dpad{display:grid;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,38px);gap:4px;flex-shrink:0}.dpadUp{grid-column:2}.dpad button:nth-child(2){grid-row:2;grid-column:1}.dpad button:nth-child(3){grid-row:2;grid-column:2}.dpad button:nth-child(4){grid-row:2;grid-column:3}.dpad button{padding:3px;font-size:22px;touch-action:none;user-select:none;border-radius:9px;border-width:1px;background:#1d304a}.controlText{flex:1;color:#c0d0e4;font-size:12px;display:flex;flex-direction:column;gap:8px}.controlText small{color:#819aba}.primaryAction{min-width:175px;min-height:64px;background:#f99c52;color:#101b30;border:0;font-size:15px;font-weight:bold;touch-action:none;user-select:none}.pressed{background:#68e9e8!important;color:#10283f!important;box-shadow:0 0 18px #6eeaff40}body:has(#missionOverlay){overflow:hidden}
+@media(max-width:620px){#missionOverlay{padding:4px}#missionOverlay .missionShell{padding:8px;max-height:calc(100dvh - 8px)}#missionOverlay .missionTop{align-items:center}#missionOverlay .missionTop b{font-size:11px;letter-spacing:0}#missionOverlay .missionTop button{padding:6px;font-size:11px}#actionHud{font-size:12px;min-height:34px}.stageMessage,#missionOverlay #missionResult{padding:12px;gap:4px}.stageMessage h2{font-size:19px}.stageMessage p{font-size:12px}.stageMessage .eyebrow{font-size:9px}.stageMessage .mut{font-size:11px}.stageMessage .go{font-size:13px;padding:8px 16px}.controlHint{padding:2px}.canvasStage:has(.stageMessage:not([hidden])){min-height:290px}.touchControls{gap:10px;flex-wrap:wrap}.controlText{order:3;flex-basis:100%;font-size:11px;gap:4px}.primaryAction{flex:1;min-width:130px;min-height:78px}.simulator{padding:14px}.missionCatalog{grid-template-columns:repeat(2,minmax(0,1fr))}.missionTile{padding:12px}.missionTile b{font-size:16px}.missionTile .eyebrow{font-size:9px;letter-spacing:1px}.missionTile .mut{font-size:12px}}
+@media(max-width:370px){.missionCatalog{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.missionTile{transition:none}.spin,.blink{animation:none}}
+
+.failureRule{font-size:12px;color:#9af0cb;background:#16352f;border:1px solid #2d6556;border-radius:8px;padding:8px 10px;margin:8px 0}.failureRule.hardRule{background:#38222d;border-color:#784251;color:#ffb8ba}.caveMapChoice{font-size:13px;color:#c6def0}.caveMapChoice select{background:#14273e;color:#e9f6ff;border:1px solid #48738c;border-radius:8px;padding:7px;font:inherit;max-width:100%}.stageMessage p.failureRule{font-size:12px;padding:8px 10px}.stageMessage:has(.caveMapChoice){gap:5px}@media(max-width:620px){.canvasStage:has(#missionBrief:not([hidden])){min-height:360px}.stageMessage
+#settingsOverlay{position:fixed;inset:0;z-index:70;background:#030a18ed;padding:18px;display:grid;place-items:center;overscroll-behavior:contain}.settingsShell{width:min(880px,100%);max-height:calc(100dvh - 36px);overflow:auto;padding:22px;background:#122239;border:1px solid #426882;border-radius:18px;box-shadow:0 24px 100px #0009}.settingsTop{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}.settingsTop h2{margin:0;font-size:27px}.settingsTop button{font-size:13px}.settingsSection{border-top:1px solid #2f4a65;padding-top:16px;margin-top:16px}.settingsSection h3{font-size:17px;margin:0 0 14px;color:#cdf3f4}.settingsSection p{font-size:12px;color:#9eb9cf;line-height:1.6}.settingsRow{display:grid;grid-template-columns:minmax(150px,1.1fr) minmax(90px,1fr) 45px;gap:12px;align-items:center;margin:12px 0;color:#dbeaf6;font-size:13px}.settingsRow input[type=range]{width:100%;height:30px}.settingsRow output{color:#9bf0d8;font-variant-numeric:tabular-nums}.settingsRow input[type=checkbox]{width:23px;height:23px;accent-color:#65d9bd}.keyGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.keyGroup{min-width:0;border:1px solid #385770;padding:13px;border-radius:12px;background:#142b42}.keyGroup legend{font-size:13px;color:#9ddfdf;padding:0 7px}.keyGroup .settingsRow{grid-template-columns:1fr 95px;gap:7px;margin:8px 0}.keyButton{min-width:80px;padding:8px;font-size:12px;background:#223e59;border-width:1px}.keyButton[aria-pressed=true]{border-color:#e3b96d;background:#453921;color:#ffe7aa}.settingsError{color:#ffc3b3!important;min-height:20px}.settingsOpen{min-width:38px}.successHalo{position:relative;width:130px;height:82px;flex-shrink:0;display:grid;place-items:center;margin:4px auto 10px;pointer-events:none}.successCore{font-size:55px;line-height:1;color:#ffe7a2;text-shadow:0 0 22px #edcb6d88;animation:successPop .65s cubic-bezier(.2,.8,.3,1.2) both}.successOrbit{position:absolute;width:76px;height:76px;border:1px solid #8de4dc88;border-radius:50%;box-shadow:0 0 30px #71ceca22,inset 0 0 18px #71ceca11;animation:successRing .9s ease-out both}.successSpark{position:absolute;left:50%;top:50%;font-size:14px;color:var(--spark-color);animation:successRay 1s ease-out both;animation-delay:var(--spark-delay)}@keyframes successPop{from{opacity:0;transform:scale(.35) rotate(-25deg)}to{opacity:1;transform:scale(1) rotate(0)}}@keyframes successRing{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}@keyframes successRay{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(calc(var(--spark-x) - 50%),calc(var(--spark-y) - 50%)) scale(.7) rotate(70deg)}}.successStill *{animation:none!important}.successStill .successOrbit{box-shadow:none}body[data-low-performance=true] .spin,body[data-low-performance=true] .blink,body[data-effects=off] .spin,body[data-effects=off] .blink{animation:none!important}body[data-low-performance=true] .successHalo *,body[data-effects=off] .successHalo *{animation:none!important}body[data-low-performance=true] .successSpark,body[data-effects=off] .successSpark{display:none}body[data-low-performance=true] .missionTile{transition:none}body:has(#settingsOverlay){overflow:hidden}@media(max-width:650px){#settingsOverlay{padding:7px}.settingsShell{padding:16px;max-height:calc(100dvh - 14px)}.settingsTop h2{font-size:23px}.settingsRow{grid-template-columns:1fr 1fr 38px;gap:8px;font-size:12px}.keyGrid{grid-template-columns:1fr}.keyGroup .settingsRow{grid-template-columns:1fr 110px}.successHalo{height:65px;width:100px;margin:2px auto 6px}.successCore{font-size:43px}.successOrbit{height:60px;width:60px}}@media(prefers-reduced-motion:reduce){.successHalo *{animation:none!important}.successSpark{display:none}}
+#coopOverlay{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#030a18f5;padding:14px;overscroll-behavior:contain}.coopShell{width:min(1100px,100%);max-height:calc(100dvh - 28px);overflow:auto;background:#101e34;border:1px solid #3a667b;border-radius:18px;padding:15px;box-shadow:0 30px 100px #0008}.coopTop{display:flex;justify-content:space-between;align-items:center;gap:12px}.coopTop h2,.coopTop h3{margin:0;font-size:18px}.coopTop button{font-size:13px;padding:7px 10px}.coopHud{font-size:14px;color:#a8eef1;font-variant-numeric:tabular-nums;padding:10px 2px;min-height:38px}.coopStage{position:relative;border-radius:12px;overflow:hidden;background:#081322}.coopStage canvas{display:block;width:100%;height:auto;aspect-ratio:9/5;touch-action:none;border-radius:12px}.coopMessage{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;text-align:center;background:#0b1930f5;padding:24px;overflow:auto}.coopMessage h2{font-size:30px;margin:0}.coopMessage h3{font-size:21px;margin:0}.coopMessage p{margin:0;max-width:650px;color:#bfd3e7;font-size:15px;line-height:1.55}.coopMessage button{font-size:15px}.coopActions,.coopDifficulty{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.coopDifficulty button.selected,.coopDifficulty button[aria-pressed=true]{border-color:#71decb;background:#19443f}.coopHint,.coopRule{color:#9bbbd2;font-size:12px;line-height:1.5}.coopRule{border:1px solid #3b5c77;border-radius:8px;padding:9px 12px;background:#172e45}.coopControls{padding-top:12px}.coopPads{display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap}.coopPad{background:#152c42;border:1px solid #35546a;border-radius:12px;padding:10px;display:grid;gap:6px;flex:1;min-width:240px}.coopPad h3,.coopPad h4{margin:0;font-size:13px}.coopPad button{touch-action:none;user-select:none;min-width:42px;min-height:38px;border-width:1px;padding:5px 9px}.coopPad .coopInteract{background:#29566a;color:#e4fcff;font-size:12px;font-weight:bold;min-height:46px}.coopPad:nth-child(2){background:#302b43;border-color:#605778}.coopPad:nth-child(2) .coopInteract{background:#5b4679}.coopPad .pressed{background:#79ecde!important;color:#14293d}.coopPad [data-coop-row]{display:flex;gap:5px;justify-content:center}body:has(#coopOverlay){overflow:hidden}
+@media(max-width:650px){.homeModes{grid-template-columns:1fr}.homeMode{padding:22px;min-height:240px}.homeMode h2{font-size:23px}.modeHome{padding-top:10px}#coopOverlay{padding:4px}.coopShell{padding:8px;max-height:calc(100dvh - 8px)}.coopTop h2,.coopTop h3{font-size:13px}.coopTop button{font-size:11px;padding:6px}.coopHud{font-size:12px}.coopStage:has(.coopMessage:not([hidden])){min-height:355px}.coopMessage{padding:14px;justify-content:flex-start;gap:10px}.coopMessage h2{font-size:22px}.coopMessage p{font-size:12px}.coopPads{gap:7px}.coopPad{min-width:145px;padding:8px;flex-basis:45%}.coopPad button{min-width:34px;min-height:34px;font-size:13px;padding:4px}.coopPad .coopInteract{font-size:11px}.coopHint{font-size:11px}}
+
+.coopDpad{display:grid;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,38px);gap:4px;justify-content:center}.coopDpad button:first-child{grid-column:2}.coopDpad button:nth-child(2){grid-row:2;grid-column:1}.coopDpad button:nth-child(3){grid-row:2;grid-column:2}.coopDpad button:nth-child(4){grid-row:2;grid-column:3}.coopPressed{background:#79ecde!important;color:#14293d!important;box-shadow:0 0 16px #78eddd44}.coopInteract small{display:block;font-size:9px;margin-top:3px}.coopTop b{font-size:14px;letter-spacing:1px}.coopMessage[hidden]{display:none!important}.coopDifficulty input{width:20px;height:20px;accent-color:#64d9c4}@media(max-width:650px){.coopDpad{grid-template-columns:repeat(3,35px);grid-template-rows:repeat(2,34px);gap:3px}.coopTop b{font-size:11px;letter-spacing:0}}
+#referenceMissionOverlayNote{display:none}
+@media(max-width:600px){.top-actions #coop-open-btn{display:none}}
+
 </style>
 </head>
 <body>
@@ -163,8 +183,10 @@
   <div class="brand"><div class="brand-mark">⌁</div><div><div class="brand-name">OUTPOST ZERO</div><div class="brand-sub">JUNIOR ASTRONAUT MISSION TRAINER</div></div></div>
   <div class="top-actions">
     <span class="cadet-pill">CADET <b id="cadet-level">LV 1</b> · <span id="cadet-xp">0/100 XP</span> · <span id="cadet-badges">0 badges</span></span>
-    <button class="quiet-btn" id="science-open">⌁ Science & data</button>
-    <button class="quiet-btn" id="music-toggle" aria-pressed="false">♫ Music off</button>
+    <button class="quiet-btn" id="settings-open-btn" aria-label="Settings" title="Settings">⚙ Settings</button>
+     <button class="quiet-btn" id="coop-open-btn" aria-label="Open two-player station game">🤝 Co-op game</button>
+     <button class="quiet-btn" id="science-open">⌁ Science & data</button>
+    <button class="quiet-btn" id="music-toggle" data-music-control data-music-full aria-pressed="false">♫ Start music</button>
     <button class="quiet-btn" id="sound-toggle" aria-pressed="false">◖ Effects on</button>
     <button class="quiet-btn hidden" id="reset-btn">↻ Restart</button>
   </div>
@@ -2121,45 +2143,12 @@ $("debrief-science").addEventListener("click",openScience);
 $("play-again").addEventListener("click",reset);
 $("reset-btn").addEventListener("click",reset);
 $("sound-toggle").addEventListener("click",()=>{soundOn=!soundOn;$("sound-toggle").textContent=soundOn?"◖ Effects on":"◖ Effects off";$("sound-toggle").setAttribute("aria-pressed",String(soundOn));if(soundOn)beep(520,.08);});
-let musicNodes=[],musicOn=false,musicTimer=null,musicStep=0;
-function startAmbientMusic(){
- if(musicOn)return;
- try{
-  audioContext=audioContext||new (window.AudioContext||window.webkitAudioContext)();
-  audioContext.resume?.();
-  const master=audioContext.createGain();master.gain.value=.06;master.connect(audioContext.destination);
-  musicNodes.push(master);
-  // Original, quietly looping pentatonic ambient phrase composed for this game.
-  const notes=[220,261.63,329.63,392,349.23,293.66,261.63,196];
-  function playNote(){
-   if(!musicOn)return;
-   const now=audioContext.currentTime,hz=notes[musicStep%notes.length];
-   const osc=audioContext.createOscillator(),gain=audioContext.createGain();
-   osc.type="sine";osc.frequency.setValueAtTime(hz,now);
-   gain.gain.setValueAtTime(.0001,now);
-   gain.gain.exponentialRampToValueAtTime(.075,now+.07);
-   gain.gain.exponentialRampToValueAtTime(.0001,now+.62);
-   osc.connect(gain);gain.connect(master);osc.start(now);osc.stop(now+.64);
-   musicNodes.push(osc);osc.onended=()=>{const index=musicNodes.indexOf(osc);if(index>=0)musicNodes.splice(index,1);};
-   if(musicStep%4===0){
-    const bass=audioContext.createOscillator(),bassGain=audioContext.createGain();
-    bass.type="triangle";bass.frequency.setValueAtTime(hz/2,now);
-    bassGain.gain.setValueAtTime(.0001,now);bassGain.gain.exponentialRampToValueAtTime(.045,now+.12);bassGain.gain.exponentialRampToValueAtTime(.0001,now+.9);
-    bass.connect(bassGain);bassGain.connect(master);bass.start(now);bass.stop(now+.92);
-    musicNodes.push(bass);bass.onended=()=>{const index=musicNodes.indexOf(bass);if(index>=0)musicNodes.splice(index,1);};
-   }
-   musicStep=(musicStep+1)%notes.length;
-  }
-  musicOn=true;playNote();musicTimer=window.setInterval(playNote,680);
-  $("music-toggle").textContent="♫ Music on";$("music-toggle").setAttribute("aria-pressed","true");
- }catch(e){musicOn=false;if(musicTimer!==null){clearInterval(musicTimer);musicTimer=null;}$("music-toggle").textContent="♫ Music unavailable";}
-}
-function stopAmbientMusic(){
- if(musicTimer!==null){clearInterval(musicTimer);musicTimer=null;}
- musicNodes.forEach(node=>{try{if(node.stop)node.stop();else if(node.gain)node.gain.value=0;}catch(e){}});
- musicNodes=[];musicOn=false;$("music-toggle").textContent="♫ Music off";$("music-toggle").setAttribute("aria-pressed","false");
-}
-$("music-toggle").addEventListener("click",()=>musicOn?stopAmbientMusic():startAmbientMusic());
+// Music is provided by the same synthesized score and control system as the reference.
+$("music-toggle").addEventListener("click",()=>SpaceMusic.toggle());
+$("settings-open-btn").addEventListener("click",()=>openSettings());
+$("coop-open-btn").addEventListener("click",()=>launchStandaloneCoop());
+GameSettings.subscribe(next=>SpaceMusic.setVolume(next.musicVolume));
+SpaceMusic.syncControls();
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeScience();closeOpsModal();}});
 updateLoadouts();renderIssues();render();
 
@@ -2176,6 +2165,1943 @@ console.assert(dustyPower.solar<=clearPower.solar&&dustyPower.total<=clearPower.
 state.heaterFault=2;
 console.assert(totalDemand({life:4,green:2,shelter:1,repair:1})===14,"heater crisis increases demand");
 state.heaterFault=0;
+/* BEGIN reference-aligned mission system */
+/* Source: missions/settings.js */
+/* Preferences have their own storage entry and never touch expedition progress. */
+const GameSettings=(()=>{
+ const STORAGE_KEY='astronaut.settings.v1';
+ const ACTIONS=['up','down','left','right','action'],MODES=['solo','p1','p2'];
+ const CANONICAL={solo:{up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight',action:'Space'},p1:{up:'KeyW',down:'KeyS',left:'KeyA',right:'KeyD',action:'KeyF'},p2:{up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight',action:'Enter'}};
+ const DEFAULTS={musicVolume:.65,fxVolume:1,effects:.8,lowPerformance:false,keys:{solo:{up:'KeyW',down:'KeyS',left:'KeyA',right:'KeyD',action:'Space'},p1:{up:'KeyW',down:'KeyS',left:'KeyA',right:'KeyD',action:'KeyF'},p2:{up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight',action:'Enter'}}};
+ const ACTION_LABELS={up:'Up',down:'Down',left:'Left',right:'Right',action:'Action'};
+ const MODE_LABELS={solo:'Single player',p1:'Co-op · Player 1',p2:'Co-op · Player 2'};
+ const SPECIAL_KEYS={ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',Space:'Space',Enter:'Enter',ShiftLeft:'Left Shift',ShiftRight:'Right Shift'};
+ const subscribers=new Set();
+ let settings=copy(DEFAULTS),overlay=null,previousFocus=null,keyTarget=null,capture=null;
+ const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
+ const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
+ const clamp=value=>Math.max(0,Math.min(1,value));
+ function copy(value){return {musicVolume:value.musicVolume,fxVolume:value.fxVolume,effects:value.effects,lowPerformance:value.lowPerformance,keys:{solo:{...value.keys.solo},p1:{...value.keys.p1},p2:{...value.keys.p2}}}}
+ function allowed(code){return typeof code==='string'&&code!=='KeyP'&&(/^(Key[A-Z]|Digit[0-9])$/.test(code)||owns(SPECIAL_KEYS,code))}
+ function keyLabel(code){return SPECIAL_KEYS[code]||code.replace(/^Key|^Digit/,'')}
+ function keysError(keys){
+  for(const mode of MODES)for(const action of ACTIONS)if(!allowed(keys[mode][action]))return 'Esc, Tab and P are reserved. Choose a letter, number, arrow, Space, Enter or Shift.';
+  const solo=new Set(),coop=new Set();
+  for(const mode of MODES)for(const action of ACTIONS){const used=mode==='solo'?solo:coop,code=keys[mode][action];if(used.has(code))return 'This key is already used in this game mode. Choose another key.';used.add(code)}
+  return '';
+ }
+ function mergeKeys(base,patch){
+  if(!record(patch)||Object.keys(patch).some(mode=>!MODES.includes(mode)))return false;
+  for(const mode of Object.keys(patch)){
+   if(!record(patch[mode])||Object.keys(patch[mode]).some(action=>!ACTIONS.includes(action)))return false;
+   for(const action of Object.keys(patch[mode]))base[mode][action]=patch[mode][action];
+  }
+  return !keysError(base);
+ }
+ function read(){
+  try{
+   const raw=globalThis.localStorage?.getItem(STORAGE_KEY);if(!raw)return;
+   const value=JSON.parse(raw);if(!record(value))return;
+   for(const key of ['musicVolume','fxVolume','effects'])if(typeof value[key]==='number'&&Number.isFinite(value[key]))settings[key]=clamp(value[key]);
+   if(typeof value.lowPerformance==='boolean')settings.lowPerformance=value.lowPerformance;
+   if(owns(value,'keys')){const candidate=copy(DEFAULTS);if(mergeKeys(candidate.keys,value.keys))settings.keys=candidate.keys}
+  }catch(_){/* Unavailable or corrupt storage uses the in-memory defaults. */}
+ }
+ function persist(){try{globalThis.localStorage?.setItem(STORAGE_KEY,JSON.stringify(settings))}catch(_){}}
+ function applyBody(){
+  if(typeof document==='undefined'||!document.body)return;
+  document.body.dataset.lowPerformance=String(settings.lowPerformance);
+  document.body.dataset.effects=settings.effects===0?'off':settings.effects<.5?'reduced':'full';
+ }
+ function get(){return copy(settings)}
+ function update(patch){
+  if(!record(patch)||Object.keys(patch).some(key=>!['musicVolume','fxVolume','effects','lowPerformance','keys'].includes(key)))return false;
+  const next=copy(settings);
+  for(const key of ['musicVolume','fxVolume','effects'])if(owns(patch,key)){if(typeof patch[key]!=='number'||!Number.isFinite(patch[key]))return false;next[key]=clamp(patch[key])}
+  if(owns(patch,'lowPerformance')){if(typeof patch.lowPerformance!=='boolean')return false;next.lowPerformance=patch.lowPerformance}
+  if(owns(patch,'keys')&&!mergeKeys(next.keys,patch.keys))return false;
+  if(JSON.stringify(next)===JSON.stringify(settings))return true;
+  settings=next;persist();applyBody();refresh();
+  for(const listener of [...subscribers]){try{listener(get())}catch(_){/* A subscriber cannot prevent other preferences from updating. */}}
+  return true;
+ }
+ function subscribe(listener){if(typeof listener!=='function')return ()=>{};subscribers.add(listener);return ()=>subscribers.delete(listener)}
+ function keyForSolo(code){
+  for(const action of ACTIONS)if(settings.keys.solo[action]===code)return CANONICAL.solo[action];
+  return ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(code)?code:null;
+ }
+ function keyForCoop(code){for(const mode of ['p1','p2'])for(const action of ACTIONS)if(settings.keys[mode][action]===code)return CANONICAL[mode][action];return null}
+ function labels(mode='solo'){
+  if(!MODES.includes(mode))mode='solo';
+  return ACTIONS.map(action=>{const code=settings.keys[mode][action],alias=CANONICAL.solo[action];return ACTION_LABELS[action]+': '+keyLabel(code)+(mode==='solo'&&action!=='action'&&code!==alias&&keyForSolo(alias)===alias?' / '+keyLabel(alias):'')}).join(' · ')+' · P: pause';
+ }
+ function find(id){return overlay?.querySelector('#'+id)}
+ function refresh(){
+  if(!overlay)return;
+  for(const [key,id] of [['musicVolume','Music'],['fxVolume','Fx'],['effects','Effects']]){const value=Math.round(settings[key]*100);find('settings'+id+'Volume').value=String(value);find('settings'+id+'Value').textContent=value+'%'}
+  find('settingsLowPerformance').checked=settings.lowPerformance;
+  for(const mode of MODES)for(const action of ACTIONS){const button=find('settingsKey-'+mode+'-'+action),waiting=capture&&capture.mode===mode&&capture.action===action;button.textContent=waiting?'Press a key…':keyLabel(settings.keys[mode][action]);button.setAttribute('aria-pressed',String(!!waiting));button.setAttribute('aria-label',MODE_LABELS[mode]+', '+ACTION_LABELS[action]+': '+(waiting?'waiting for a new key':keyLabel(settings.keys[mode][action])))}
+ }
+ function clearCapture(){capture=null;if(overlay){find('settingsCaptureHint').textContent='Click a key button, then press the physical key you want to use.';find('settingsError').textContent='';refresh()}}
+ function beginCapture(mode,action){capture={mode,action};find('settingsError').textContent='';find('settingsCaptureHint').textContent=MODE_LABELS[mode]+' · '+ACTION_LABELS[action]+': press a new key. Esc cancels.';refresh()}
+ function stop(event){event.stopPropagation();if(event.stopImmediatePropagation)event.stopImmediatePropagation()}
+ function onKeyDown(event){
+  if(!overlay)return;stop(event);
+  const code=event.code;
+  if(capture){
+   event.preventDefault();
+   if(code==='Escape'){clearCapture();return}
+   if(event.repeat)return;
+   if(event.ctrlKey||event.altKey||event.metaKey||(event.shiftKey&&code!=='ShiftLeft'&&code!=='ShiftRight')||!allowed(code)){
+    find('settingsError').textContent='Key combinations are unavailable. Esc, Tab and P are reserved. Choose another key.';return;
+   }
+   const next=copy(settings);next.keys[capture.mode][capture.action]=code;const error=keysError(next.keys);
+   if(error){find('settingsError').textContent=error;return}
+   const patch={keys:{[capture.mode]:{[capture.action]:code}}};clearCapture();update(patch);return;
+  }
+  if(code==='Escape'){event.preventDefault();if(!event.repeat)close();return}
+  if(code==='Tab'){
+   const focusable=[...overlay.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')].filter(element=>element.getClientRects().length&&!element.hidden);
+   if(!focusable.length){event.preventDefault();overlay.focus();return}
+   const first=focusable[0],last=focusable[focusable.length-1],active=document.activeElement;
+   if(event.shiftKey&&(active===first||!overlay.contains(active))){event.preventDefault();last.focus()}
+   else if(!event.shiftKey&&(active===last||!overlay.contains(active))){event.preventDefault();first.focus()}
+  }
+ }
+ function onKeyUp(event){if(overlay)stop(event)}
+ function open(){
+  if(typeof document==='undefined'||!document.body||!document.createElement)return false;
+  if(overlay){find('settingsClose').focus();return true}
+  previousFocus=document.activeElement;overlay=document.createElement('div');overlay.id='settingsOverlay';overlay.tabIndex=-1;
+  overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','settingsTitle');
+  overlay.innerHTML='<div class="settingsShell"><div class="settingsTop"><h2 id="settingsTitle">⚙ Settings</h2><button type="button" id="settingsClose" class="settingsClose" aria-label="Close settings">✕ Close</button></div><section class="settingsSection"><h3>Audio</h3><label class="settingsRow" for="settingsMusicVolume"><span>Music volume</span><input id="settingsMusicVolume" type="range" min="0" max="100" step="1"><output id="settingsMusicValue" for="settingsMusicVolume"></output></label><label class="settingsRow" for="settingsFxVolume"><span>Sound effect volume</span><input id="settingsFxVolume" type="range" min="0" max="100" step="1"><output id="settingsFxValue" for="settingsFxVolume"></output></label></section><section class="settingsSection"><h3>Graphics and performance</h3><label class="settingsRow" for="settingsEffectsVolume"><span>Visual effect intensity</span><input id="settingsEffectsVolume" type="range" min="0" max="100" step="1"><output id="settingsEffectsValue" for="settingsEffectsVolume"></output></label><label class="settingsRow" for="settingsLowPerformance"><span>Low performance mode</span><input id="settingsLowPerformance" type="checkbox"></label><p class="mut">Low performance mode reduces decorative motion and particles.</p></section><section class="settingsSection"><h3>Keyboard controls</h3><p id="settingsCaptureHint">Click a key button, then press the physical key you want to use.</p><p class="mut">P: pause (reserved key) · Esc: close / cancel key selection. Key combinations are unavailable.</p><div class="keyGrid">'+MODES.map(mode=>'<fieldset class="keyGroup"><legend>'+MODE_LABELS[mode]+'</legend>'+ACTIONS.map(action=>'<label class="settingsRow"><span>'+ACTION_LABELS[action]+'</span><button type="button" class="keyButton" id="settingsKey-'+mode+'-'+action+'" data-settings-mode="'+mode+'" data-settings-action="'+action+'"></button></label>').join('')+'</fieldset>').join('')+'</div><p id="settingsError" class="settingsError" role="status" aria-live="polite"></p><button type="button" id="settingsResetKeys">Restore default keys</button></section></div>';
+  document.body.append(overlay);find('settingsClose').onclick=close;
+  for(const [key,id] of [['musicVolume','Music'],['fxVolume','Fx'],['effects','Effects']])find('settings'+id+'Volume').oninput=event=>update({[key]:Number(event.target.value)/100});
+  find('settingsLowPerformance').onchange=event=>update({lowPerformance:event.target.checked});
+  overlay.querySelectorAll('[data-settings-mode]').forEach(button=>{button.onclick=()=>beginCapture(button.dataset.settingsMode,button.dataset.settingsAction)});
+  find('settingsResetKeys').onclick=()=>{clearCapture();update({keys:copy(DEFAULTS).keys})};
+  keyTarget=typeof window!=='undefined'&&window.addEventListener?window:document;
+  keyTarget.addEventListener('keydown',onKeyDown,true);keyTarget.addEventListener('keyup',onKeyUp,true);
+  refresh();find('settingsClose').focus();return true;
+ }
+ function close(){
+  if(!overlay)return false;
+  keyTarget.removeEventListener('keydown',onKeyDown,true);keyTarget.removeEventListener('keyup',onKeyUp,true);
+  capture=null;const old=overlay;overlay=null;old.remove();keyTarget=null;
+  const focus=previousFocus;previousFocus=null;if(focus&&focus.isConnected&&typeof focus.focus==='function')focus.focus();return true;
+ }
+ read();applyBody();
+ if(typeof document!=='undefined'&&!document.body&&document.addEventListener)document.addEventListener('DOMContentLoaded',applyBody,{once:true});
+ return {get,update,subscribe,keyForSolo,keyForCoop,labels,open,close};
+})();
+/* Source: missions/music.js */
+/* Original score: "Between the Moons". All instruments are synthesized locally.
+   74 BPM, eight bars: Dm(add9) → Bbmaj7 → Fmaj9 → C(add9). */
+const SpaceMusic=(()=>{
+ const PREF_KEY='astronaut.spaceMusic.enabled.v1',BPM=74,BEAT=60/BPM,STEP=BEAT/2,LOOP_STEPS=64;
+ const CHORDS=[
+  {bass:38,pad:[50,57,60,64,65],arp:[62,65,69,72,76],bell:{2:81,6:84,10:88,13:86}},
+  {bass:34,pad:[46,53,57,62,65],arp:[58,62,65,69,72],bell:{1:81,5:77,9:74,13:77}},
+  {bass:41,pad:[48,53,57,64,67],arp:[60,64,67,69,72],bell:{2:79,6:81,10:84,14:88}},
+  {bass:36,pad:[48,55,60,62,64],arp:[60,62,64,67,72],bell:{1:86,5:84,9:79,13:74}}
+ ];
+ const ARP=[0,2,3,1,4,2,3,2];
+ let enabled=true,started=false,playing=false,mode='menu',volume=.65,ac=null,graph=null,noise=null;
+ let timer=null,nextTime=0,nextStep=0,generation=0,pendingPlay=null,unavailable=false,lastError='';
+ const voices=new Set();
+ try{enabled=globalThis.localStorage?.getItem(PREF_KEY)!=='off'}catch(_){/* Private browsing keeps an in-memory preference. */}
+ const hidden=()=>typeof document!=='undefined'&&!!document.hidden;
+ const constructor=()=>globalThis.AudioContext||globalThis.webkitAudioContext;
+ const supported=()=>!unavailable&&typeof constructor()==='function';
+ const frequency=midi=>440*Math.pow(2,(midi-69)/12);
+ function persist(){try{globalThis.localStorage?.setItem(PREF_KEY,enabled?'on':'off')}catch(_){}}
+ function syncControls(){
+  if(typeof document==='undefined')return;
+  const available=supported(),paused=started&&hidden(),state=!available?'unavailable':!enabled?'off':playing||paused?'on':'ready';
+  const label=!available?'♫ Music unavailable':!enabled?'♫ Turn music on':playing||paused?'♫ Music on':'♫ Start music';
+  const action=!available?'This browser does not support background music':!enabled?'Turn background music on':playing||paused?'Turn background music off':'Start background music';
+  document.querySelectorAll('[data-music-control]').forEach(button=>{
+   button.disabled=!available;
+   button.textContent=button.hasAttribute('data-music-full')?label:enabled?'♫':'♫ ×';
+   button.setAttribute('aria-pressed',String(enabled&&available));
+   button.setAttribute('aria-label',action);
+   button.title=action+(paused?' · Paused while the tab is hidden':'');
+   button.dataset.musicState=state;
+  });
+ }
+ // This context is also the game's SFX context. Music never suspends or closes it.
+ function context(){
+  if(ac&&ac.state!=='closed')return ac;
+  if(!supported()){syncControls();return null}
+  try{ac=new (constructor())();graph=null;noise=null;return ac}
+  catch(_){unavailable=true;lastError='unavailable';syncControls();return null}
+ }
+ function makeGraph(){
+  if(graph)return;
+  const filter=ac.createBiquadFilter(),master=ac.createGain(),compressor=ac.createDynamicsCompressor();
+  filter.type='lowpass';filter.frequency.value=mode==='game'?4800:3800;filter.Q.value=.45;
+  master.gain.value=0;
+  compressor.threshold.value=-18;compressor.knee.value=16;compressor.ratio.value=3;
+  compressor.attack.value=.02;compressor.release.value=.4;
+  filter.connect(master);master.connect(compressor);compressor.connect(ac.destination);
+  const delay=ac.createDelay(1),send=ac.createGain(),wet=ac.createGain(),feedback=ac.createGain(),echoFilter=ac.createBiquadFilter();
+  delay.delayTime.value=BEAT*.75;send.gain.value=.19;wet.gain.value=.28;feedback.gain.value=.24;
+  echoFilter.type='lowpass';echoFilter.frequency.value=1800;
+  filter.connect(send);send.connect(delay);delay.connect(wet);wet.connect(master);
+  delay.connect(echoFilter);echoFilter.connect(feedback);feedback.connect(delay);
+  graph={filter,master,compressor,delay,send,wet,feedback,echoFilter};
+ }
+ function disconnect(voice){
+  if(voice.disconnected)return;voice.disconnected=true;voices.delete(voice);
+  voice.nodes.forEach(node=>{try{node.disconnect()}catch(_){}});
+ }
+ function register(sources,nodes,end){
+  const voice={sources,nodes,end,disconnected:false};voices.add(voice);
+  let remaining=sources.length;
+  sources.forEach(source=>{source.onended=()=>{if(--remaining===0)disconnect(voice)}});
+  return voice;
+ }
+ function envelope(gain,time,duration,peak,attack){
+  gain.setValueAtTime(.0001,time);
+  gain.linearRampToValueAtTime(peak,time+attack);
+  gain.linearRampToValueAtTime(peak*.7,time+Math.max(attack+.01,duration*.52));
+  gain.exponentialRampToValueAtTime(.0001,time+duration);
+ }
+ function tone(midi,time,duration,peak,type='sine',attack=.02,partials=[[1,1,0]]){
+  const gain=ac.createGain(),sources=[],nodes=[gain];
+  envelope(gain.gain,time,duration,peak,attack);gain.connect(graph.filter);
+  partials.forEach(([ratio,volume,detune])=>{
+   const oscillator=ac.createOscillator(),partial=ac.createGain();
+   oscillator.type=type;oscillator.frequency.setValueAtTime(frequency(midi)*ratio,time);
+   oscillator.detune.setValueAtTime(detune,time);partial.gain.value=volume;
+   oscillator.connect(partial);partial.connect(gain);sources.push(oscillator);nodes.push(oscillator,partial);
+  });
+  register(sources,nodes,time+duration+.04);
+  sources.forEach(source=>{source.start(time);source.stop(time+duration+.04)});
+ }
+ function kick(time){
+  const oscillator=ac.createOscillator(),gain=ac.createGain();
+  oscillator.type='sine';oscillator.frequency.setValueAtTime(105,time);
+  oscillator.frequency.exponentialRampToValueAtTime(43,time+.17);
+  envelope(gain.gain,time,.24,.075,.008);
+  oscillator.connect(gain);gain.connect(graph.filter);
+  register([oscillator],[oscillator,gain],time+.26);oscillator.start(time);oscillator.stop(time+.26);
+ }
+ function hat(time,accent){
+  if(!noise){
+   noise=ac.createBuffer(1,Math.ceil(ac.sampleRate*.13),ac.sampleRate);
+   const data=noise.getChannelData(0);let seed=2197;
+   for(let i=0;i<data.length;i++){seed=(seed*16807)%2147483647;data[i]=(seed/2147483647*2-1)*.65}
+  }
+  const source=ac.createBufferSource(),highpass=ac.createBiquadFilter(),gain=ac.createGain();
+  source.buffer=noise;highpass.type='highpass';highpass.frequency.value=3100;
+  envelope(gain.gain,time,.095,accent?.027:.017,.004);
+  source.connect(highpass);highpass.connect(gain);gain.connect(graph.filter);
+  register([source],[source,highpass,gain],time+.13);source.start(time);source.stop(time+.13);
+ }
+ function compose(step,time){
+  const chord=CHORDS[Math.floor(step/16)%4],position=step%16;
+  if(position===0){
+   // Two gently detuned sine waves per pad note give slow, weightless movement.
+   chord.pad.forEach(note=>tone(note,time,8*BEAT+.8,.029,'sine',1.1,[[1,.65,-4],[1,.35,4]]));
+  }
+  if(position%8===0)tone(chord.bass,time,3.8*BEAT,.095,'sine',.09,[[1,.87,0],[2,.13,0]]);
+  if(mode==='game'||position%2===0){
+   const note=chord.arp[ARP[Math.floor(position/(mode==='game'?1:2))%ARP.length]];
+   tone(note,time,.9*BEAT,mode==='game'?.039:.031,'triangle',.025);
+  }
+  if(chord.bell[position]!==undefined){
+   tone(chord.bell[position],time,2.3*BEAT,.035,'sine',.012,[[1,.8,0],[2.002,.2,0]]);
+  }
+  if(mode==='game'){
+   if(position%4===0)kick(time);
+   if(position%2===0)hat(time,position%4===2);
+  }
+ }
+ function halt(){
+  generation++;
+  if(timer!==null){clearInterval(timer);timer=null}
+  pendingPlay=null;playing=false;
+  if(!ac)return;
+  const now=ac.currentTime;
+  if(graph){
+   const gain=graph.master.gain;
+   try{gain.cancelScheduledValues(now);gain.setValueAtTime(gain.value,now);gain.linearRampToValueAtTime(0,now+.09)}catch(_){}
+  }
+  voices.forEach(voice=>{
+   voice.sources.forEach(source=>{try{source.stop(now+.1)}catch(_){}});
+   // onended disconnects each retiring voice after the short master fade.
+  });
+  voices.clear();
+ }
+ function schedule(){
+  if(!playing||!enabled||hidden())return;
+  try{
+   const now=ac.currentTime;
+   voices.forEach(voice=>{if(voice.end<now-.1)disconnect(voice)});
+   // A throttled tab must never enqueue a backlog of notes.
+   if(nextTime<now-.5)nextTime=now+.06;
+   let count=0;
+   while(nextTime<now+.3&&count++<8){compose(nextStep,nextTime);nextStep=(nextStep+1)%LOOP_STEPS;nextTime+=STEP}
+  }catch(_){lastError='playback';halt();syncControls()}
+ }
+ function setMode(nextMode='menu'){
+  mode=nextMode==='game'?'game':'menu';
+  if(graph&&ac){try{graph.filter.frequency.setTargetAtTime(mode==='game'?4800:3800,ac.currentTime,.4)}catch(_){}}
+  return mode;
+ }
+ // Call from a game/menu button gesture. Loading this file never starts audio.
+ async function play(nextMode='menu'){
+  setMode(nextMode);
+  if(!enabled||hidden()){syncControls();return false}
+  const audio=context();if(!audio)return false;
+  if(playing&&audio.state==='running'){syncControls();return true}
+  if(pendingPlay)return pendingPlay;
+  const ticket=generation;
+  const request=(async()=>{
+   try{
+    if(audio.state==='suspended'||audio.state==='interrupted')await audio.resume();
+    if(ticket!==generation||!enabled||hidden())return false;
+    if(audio.state==='closed'||audio.state==='suspended'||audio.state==='interrupted'){
+     lastError='resume';syncControls();return false;
+    }
+    makeGraph();started=true;playing=true;lastError='';
+    const now=audio.currentTime;nextStep=0;nextTime=now+.07;
+    const gain=graph.master.gain;gain.cancelScheduledValues(now);gain.setValueAtTime(0,now);gain.linearRampToValueAtTime(.43*(volume/.65),now+.38);
+    schedule();
+    if(playing&&timer===null)timer=setInterval(schedule,120);
+    syncControls();return playing;
+   }catch(_){lastError='resume';halt();syncControls();return false}
+  })();
+  pendingPlay=request;
+  try{return await request}finally{if(pendingPlay===request)pendingPlay=null}
+ }
+ async function toggle(){
+  // The first click on the initially enabled control is its explicit start gesture.
+  if(enabled&&!playing&&!pendingPlay&&!hidden())return play(mode).then(()=>enabled);
+  if(enabled){enabled=false;persist();halt();syncControls();return false}
+  enabled=true;persist();await play(mode);syncControls();return true;
+ }
+ function setVolume(value){
+  const next=Number(value);if(!Number.isFinite(next))return volume;volume=Math.max(0,Math.min(1,next));
+  if(graph&&ac){try{const now=ac.currentTime,gain=graph.master.gain;gain.cancelScheduledValues(now);gain.setValueAtTime(gain.value,now);gain.linearRampToValueAtTime(playing?.43*(volume/.65):0,now+.12)}catch(_){}}
+  return volume;
+ }
+ function getState(){
+  return {enabled,started,playing,mode,volume,available:supported(),contextState:ac?.state||'uninitialized',schedulerRunning:timer!==null,
+   activeSources:[...voices].reduce((count,voice)=>count+voice.sources.length,0),bpm:BPM,loopBeats:LOOP_STEPS/2,lastError};
+ }
+ if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
+  if(hidden()){halt();syncControls()}
+  else if(enabled&&started)void play(mode);
+ });
+ syncControls();
+ return {play,toggle,setMode,setVolume,context,getState,syncControls};
+})();
+/* Source: missions/effects.js */
+/* Canvas-only decoration. Mission data and gameplay randomness stay untouched. */
+const GameFX = (() => {
+  const TAU = Math.PI * 2;
+  const clamp = (n, low, high) => Math.max(low, Math.min(high, n));
+  const finite = (n, fallback = 0) => Number.isFinite(n) ? n : fallback;
+  const options = prefs => ({
+    intensity: clamp(finite(prefs && prefs.effects, .8), 0, 1),
+    low: !!(prefs && prefs.lowPerformance)
+  });
+  const trailColor = cosmetics => cosmetics && typeof cosmetics.trail === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(cosmetics.trail) ? cosmetics.trail : '#ffb161';
+  // A local, deterministic variation avoids consuming the missions' random stream.
+  const variation = n => {
+    const value = Math.sin(n * 12.9898 + 78.233) * 43758.5453;
+    return value - Math.floor(value);
+  };
+  function position(id, m) {
+    if (id === 'finale' && m.stage === 3 && m.rocket) return {x: finite(m.rocket.x, 450), y: 390};
+    if (['landing', 'rescue', 'meteor', 'mining', 'rover', 'finale'].includes(id) && Number.isFinite(m.x) && Number.isFinite(m.y)) return {x: m.x, y: m.y};
+    return null;
+  }
+  function create() {
+    let particles = [], model = null, missionId = '', previous = null;
+    let clock = 0, serial = 0, shakeAmount = 0, emissionCarry = 0;
+    let prefs = options(), maxParticles = 112, frameBudget = 0;
+
+    function reset() {
+      particles.length = 0; model = null; missionId = ''; previous = null;
+      clock = 0; serial = 0; shakeAmount = 0; emissionCarry = 0;
+    }
+    function add(x, y, vx, vy, life, size, color, kind) {
+      if (!frameBudget || particles.length >= maxParticles) return;
+      frameBudget--;
+      particles.push({x, y, vx, vy, life, maxLife: life, size, color, kind});
+    }
+    function exhaust(point, dx, dy, count, color, jet) {
+      const px = -dy, py = dx;
+      for (let i = 0; i < count && frameBudget; i++) {
+        const n = ++serial, spread = (variation(n) - .5) * (jet ? 45 : 36);
+        const speed = (jet ? 58 : 74) + variation(n + 31) * 74;
+        const side = (variation(n + 14) - .5) * (jet ? 6 : 14);
+        add(point.x + px * side, point.y + py * side, dx * speed + px * spread, dy * speed + py * spread,
+          .28 + variation(n + 45) * .35, (jet ? 1.3 : 1.8) + variation(n + 73) * 2.2, color, 'ember');
+      }
+    }
+    function sparks(point, count, color, hit) {
+      for (let i = 0; i < count && frameBudget; i++) {
+        const n = ++serial, angle = variation(n + 4) * TAU;
+        const speed = (hit ? 65 : 25) + variation(n + 9) * (hit ? 120 : 90);
+        const radius = hit ? 19 : 11;
+        add(point.x + Math.cos(angle) * radius, point.y + Math.sin(angle) * radius,
+          Math.cos(angle) * speed, Math.sin(angle) * speed - (hit ? 12 : 23),
+          .22 + variation(n + 21) * .36, 1.1 + variation(n + 66) * 1.4, color, 'spark');
+      }
+    }
+    function update(id, m, dt, input, requestedPrefs, cosmetics) {
+      if (!m || typeof m !== 'object') { reset(); return; }
+      if (m !== model || id !== missionId) {
+        reset(); model = m; missionId = id;
+      }
+      prefs = options(requestedPrefs);
+      const elapsed = clamp(finite(dt), 0, 60), emissionTime = Math.min(elapsed, .05);
+      clock += elapsed;
+      maxParticles = Math.round((prefs.low ? 40 : 140) * prefs.intensity);
+      frameBudget = Math.ceil((prefs.low ? 8 : 28) * prefs.intensity);
+      const current = {
+        hp: Number.isFinite(m.hp) ? m.hp : null,
+        hits: finite(m.hits), bumps: finite(m.bumps)
+      };
+      const hitCount = previous ? Math.max(
+        previous.hp !== null && current.hp !== null ? previous.hp - current.hp : 0,
+        current.hits - previous.hits, current.bumps - previous.bumps, 0
+      ) : 0;
+      previous = current;
+      if (!prefs.intensity) {
+        particles.length = 0; shakeAmount = 0; emissionCarry = 0; return;
+      }
+      if (particles.length > maxParticles) particles.splice(0, particles.length - maxParticles);
+      // Age by the full elapsed time, but cap new emission work after a slow frame.
+      let alive = 0;
+      for (const p of particles) {
+        p.life -= elapsed;
+        if (p.life <= 0) continue;
+        p.x += p.vx * elapsed; p.y += p.vy * elapsed;
+        if (p.kind === 'spark') p.vy += 95 * elapsed;
+        particles[alive++] = p;
+      }
+      particles.length = alive;
+      shakeAmount = prefs.low ? 0 : shakeAmount * Math.exp(-17 * elapsed);
+      const point = position(id, m), color = trailColor(cosmetics);
+      if (hitCount && point) {
+        sparks(point, Math.ceil((prefs.low ? 8 : 22) * prefs.intensity * Math.min(2, hitCount)), color, true);
+        if (!prefs.low) shakeAmount = Math.min(3.2, 2 + hitCount * .4) * prefs.intensity;
+      }
+      if (!emissionTime || m.outcome) return;
+      let emitter = null, rate = 0;
+      if (id === 'landing' && m.thrust && point) {
+        emitter = {point: {x: point.x, y: point.y + 29}, dx: 0, dy: 1}; rate = 92;
+      } else if (id === 'finale' && m.stage === 3 && m.rocket && m.rocket.thrust && point) {
+        emitter = {point: {x: point.x, y: point.y + 36}, dx: 0, dy: 1}; rate = 112;
+      } else if (id === 'rescue' && point && Math.hypot(finite(m.ax), finite(m.ay)) > .01) {
+        const length = Math.hypot(finite(m.ax), finite(m.ay));
+        const dx = -finite(m.ax) / length, dy = -finite(m.ay) / length;
+        emitter = {point: {x: point.x + dx * 23, y: point.y + dy * 23}, dx, dy, jet: true}; rate = 74;
+      } else if (id === 'mining' && m.drilling && m.active && Number.isFinite(m.active.x) && Number.isFinite(m.active.y)) {
+        emitter = {point: {x: m.active.x, y: m.active.y}, drill: true}; rate = 80;
+      }
+      if (!emitter) { emissionCarry = 0; return; }
+      emissionCarry += rate * emissionTime * prefs.intensity * (prefs.low ? .35 : 1);
+      const count = Math.floor(emissionCarry);
+      emissionCarry -= count;
+      if (emitter.drill) sparks(emitter.point, count, color, false);
+      else exhaust(emitter.point, emitter.dx, emitter.dy, count, color, emitter.jet);
+    }
+    function streak(ctx, x, y, radius, vx, vy, color) {
+      const speed = Math.hypot(vx, vy);
+      if (!speed) return;
+      const dx = vx / speed, dy = vy / speed, start = Math.max(0, radius) + 5;
+      const length = (16 + Math.min(42, speed * .15)) * (.45 + prefs.intensity * .55);
+      // The visible streak starts outside the rock's collision circle.
+      ctx.globalAlpha = .17 + prefs.intensity * .16;
+      ctx.strokeStyle = color; ctx.lineWidth = prefs.low ? 1.4 : 2;
+      ctx.beginPath(); ctx.moveTo(x - dx * start, y - dy * start);
+      ctx.lineTo(x - dx * (start + length), y - dy * (start + length)); ctx.stroke();
+    }
+    function draw(ctx, id, m, cosmetics) {
+      if (!ctx || !m || model !== m || missionId !== id || !prefs.intensity) return;
+      ctx.save();
+      const color = trailColor(cosmetics), streakLimit = prefs.low ? 6 : 18;
+      let streaks = 0;
+      if (id === 'meteor' && Array.isArray(m.items)) {
+        for (const rock of m.items) {
+          if (streaks >= streakLimit) break;
+          if (rock.type !== 'rock' || rock.dead || !Number.isFinite(rock.x) || !Number.isFinite(rock.y) || rock.y < -40 || rock.y > 540) continue;
+          streak(ctx, rock.x, rock.y, finite(rock.r, 16), finite(rock.vx), finite(rock.v, 140), color); streaks++;
+        }
+      } else if (id === 'finale' && m.stage === 3 && m.rocket && Array.isArray(m.debris)) {
+        for (const rock of m.debris) {
+          if (streaks >= streakLimit) break;
+          const y = 390 - (finite(rock.a) - finite(m.rocket.altitude)) * .45;
+          if (rock.passed || !Number.isFinite(rock.x) || y < 70 || y > 530) continue;
+          streak(ctx, rock.x, y, finite(rock.r, 20), 0, finite(m.rocket.vy, 100) * .45, color); streaks++;
+        }
+      }
+      for (const p of particles) {
+        const fade = clamp(p.life / p.maxLife, 0, 1);
+        ctx.globalAlpha = fade * (p.kind === 'spark' ? .9 : .65) * prefs.intensity;
+        if (p.kind === 'spark') {
+          ctx.strokeStyle = p.color; ctx.lineWidth = p.size * fade;
+          ctx.beginPath(); ctx.moveTo(p.x, p.y);
+          const length = Math.hypot(p.vx, p.vy) || 1;
+          ctx.lineTo(p.x - p.vx / length * (2 + fade * 5), p.y - p.vy / length * (2 + fade * 5)); ctx.stroke();
+        } else {
+          ctx.fillStyle = p.color;
+          const size = p.size * (.4 + fade * .6);
+          ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size * 1.5);
+        }
+      }
+      ctx.restore();
+    }
+    function shake() {
+      if (prefs.low || !prefs.intensity || shakeAmount < .02) return {x: 0, y: 0};
+      return {x: Math.sin(clock * 79 + .8) * shakeAmount, y: Math.cos(clock * 67 + .4) * shakeAmount * .65};
+    }
+    return {update, draw, shake, reset};
+  }
+  function successHTML(requestedPrefs) {
+    const prefs = options(requestedPrefs), still = prefs.low || !prefs.intensity;
+    let html = `<div class="successHalo${still ? ' successStill' : ''}" style="--fx-intensity:${prefs.intensity}" aria-hidden="true"><span class="successOrbit"></span><span class="successCore">✦</span>`;
+    if (!still) {
+      const count = Math.ceil(8 + prefs.intensity * 12);
+      for (let i = 0; i < count; i++) {
+        const angle = i / count * TAU, distance = 46 + i % 3 * 19;
+        const x = Math.round(Math.cos(angle) * distance), y = Math.round(Math.sin(angle) * distance);
+        html += `<span class="successSpark" style="--spark-x:${x}px;--spark-y:${y}px;--spark-delay:${(i % 5 * .04).toFixed(2)}s;--spark-color:${['#8cf5d5', '#ffe28a', '#8ad8ff'][i % 3]}">✦</span>`;
+      }
+    }
+    return html + '</div>';
+  }
+  return {create, successHTML};
+})();
+
+/* Exact reference modules: user-supplied mission implementations.
+   The asteroid mining factory is displayed and described as Mars ISRU prospecting.
+   The reference's small fixed rover and meteor pickup mode are intentionally not used. */
+const MissionTypes = {};
+MissionTypes.landing = function (env) {
+  const hard = !!env.hard;
+  const lunar = env.planet === 'moon';
+  const weather = env.weather || 'clear';
+  const hasWind = weather === 'wind';
+  const windForce = (hard ? 18 : 12) * (env.risk ? 1.25 : 1);
+  const limit = 48 * (env.risk ? .85 : 1);
+  const look = { rocket: '#e5f2ff', trail: '#ffb35b', ...(env.cosmetics || {}) };
+  const hasThruster = !!(env.gear && env.gear.thruster);
+  const burnRate = hasThruster ? .75 : 1;
+  const padX = [575, 295, 650][(Math.max(1, env.sol) - 1) % 3];
+  const padW = hard ? 124 : 168;
+  const m = {
+    x: padX > 450 ? 150 : 710, y: 85, vx: 0, vy: 8, fuel: 100,
+    elapsed: 0, wind: 0, thrust: false, side: 0, outcome: null, trail: []
+  };
+  const ground = 434, feet = 23, gravity = hard ? 32 : 26;
+  function finish(success, why) {
+    if (m.outcome) return;
+    const quality = Math.max(0, Math.round(160 - Math.abs(m.vy) * 1.3 - Math.abs(m.vx)));
+    m.outcome = {
+      success,
+      title: success ? '🚀 Precision landing complete!' : 'Mission failed',
+      summary: success ? 'Cargo landed safely. Fuel remaining: ' + Math.round(m.fuel) + '%.' : why,
+      score: success ? 220 + quality + Math.round(m.fuel) : 0,
+      rewards: success ? { food: 3, pow: 7 } : {},
+      stats: { fuelRemaining: m.fuel, damage: success ? 0 : 1, seconds: m.elapsed },
+      tip: success ? 'The food and spare battery have been transferred to base.' : 'Use short thruster bursts before landing. Slow down over the green pad.'
+    };
+  }
+  m.update = function (dt, input) {
+    if (m.outcome) return;
+    m.elapsed += dt;
+    if (m.elapsed >= limit) { finish(false, 'Landing time ran out.'); return; }
+    const k = input.keys;
+    m.side = (k.ArrowRight || k.KeyD ? 1 : 0) - (k.ArrowLeft || k.KeyA ? 1 : 0);
+    m.thrust = !!(k.Space || k.ArrowUp || k.KeyW) && m.fuel > 0;
+    const sideBurn = m.side !== 0 && m.fuel > 0;
+    if (m.thrust) { m.vy -= (hard ? 76 : 70) * dt; m.fuel -= 6.2 * burnRate * dt; }
+    if (sideBurn) { m.vx += m.side * 115 * dt; m.fuel -= .8 * burnRate * dt; }
+    m.wind = hasWind ? Math.sin(m.elapsed * .9 + env.sol * .7) * windForce : 0;
+    m.vx += m.wind * dt;
+    m.fuel = Math.max(0, m.fuel);
+    m.vy = Math.max(-115, Math.min(160, m.vy + gravity * dt));
+    m.vx = Math.max(-145, Math.min(145, m.vx * Math.pow(.42, dt)));
+    m.x += m.vx * dt; m.y += m.vy * dt;
+    if (m.x < 25) { m.x = 25; m.vx = Math.abs(m.vx) * .3; }
+    if (m.x > 875) { m.x = 875; m.vx = -Math.abs(m.vx) * .3; }
+    if (m.y < 38) { m.y = 38; m.vy = Math.max(0, m.vy); }
+    if (m.thrust) m.trail.push({x:m.x, y:m.y+28, life:.55});
+    for (const p of m.trail) { p.y += dt * 50; p.life -= dt; }
+    m.trail = m.trail.filter(p=>p.life>0);
+    if (m.y + feet >= ground) {
+      m.y = ground - feet;
+      const onPad = Math.abs(m.x - padX) < padW / 2 - 17;
+      const soft = m.vy <= (hard ? 43 : 58) && Math.abs(m.vx) <= (hard ? 37 : 52);
+      finish(onPad && soft, onPad ? 'You approached the pad too fast; the crew returned to base in an escape pod.' : 'The craft landed off the pad; the crew was evacuated safely.');
+    }
+  };
+  m.action = function () {};
+  m.actionLabel = function () { return '🔥 Hold: thrust'; };
+  m.hud = function () { return '⏱ ' + Math.ceil(Math.max(0,limit-m.elapsed)) + ' s  ·  ⛽ ' + Math.round(m.fuel) + '%' + '  ·  ↓ ' + Math.round(m.vy) + '  ·  ↔ ' + Math.round(Math.abs(m.vx)) + (hasWind ? '  ·  Wind ' + (m.wind < 0 ? '←' : '→') : '') + (env.risk ? '  ·  Risky route' : ''); };
+  m.draw = function (ctx) {
+    const bg = ctx.createLinearGradient(0, 0, 0, 500);
+    bg.addColorStop(0, '#080f26'); bg.addColorStop(1, lunar ? '#26334b' : '#492f37');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, 900, 500);
+    for (let i=0;i<58;i++) { ctx.fillStyle=i%3?'#7387b0':'#d1e9ff'; ctx.fillRect((i*151+31)%900,(i*73+12)%310,i%4?1.5:2.5,1.5); }
+    ctx.fillStyle='#243955'; ctx.beginPath(); ctx.arc(760,88,48,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=lunar?'#364256':'#71474a';
+    ctx.beginPath(); ctx.moveTo(0,434); ctx.lineTo(0,384); ctx.lineTo(80,347); ctx.lineTo(155,385); ctx.lineTo(245,365); ctx.lineTo(345,405); ctx.lineTo(456,346); ctx.lineTo(554,386); ctx.lineTo(670,356); ctx.lineTo(790,382); ctx.lineTo(900,340); ctx.lineTo(900,500); ctx.lineTo(0,500); ctx.fill();
+    ctx.fillStyle=lunar?'#566170':'#9a6552'; ctx.fillRect(0,ground,900,66);
+    for(let i=0;i<20;i++){ctx.fillStyle=lunar?'#48525f':'#7f5147';ctx.beginPath();ctx.ellipse((i*137+23)%900,450+(i*17)%44,8+(i%3)*5,3,0,0,7);ctx.fill();}
+    ctx.strokeStyle='#59dbb9';ctx.lineWidth=2;ctx.setLineDash([5,7]);ctx.beginPath();ctx.moveTo(padX,114);ctx.lineTo(padX,ground-7);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#77f5ca';ctx.fillRect(padX-padW/2,ground-4,padW,8);
+    ctx.fillStyle='#1d3940';ctx.fillRect(padX-padW/2,ground+4,padW,16);
+    for(let i=0;i<5;i++){ctx.fillStyle='#b4ffde';ctx.fillRect(padX-padW/2+i*(padW/4)-2,ground-8,4,4);}
+    ctx.textAlign='center';ctx.font='bold 13px system-ui';ctx.fillStyle='#b7ffe2';ctx.fillText('LANDING PAD',padX,ground+40);
+    if(hasWind){
+      const direction=m.wind<0?-1:1;ctx.save();ctx.strokeStyle='#d4e9ff66';ctx.lineWidth=1.5;
+      for(let i=0;i<22;i++){const x=(i*131+m.elapsed*90*direction+9000)%900,y=115+(i*67)%270;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+direction*(18+i%4*7),y-3);ctx.stroke();}
+      const pole=padX+padW/2+18;ctx.strokeStyle='#d9e5ef';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(pole,ground);ctx.lineTo(pole,ground-55);ctx.stroke();
+      ctx.fillStyle='#ffb565';ctx.beginPath();ctx.moveTo(pole,ground-55);ctx.lineTo(pole+direction*(20+Math.abs(m.wind)),ground-48);ctx.lineTo(pole,ground-41);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#e9f4ff';ctx.font='12px system-ui';ctx.textAlign='right';ctx.fillText('Crosswind '+(direction>0?'→':'←')+' · adjust your heading',875,hasThruster?80:57);ctx.restore();
+    }
+    for(const p of m.trail){ctx.globalAlpha=p.life/.55;ctx.fillStyle=look.trail;ctx.beginPath();ctx.arc(p.x,p.y,4+p.life*6,0,7);ctx.fill();}ctx.globalAlpha=1;
+    ctx.save();ctx.translate(m.x,m.y);ctx.rotate(m.vx*.0017);
+    if(m.thrust){ctx.fillStyle=look.trail;ctx.beginPath();ctx.moveTo(-10,17);ctx.lineTo(0,42+Math.sin(m.elapsed*55)*8);ctx.lineTo(10,17);ctx.fill();ctx.fillStyle='#fff5bf';ctx.beginPath();ctx.moveTo(-5,17);ctx.lineTo(0,32);ctx.lineTo(5,17);ctx.fill();}
+    ctx.strokeStyle='#c7e7f5';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-12,8);ctx.lineTo(-24,23);ctx.lineTo(-31,23);ctx.moveTo(12,8);ctx.lineTo(24,23);ctx.lineTo(31,23);ctx.stroke();
+    ctx.fillStyle=look.rocket;ctx.beginPath();ctx.moveTo(-19,13);ctx.lineTo(-14,-11);ctx.quadraticCurveTo(0,-33,14,-11);ctx.lineTo(19,13);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#45c7e3';ctx.beginPath();ctx.arc(0,-8,8,0,7);ctx.fill();ctx.fillStyle='#f7aa5c';ctx.fillRect(-12,12,24,6);
+    if(m.side){ctx.fillStyle='#a5f0ff';ctx.fillRect(m.side>0?-28:21,2,7+Math.sin(m.elapsed*42)*3,5);}
+    ctx.restore();
+    ctx.fillStyle='#091424d9';ctx.fillRect(18,18,380,75);ctx.textAlign='left';ctx.fillStyle='#e9f4ff';ctx.font='bold 17px system-ui';ctx.fillText('Land the cargo on the green pad',32,43);ctx.font='13px system-ui';ctx.fillStyle='#a9c2dc';ctx.fillText('← → steer · ↑ / Space to slow down',32,65);ctx.fillText('Safe landing: ↓ ≤ '+(hard?43:58)+' and ↔ ≤ '+(hard?37:52),32,83);
+    if(hasThruster){ctx.fillStyle='#8dffd1';ctx.font='12px system-ui';ctx.textAlign='right';ctx.fillText('✓ Efficient thruster · 25% less fuel',875,57);}
+    const safe=m.vy<=(hard?43:58)&&Math.abs(m.vx)<=(hard?37:52);ctx.fillStyle=safe?'#8dffd1':'#ffc589';ctx.textAlign='right';ctx.font='bold 14px system-ui';ctx.fillText(safe?'SAFE SPEED':'THRUST TO SLOW DOWN',875,33);
+  };
+  return m;
+};
+MissionTypes.cave = function (env = {}) {
+  const cell = 38, cols = 21, rows = 11, ox = 51, oy = 62;
+  // Each layout has its own connected geometry, entry, chambers, crystals and cracks.
+  const layouts = [
+    {name:'Crystal Passage',start:[1,5],crystals:[[4,2],[10,8],[18,2]],seconds:[50,42],
+      rooms:[[1,5,19,6],[1,1,5,4],[3,3,4,6],[7,6,11,9],[8,5,9,9],[14,1,19,4],[16,3,17,6]],
+      cracks:[[6,5],[6,6],[13,5],[13,6]],floor:'#303d47',stone:'#26303e'},
+    {name:'Ring Gallery',start:[2,8],crystals:[[4,2],[18,5],[10,5]],seconds:[58,48],
+      rooms:[[2,2,18,2],[2,8,18,8],[2,2,2,8],[18,2,18,8],[2,5,10,5],[2,1,5,3],[16,4,19,6],[8,4,12,6]],
+      cracks:[[9,2],[18,7],[6,5]],floor:'#293e43',stone:'#203438'},
+    {name:'Deep Fork',start:[10,9],crystals:[[3,2],[17,8],[17,2]],seconds:[58,48],
+      rooms:[[10,2,10,9],[3,6,17,6],[3,2,3,6],[2,1,5,3],[17,6,17,9],[15,7,19,9],[10,2,17,2],[15,1,18,3]],
+      cracks:[[6,6],[13,6],[14,2]],floor:'#3a3448',stone:'#2c293c'},
+    {name:'Spiral Core',start:[1,1],crystals:[[18,9],[4,3],[11,5]],seconds:[80,68],
+      rooms:[[1,1,19,1],[19,1,19,9],[3,9,19,9],[3,3,3,9],[3,3,15,3],[15,3,15,7],[7,7,15,7],[7,5,7,7],[7,5,11,5]],
+      cracks:[[10,1],[19,6],[9,9],[12,3]],floor:'#45372e',stone:'#342c2c'}
+  ];
+  const mapIndex=Number.isInteger(env.mapIndex)&&env.mapIndex>=0&&env.mapIndex<layouts.length?env.mapIndex:0;
+  const layout=layouts[mapIndex];
+  const tiles = Array.from({length: rows}, () => Array(cols).fill(1));
+  for(const [x1,y1,x2,y2] of layout.rooms)for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++)tiles[y][x]=0;
+  layout.cracks.forEach(([x,y])=>tiles[y][x]=2);
+  const center=(x,y)=>({x:ox+(x+.5)*cell,y:oy+(y+.5)*cell});
+  const start=center(...layout.start), player={...start};
+  const crystals=layout.crystals.map(([x,y],i)=>({...center(x,y),found:false,id:i}));
+  const seen=Array.from({length:rows},()=>Array(cols).fill(false));
+  const oxygenSupport=env.support==='oxygen', suit=env.cosmetics?.suit||'#f0f7ff';
+  const riskScale=env.risk ? .85 : 1, fog=env.weather==='fog', fogScale=fog ? .72 : 1;
+  const limit=layout.seconds[env.hard?1:0]*riskScale+(oxygenSupport?15:0);
+  const lamp=!!env.gear?.lamp, light={seen:(lamp?200:150)*fogScale,clear:(lamp?140:95)*fogScale,crystal:(lamp?210:160)*fogScale};
+  let elapsed=0, penalties=0, cooldown=0, jump=0, hurt=0, trail=[], total=0, queuedJump=false;
+  let lastSafe={...player}, direction={x:1,y:0}, jumpDirection={x:1,y:0};
+  function oxygen(){return Math.max(0,limit-elapsed-penalties);}
+  function tileAt(x,y){const tx=Math.floor((x-ox)/cell),ty=Math.floor((y-oy)/cell);return tiles[ty]?.[tx]??1;}
+  function wall(x,y){const r=10;return [[-r,-r],[r,-r],[-r,r],[r,r]].some(([dx,dy])=>tileAt(x+dx,y+dy)===1);}
+  function finish(returned){
+    if(game.outcome)return;
+    const complete=returned&&total===3&&oxygen()>0;
+    game.outcome={success:complete,title:complete?'Cave samples delivered to base!':'Mission failed',
+      summary:complete?`${layout.name}: 3 / 3 crystals delivered to base. ${penalties?`${Math.round(penalties)} s lost to cracks.`:'No time lost to cracks.'}`:`${layout.name}: oxygen ran out. ${total} / 3 crystals found; samples could not be delivered to base.`,
+      score:complete?420+Math.floor(oxygen()*3):0,rewards:complete?{h2o:6,pow:6}:{},
+      ...(complete?{stats:{crystals:total,damage:penalties/4,seconds:elapsed}}:{}),
+      tip:complete?'You made good use of your flashlight and jumps. Now manage the base resources.':'Find every crystal and return to the green exit before oxygen runs out. Move toward a crack, then jump across.'};
+  }
+  const game={outcome:null,mapName:layout.name,
+    update(dt,input){
+      if(game.outcome)return;elapsed+=dt;if(oxygen()<=0){finish(false);return;}cooldown=Math.max(0,cooldown-dt);hurt=Math.max(0,hurt-dt);
+      const k=input.keys||{}; let dx=(k.ArrowRight||k.KeyD?1:0)-(k.ArrowLeft||k.KeyA?1:0),dy=(k.ArrowDown||k.KeyS?1:0)-(k.ArrowUp||k.KeyW?1:0);
+      if(!dx&&!dy&&input.target){dx=input.target.x-player.x;dy=input.target.y-player.y;if(Math.hypot(dx,dy)<8){dx=0;dy=0;}}
+      const length=Math.hypot(dx,dy);if(length){dx/=length;dy/=length;direction={x:dx,y:dy};}
+      if(queuedJump){queuedJump=false;if(cooldown<=0){jump=.46;cooldown=1.4;jumpDirection={...direction};}}
+      const inJump=jump>0;if(inJump){dx=jumpDirection.x;dy=jumpDirection.y;}
+      const speed=inJump?235:145, nx=player.x+dx*speed*dt,ny=player.y+dy*speed*dt;
+      if(!wall(nx,player.y))player.x=nx;if(!wall(player.x,ny))player.y=ny;
+      if(inJump){jump=Math.max(0,jump-dt);trail.push({x:player.x,y:player.y,life:.3});}
+      if(tileAt(player.x,player.y)===2&&!inJump&&hurt===0){
+        penalties+=4;hurt=1.4;player.x=lastSafe.x;player.y=lastSafe.y;jump=0;
+      }else if(tileAt(player.x,player.y)===0&&!inJump)lastSafe={...player};
+      trail=trail.filter(p=>(p.life-=dt)>0);
+      for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const p=center(x,y);if(Math.hypot(p.x-player.x,p.y-player.y)<light.seen)seen[y][x]=true;}
+      if(oxygen()<=0){finish(false);return;}
+      for(const c of crystals)if(!c.found&&Math.hypot(c.x-player.x,c.y-player.y)<26){c.found=true;total++;}
+      if(total===3&&Math.hypot(start.x-player.x,start.y-player.y)<23)finish(true);
+    },
+    action(){if(!game.outcome&&cooldown<=0)queuedJump=true;},
+    actionLabel(){return cooldown>0?`Jump ${cooldown.toFixed(1)} s`:'↝ Jump'},
+    hud(){return `${fog?'🌫 Fog · ':''}${oxygenSupport?'🫧 Spare tank +15 s · ':''}${lamp?'🔦 Wider beam · ':''}🫁 Oxygen ${Math.ceil(oxygen())} s  ·  💎 ${total} / 3 crystals  ·  ${total===3?'Return to the green exit':'Explore the chambers'}`;},
+    draw(ctx){
+      ctx.fillStyle='#080f19';ctx.fillRect(0,0,900,500);
+      ctx.textAlign='left';ctx.font='bold 15px sans-serif';ctx.fillStyle='#d9ebff';ctx.fillText('CAVE EXPLORATION / '+layout.name.toLocaleUpperCase('en-US'),26,27);
+      ctx.font='12px sans-serif';ctx.fillStyle='#8dacc1';ctx.fillText('Find 3 crystals → return to the green exit   •   Move + jump across cracks',26,46);
+      for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+        const px=ox+x*cell,py=oy+y*cell,t=tiles[y][x],p=center(x,y),dist=Math.hypot(p.x-player.x,p.y-player.y);
+        ctx.fillStyle=t===1?layout.stone:layout.floor;ctx.fillRect(px,py,cell+1,cell+1);
+        if(t===1){ctx.strokeStyle='#354152';ctx.strokeRect(px+4,py+4,cell-8,cell-8);ctx.fillStyle='#1c2633';ctx.beginPath();ctx.moveTo(px+3,py+cell-5);ctx.lineTo(px+cell-4,py+5);ctx.lineTo(px+cell-4,py+cell-4);ctx.fill();}
+        else {ctx.fillStyle='#ffffff0c';ctx.fillRect(px+((x*7+y*11)%28),py+12,3,3);if(t===2){ctx.fillStyle='#060711';ctx.beginPath();ctx.moveTo(px+13,py);ctx.lineTo(px+27,py+9);ctx.lineTo(px+16,py+23);ctx.lineTo(px+26,py+38);ctx.lineTo(px+7,py+38);ctx.lineTo(px+12,py+23);ctx.lineTo(px+19,py+10);ctx.closePath();ctx.fill();ctx.strokeStyle='#b77bde';ctx.beginPath();ctx.moveTo(px+13,py);ctx.lineTo(px+23,py+11);ctx.lineTo(px+11,py+23);ctx.lineTo(px+20,py+38);ctx.stroke();}}
+        if(dist>light.clear){ctx.fillStyle=`rgba(2,6,15,${seen[y][x]?Math.min(.72,(dist-light.clear)/240):.91})`;ctx.fillRect(px,py,cell+1,cell+1);}
+      }
+      // Weather haze drifts over terrain; exit, samples and astronaut stay legible above it.
+      if(fog){ctx.fillStyle='rgba(167,189,211,0.06)';for(let i=0;i<6;i++){const x=((i*227+elapsed*9)%1250)-175,y=115+i*62+Math.sin(elapsed*.25+i)*12;ctx.beginPath();ctx.ellipse(x,y,210,33,0,0,Math.PI*2);ctx.fill();}}
+      // An exit beacon stays visible through the explored darkness.
+      ctx.fillStyle='#113f43';ctx.fillRect(start.x-15,start.y-16,30,32);ctx.strokeStyle='#63f5c4';ctx.lineWidth=2;ctx.strokeRect(start.x-15,start.y-16,30,32);
+      ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillStyle='#88ffd5';ctx.fillText('EXIT',start.x,start.y-23);
+      for(const c of crystals){if(c.found)continue;const near=Math.hypot(c.x-player.x,c.y-player.y)<light.crystal;if(!near&&!seen[Math.floor((c.y-oy)/cell)][Math.floor((c.x-ox)/cell)])continue;ctx.save();ctx.globalAlpha=near?1:.35;ctx.translate(c.x,c.y);ctx.fillStyle='#b09bff';ctx.shadowColor='#9f72ff';ctx.shadowBlur=18;ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(10,0);ctx.lineTo(0,15);ctx.lineTo(-10,0);ctx.closePath();ctx.fill();ctx.strokeStyle='#eee9ff';ctx.stroke();ctx.restore();}
+      trail.forEach(p=>{ctx.globalAlpha=p.life;ctx.fillStyle='#91ecff';ctx.beginPath();ctx.arc(p.x,p.y,12,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;
+      ctx.save();ctx.translate(player.x,player.y);if(hurt>0&&Math.floor(hurt*12)%2)ctx.globalAlpha=.35;
+      ctx.rotate(Math.atan2(direction.y,direction.x)+Math.PI/2);ctx.fillStyle=suit;ctx.beginPath();ctx.ellipse(0,2,11,14,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#5ae4ef';ctx.beginPath();ctx.ellipse(0,-6,8,5,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=suit;ctx.fillRect(-14,-1,5,10);ctx.fillRect(9,-1,5,10);ctx.restore();
+      if(inJumpVisual()){ctx.strokeStyle='#8cecff';ctx.beginPath();ctx.arc(player.x,player.y,19,0,Math.PI*2);ctx.stroke();}
+      if(hurt>0){ctx.fillStyle='#ffb6a4';ctx.font='bold 16px sans-serif';ctx.textAlign='center';ctx.fillText('Crack! −4 s oxygen',450,489);}
+      function inJumpVisual(){return jump>0;}
+    }
+  };return game;
+};
+MissionTypes.cave.maps = ['Crystal Passage','Ring Gallery','Deep Fork','Spiral Core'];
+
+/* Three-room engineering emergency. Root owns input, frame timing, and results. */
+MissionTypes.repair = function (env = {}) {
+  const tools=!!env.gear?.tools, repairSeconds=tools?(env.hard?2.2:1.75):(env.hard?3.2:2.5);
+  const repairSupport=env.support==='repair', suit=env.cosmetics?.suit||'#eff7ff';
+  const riskScale=env.risk ? .85 : 1, duration=45*riskScale;
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const rooms = [
+    { x: 40, w: 240, name: 'LIFE SUPPORT', label: 'Oxygen line', color: '#73e2eb', type: 'o2' },
+    { x: 330, w: 240, name: 'WATER RECYCLING', label: 'Water pump', color: '#80adff', type: 'h2o' },
+    { x: 620, w: 240, name: 'POWER ROOM', label: 'Power distributor', color: '#ffca7c', type: 'pow' }
+  ];
+  const order = ((env.sol || 1) - 1) % 3;
+  const s = {
+    x: 450, y: 415, elapsed: 0, walking: 0, active: null,
+    systems: rooms.map((r, i) => ({ ...r, cx: r.x + 120, cy: 205, deadline: ((env.hard ? 14 : 17) + ((i + order) % 3) * 12)*riskScale, progress: 0, state: 'active' }))
+  };
+  // A purchased support item is applied only once when the mission is constructed.
+  if(repairSupport)s.systems.reduce((a,b)=>a.deadline<b.deadline?a:b).progress=.25;
+  const walkable = (x, y) => {
+    if (x >= 38 && x <= 862 && y >= 350 && y <= 452) return true;
+    return rooms.some(r => x >= r.x + 13 && x <= r.x + r.w - 13 && y >= 115 && y <= 370);
+  };
+  const nearest = () => s.systems.find(r => r.state === 'active' && Math.hypot(r.cx - s.x, r.cy - s.y) < 62);
+  const complete = () => {
+    if (api.outcome) return;
+    const fixed = s.systems.filter(r => r.state === 'fixed');
+    const rewards = {};
+    fixed.forEach(r => { rewards[r.type] = r.type === 'pow' ? 18 : r.type === 'o2' ? 5 : 6; });
+    api.outcome = {
+      success: fixed.length === 3,
+      title: fixed.length === 3 ? 'Base systems are back online!' : 'Mission failed',
+      summary: `${fixed.length} / 3 systems repaired in ${Math.ceil(s.elapsed)} seconds.`,
+      score: fixed.length === 3 ? 450 + Math.max(0, Math.round((duration - s.elapsed) * 8)) : 0,
+      rewards: fixed.length === 3 ? rewards : {},
+      ...(fixed.length === 3 ? {stats:{fixed:fixed.length,damage:0,seconds:s.elapsed}} : {}),
+      tip: fixed.length === 3 ? 'Oxygen, water and power lines are back online. You can now adjust base allocations.' : 'Go to the room with the least time left first. Stand beside the device and hold the repair button.'
+    };
+  };
+  function text(ctx, value, x, y, size = 16, color = '#e7f1ff', align = 'left') {
+    ctx.fillStyle = color; ctx.font = `600 ${size}px system-ui, sans-serif`; ctx.textAlign = align; ctx.fillText(value, x, y);
+  }
+  function bar(ctx, x, y, w, p, color) {
+    ctx.fillStyle = '#111b2d'; ctx.fillRect(x, y, w, 8);
+    ctx.fillStyle = color; ctx.fillRect(x, y, w * clamp(p, 0, 1), 8);
+  }
+  const api = {
+    outcome: null,
+    update(dt, input) {
+      if (api.outcome) return;
+      s.elapsed += dt;
+      for (const r of s.systems) if (r.state === 'active' && s.elapsed >= r.deadline) r.state = 'failed';
+      const keys = input.keys || {};
+      let dx = (keys.ArrowRight || keys.KeyD ? 1 : 0) - (keys.ArrowLeft || keys.KeyA ? 1 : 0);
+      let dy = (keys.ArrowDown || keys.KeyS ? 1 : 0) - (keys.ArrowUp || keys.KeyW ? 1 : 0);
+      if (!dx && !dy && input.target) {
+        const d = Math.hypot(input.target.x - s.x, input.target.y - s.y);
+        if (d > 5) { dx = (input.target.x - s.x) / d; dy = (input.target.y - s.y) / d; }
+      }
+      const len = Math.hypot(dx, dy);
+      if (len > 0) {
+        dx /= len; dy /= len;
+        const nx = clamp(s.x + dx * 190 * dt, 38, 862), ny = clamp(s.y + dy * 190 * dt, 115, 452);
+        if (walkable(nx, s.y)) s.x = nx;
+        if (walkable(s.x, ny)) s.y = ny;
+        s.walking += dt;
+      }
+      s.active = nearest();
+      if (s.active && keys.Space && len === 0) {
+        s.active.progress = Math.min(1, s.active.progress + dt / repairSeconds);
+        if (s.active.progress >= 1) { s.active.state = 'fixed'; s.active = null; }
+      }
+      if (s.elapsed >= duration || s.systems.every(r => r.state !== 'active')) complete();
+    },
+    action() {},
+    actionLabel() { return nearest() ? (tools?'🧰 Hold: quick repair':'Hold: repair') : 'Approach device · REPAIR'; },
+    hud() {
+      const remaining = s.systems.filter(r => r.state === 'active');
+      const next = remaining.reduce((a, b) => a.deadline < b.deadline ? a : b, remaining[0]);
+      return `${repairSupport?'🛠 Support: 25% head start · ':''}${tools?'🧰 Quick repair · ':''}${s.systems.filter(r => r.state === 'fixed').length}/3 systems repaired · ${Math.ceil(Math.max(0, duration - s.elapsed))} s${next ? ' · Priority: ' + next.label : ''}`;
+    },
+    draw(ctx) {
+      ctx.fillStyle = '#080e1c'; ctx.fillRect(0, 0, 900, 500);
+      for (let x = 0; x <= 900; x += 30) { ctx.strokeStyle = '#142034'; ctx.beginPath(); ctx.moveTo(x, 100); ctx.lineTo(x, 460); ctx.stroke(); }
+      text(ctx, 'EMERGENCY ENGINEERING', 28, 32, 21);
+      text(ctx, tools?'🧰 Quick repair kit active: stand beside a device + hold repair.':'Reach each device in time. Stand beside it + hold repair.', 28, 59, 14, '#9db3d5');
+      // A single wide corridor joins three rooms; doorways remain visible.
+      ctx.fillStyle = '#243246'; ctx.fillRect(28, 340, 844, 122);
+      ctx.strokeStyle = '#42546c'; ctx.lineWidth = 2; ctx.strokeRect(28, 340, 844, 122);
+      ctx.setLineDash([10, 12]); ctx.strokeStyle = '#4b6074'; ctx.beginPath(); ctx.moveTo(44, 402); ctx.lineTo(856, 402); ctx.stroke(); ctx.setLineDash([]);
+      for (const r of s.systems) {
+        const fixed = r.state === 'fixed', failed = r.state === 'failed';
+        const remaining = Math.max(0, r.deadline - s.elapsed);
+        const urgent = !fixed && !failed && remaining < 8;
+        ctx.fillStyle = '#1a293e'; ctx.fillRect(r.x, 92, r.w, 256);
+        ctx.strokeStyle = fixed ? '#69d8a8' : failed ? '#d36b72' : '#45617e'; ctx.lineWidth = 2; ctx.strokeRect(r.x, 92, r.w, 256);
+        // Clear doorway.
+        ctx.fillStyle = '#243246'; ctx.fillRect(r.cx - 35, 335, 70, 20);
+        ctx.fillStyle = r.color; ctx.fillRect(r.cx - 37, 334, 4, 16); ctx.fillRect(r.cx + 33, 334, 4, 16);
+        text(ctx, r.name, r.cx, 122, 13, r.color, 'center');
+        // Equipment bay and working monitor.
+        ctx.fillStyle = '#0b1525'; ctx.fillRect(r.cx - 65, 155, 130, 103);
+        ctx.strokeStyle = '#526a83'; ctx.strokeRect(r.cx - 65, 155, 130, 103);
+        ctx.fillStyle = fixed ? '#205745' : failed ? '#4a2838' : '#163d55'; ctx.fillRect(r.cx - 52, 167, 104, 48);
+        ctx.strokeStyle = fixed ? '#84ffb8' : urgent ? '#ff8390' : r.color; ctx.lineWidth = 2; ctx.beginPath();
+        for (let j = 0; j < 90; j += 4) { const yy = fixed ? Math.sin(j / 8 + s.elapsed * 3) * 5 : failed ? 0 : Math.sin(j / 6 + s.elapsed * 7) * (urgent ? 14 : 8); if (!j) ctx.moveTo(r.cx - 44 + j, 190 + yy); else ctx.lineTo(r.cx - 44 + j, 190 + yy); } ctx.stroke();
+        for (let j = 0; j < 5; j++) { ctx.fillStyle = j / 5 < r.progress ? '#80f6c0' : '#374f67'; ctx.fillRect(r.cx - 44 + j * 20, 230, 12, 9); }
+        text(ctx, fixed ? 'REPAIRED' : failed ? 'LINE OFFLINE' : `${Math.ceil(remaining)} s`, r.cx, 283, 19, fixed ? '#7ee7b3' : failed ? '#f5969d' : urgent ? '#ff8990' : '#edf4ff', 'center');
+        bar(ctx, r.cx - 82, 296, 164, fixed ? 1 : r.progress, '#79e6bd');
+        if (s.active === r) {
+          ctx.strokeStyle = '#a0f5dc'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(r.cx, r.cy, 61, 0, Math.PI * 2); ctx.stroke();
+          text(ctx, 'STOP + HOLD', r.cx, 326, 11, '#b5f9dc', 'center');
+        }
+      }
+      // Repairing astronaut.
+      ctx.save(); ctx.translate(s.x, s.y);
+      const bob = Math.sin(s.walking * 16) * 2;
+      ctx.fillStyle = '#0a1425aa'; ctx.beginPath(); ctx.ellipse(0, 17, 18, 8, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = suit; ctx.fillRect(-11, 3 + bob, 9, 16); ctx.fillRect(3, 3 - bob, 9, 16);
+      ctx.fillStyle = suit; ctx.fillRect(-14, -9, 28, 25); ctx.fillRect(-20, -4, 6, 18); ctx.fillRect(14, -4, 6, 18);
+      ctx.beginPath(); ctx.arc(0, -16, 17, 0, 7); ctx.fill(); ctx.fillStyle = '#51bcd8'; ctx.beginPath(); ctx.ellipse(0, -17, 12, 9, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#ffce85'; ctx.fillRect(16, 4, 6, 15);
+      ctx.restore();
+      text(ctx, 'CORRIDOR', 450, 483, 11, '#7891b3', 'center');
+    }
+  };
+  return api;
+};
+
+
+
+/* Source: missions/rescue.js */
+/* Orbital rescue: inertia, a drifting crew member, and an actual towing tether. */
+MissionTypes.rescue = function (env = {}) {
+  const hard = !!env.hard, gear = env.gear || {}, cosmetics = env.cosmetics || {};
+  const suitColors = ['#e6f4ff','#ffc28c','#c8adff'], trailColors = ['#ffb161','#70edff','#ff8fd8'];
+  const suitColor = suitColors.includes(cosmetics.suit) ? cosmetics.suit : suitColors[0];
+  const trailColor = trailColors.includes(cosmetics.trail) ? cosmetics.trail : trailColors[0];
+  const limit = ((hard ? 45 : 55) + (gear.tether ? 10 : 0)) * (env.risk ? .85 : 1) + (env.support === 'oxygen' ? 15 : 0);
+  const attachRange = gear.tether ? 116 : 78, safeSpeed = hard ? 62 : 82;
+  const dock = {x:112,y:265};
+  const m = {x:145,y:265,vx:0,vy:0,hp:3,hits:0,elapsed:0,inv:0,shield:env.support==='shield',attached:false,braking:false,ax:0,ay:0,outcome:null,
+    partner:{x:722,y:230,vx:-5,vy:9},debris:[{x:415,y:115,r:24,vx:8,vy:13},{x:525,y:387,r:29,vx:-7,vy:-11},{x:770,y:102,r:18,vx:-11,vy:7}],trail:[]};
+  let pendingAttach = false, notice = '', noticeTime = 0;
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  const speed = ()=>Math.hypot(m.vx,m.vy);
+  function finish(success,why){
+    if(m.outcome)return;
+    m.outcome={success,title:success?'Astronaut rescued safely!':'Mission failed',summary:success?'You towed your crewmate to the airlock. Oxygen remaining: '+Math.ceil(Math.max(0,limit-m.elapsed))+' s.':why,
+      score:success?400+Math.floor(Math.max(0,limit-m.elapsed)*4)+(m.hits===0?100:0):0,rewards:success?{o2:5,pow:5}:{},
+      tip:success?'Precise maneuvers and controlled braking saved the crew.':'Hold Space / Tether–brake to slow down. When close to the astronaut at low speed, press to attach the tether, then return to the green airlock.',
+      stats:{damage:m.hits,rescued:success?1:0,seconds:m.elapsed}};
+  }
+  function clampBody(b,r){
+    if(b.x<r){b.x=r;b.vx=Math.abs(b.vx)*.3;}if(b.x>900-r){b.x=900-r;b.vx=-Math.abs(b.vx)*.3;}
+    if(b.y<82){b.y=82;b.vy=Math.abs(b.vy)*.3;}if(b.y>470){b.y=470;b.vy=-Math.abs(b.vy)*.3;}
+  }
+  m.action=function(){if(!m.outcome)pendingAttach=true;};
+  m.actionLabel=function(){return m.attached?'🪢 Tether attached · Hold: brake':'🪢 Tether / Hold: brake';};
+  m.hud=function(){return '♥'.repeat(Math.max(0,m.hp))+'♡'.repeat(3-Math.max(0,m.hp))+' · 🫁 '+Math.ceil(Math.max(0,limit-m.elapsed))+' s · Speed '+Math.round(speed())+' · '+(m.attached?'Tether attached ✓':'Reach the astronaut')+(m.shield?' · 🛡️ Shield ready':'');};
+  m.update=function(dt,input){
+    if(m.outcome)return;
+    m.elapsed+=dt;if(m.elapsed>=limit||m.hp<=0){finish(false,m.hp<=0?'Health depleted; the rescue mission could not be completed.':'Oxygen ran out; the astronaut could not be brought to the airlock.');return;}
+    m.inv=Math.max(0,m.inv-dt);noticeTime=Math.max(0,noticeTime-dt);
+    const k=input.keys||{};let dx=(k.ArrowRight||k.KeyD?1:0)-(k.ArrowLeft||k.KeyA?1:0),dy=(k.ArrowDown||k.KeyS?1:0)-(k.ArrowUp||k.KeyW?1:0);
+    if(!dx&&!dy&&input.target){const tx=input.target.x-m.x,ty=input.target.y-m.y,d=Math.hypot(tx,ty);if(d>8){dx=tx/d;dy=ty/d;}}
+    const len=Math.hypot(dx,dy);if(len){dx/=len;dy/=len;}m.ax=dx;m.ay=dy;m.braking=!!k.Space;
+    const acceleration=(gear.thruster?192:166)*(m.attached?.85:1);
+    m.vx+=dx*acceleration*dt;m.vy+=dy*acceleration*dt;
+    const damping=Math.exp(-(m.braking?(gear.thruster?4.9:4.1):.23)*dt);m.vx*=damping;m.vy*=damping;
+    const max=m.attached?138:168,sp=speed();if(sp>max){m.vx=m.vx/sp*max;m.vy=m.vy/sp*max;}
+    m.x+=m.vx*dt;m.y+=m.vy*dt;clampBody(m,23);
+    const a=m.partner;
+    if(pendingAttach){pendingAttach=false;if(!m.attached){const dist=Math.hypot(a.x-m.x,a.y-m.y),rel=Math.hypot(a.vx-m.vx,a.vy-m.vy);if(dist<=attachRange&&rel<=safeSpeed){m.attached=true;notice='TETHER ATTACHED · Return to the airlock';noticeTime=2.4;a.vx=m.vx*.65;a.vy=m.vy*.65;}else{notice=dist>attachRange?'Move closer to the astronaut, then attach the tether at low speed.':'Too fast! Hold to brake, then press again.';noticeTime=2;}}}
+    if(m.attached){
+      const tx=m.x-a.x,ty=m.y-a.y,d=Math.hypot(tx,ty)||1,stretch=Math.max(0,d-56);
+      a.vx+=tx/d*stretch*12*dt;a.vy+=ty/d*stretch*12*dt;
+      a.vx+=(m.vx-a.vx)*Math.min(1,dt*1.6);a.vy+=(m.vy-a.vy)*Math.min(1,dt*1.6);
+    }
+    a.x+=a.vx*dt;a.y+=a.vy*dt;clampBody(a,18);
+    if(m.attached){const tx=a.x-m.x,ty=a.y-m.y,d=Math.hypot(tx,ty)||1;if(d>95){a.x=m.x+tx/d*95;a.y=m.y+ty/d*95;a.vx=m.vx;a.vy=m.vy;}}
+    for(const d of m.debris){d.x+=d.vx*dt;d.y+=d.vy*dt;if(d.x<260||d.x>850)d.vx*=-1;if(d.y<95||d.y>435)d.vy*=-1;
+      if(m.inv<=0&&(Math.hypot(d.x-m.x,d.y-m.y)<d.r+17||(m.attached&&Math.hypot(d.x-a.x,d.y-a.y)<d.r+13))){
+        if(m.shield){m.shield=false;m.inv=.65;notice='SHIELD BLOCKED THE COLLISION';noticeTime=1.7;}
+        else{m.hp--;m.hits++;m.inv=1.5;m.vx*=.3;m.vy*=.3;notice='COLLISION · −1 health';noticeTime=1.5;}
+      }}
+    if(len){m.trail.push({x:m.x-dx*19,y:m.y-dy*19,life:.35});}m.trail=m.trail.filter(p=>(p.life-=dt)>0);
+    if(m.hp<=0){finish(false,'Health depleted; the rescue mission could not be completed.');return;}
+    if(m.attached&&Math.hypot(m.x-dock.x,m.y-dock.y)<64&&Math.hypot(a.x-dock.x,a.y-dock.y)<102&&speed()<85)finish(true,'');
+  };
+  function astronaut(ctx,x,y,color,angle,isPlayer){
+    ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.fillStyle='#102238';ctx.fillRect(-17,-4,7,25);
+    ctx.fillStyle=color;ctx.fillRect(-12,-3,24,25);ctx.fillRect(-19,2,7,15);ctx.fillRect(12,2,7,15);ctx.fillRect(-10,19,7,10);ctx.fillRect(3,19,7,10);
+    ctx.beginPath();ctx.arc(0,-10,16,0,Math.PI*2);ctx.fill();ctx.fillStyle=isPlayer?'#5ee3f0':'#edb374';ctx.beginPath();ctx.ellipse(0,-11,11,8,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff88';ctx.fillRect(-7,-16,8,3);ctx.restore();
+  }
+  m.draw=function(ctx){
+    const bg=ctx.createLinearGradient(0,0,900,500);bg.addColorStop(0,'#071329');bg.addColorStop(1,'#171735');ctx.fillStyle=bg;ctx.fillRect(0,0,900,500);
+    for(let i=0;i<100;i++){ctx.fillStyle=i%4?'#6c8dab':'#d2f4ff';ctx.fillRect((i*173+27)%900,(i*67+14)%500,i%3?1:2,1.6);}
+    ctx.fillStyle='#143859';ctx.beginPath();ctx.arc(835,460,170,0,7);ctx.fill();ctx.strokeStyle='#267a9944';ctx.lineWidth=12;ctx.beginPath();ctx.arc(835,460,177,0,7);ctx.stroke();
+    ctx.fillStyle='#23354e';ctx.fillRect(0,175,65,180);ctx.strokeStyle='#5b7d99';ctx.lineWidth=2;ctx.strokeRect(0,175,65,180);
+    ctx.fillStyle='#203e5a';ctx.fillRect(0,110,54,45);ctx.fillRect(0,375,54,45);ctx.fillStyle='#3580a8';for(let i=0;i<4;i++){ctx.fillRect(i*14,115,10,34);ctx.fillRect(i*14,380,10,34);}
+    ctx.fillStyle='#1d4b43aa';ctx.strokeStyle='#85f7c6';ctx.lineWidth=2;ctx.beginPath();ctx.arc(dock.x,dock.y,64,0,7);ctx.fill();ctx.stroke();ctx.setLineDash([5,5]);ctx.beginPath();ctx.arc(dock.x,dock.y,101,0,7);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#7cebc8';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText('AIRLOCK',dock.x,dock.y+83);
+    for(const d of m.debris){ctx.save();ctx.translate(d.x,d.y);ctx.rotate(m.elapsed*.3+d.x*.01);ctx.fillStyle='#5b647a';ctx.strokeStyle='#a0b2ca';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-d.r,-d.r*.65);ctx.lineTo(d.r*.8,-d.r);ctx.lineTo(d.r,d.r*.5);ctx.lineTo(-d.r*.7,d.r);ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeStyle='#9cb3c5';ctx.beginPath();ctx.moveTo(-d.r/2,-d.r/2);ctx.lineTo(d.r/2,d.r/2);ctx.stroke();ctx.restore();}
+    if(m.attached){ctx.strokeStyle='#8cf4dc';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(m.x,m.y+8);ctx.quadraticCurveTo((m.x+m.partner.x)/2,(m.y+m.partner.y)/2+14,m.partner.x,m.partner.y+7);ctx.stroke();}
+    else{ctx.strokeStyle='#ffcb8260';ctx.setLineDash([4,7]);ctx.beginPath();ctx.arc(m.partner.x,m.partner.y,attachRange,0,7);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#ffd5a1';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText('AWAITING RESCUE',m.partner.x,m.partner.y-37);}
+    for(const p of m.trail){ctx.globalAlpha=p.life/.35;ctx.fillStyle=trailColor;ctx.beginPath();ctx.arc(p.x,p.y,3+p.life*6,0,7);ctx.fill();}ctx.globalAlpha=1;
+    astronaut(ctx,m.partner.x,m.partner.y,'#f6c68e',Math.sin(m.elapsed*.7)*.18,false);
+    ctx.save();if(m.inv>0&&Math.floor(m.elapsed*12)%2)ctx.globalAlpha=.4;astronaut(ctx,m.x,m.y,suitColor,Math.atan2(m.ay||0,m.ax||1)*.08,true);ctx.restore();
+    if(m.shield){ctx.strokeStyle='#a7ffdd';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(m.x,m.y,34,0,Math.PI*2);ctx.stroke();}
+    const target=m.attached?dock:m.partner,ang=Math.atan2(target.y-m.y,target.x-m.x);ctx.save();ctx.translate(m.x+Math.cos(ang)*43,m.y+Math.sin(ang)*43);ctx.rotate(ang);ctx.fillStyle=m.attached?'#86ffd2':'#ffd795';ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(-5,-6);ctx.lineTo(-5,6);ctx.closePath();ctx.fill();ctx.restore();
+    ctx.fillStyle='#071424eb';ctx.fillRect(18,12,760,52);ctx.textAlign='left';ctx.fillStyle='#e6f5ff';ctx.font='bold 15px system-ui';ctx.fillText(m.attached?'TETHER ATTACHED → Bring both astronauts to the green airlock':'ASTRONAUT RESCUE → Approach, slow down, attach tether',30,34);ctx.fillStyle='#a9c7da';ctx.font='12px system-ui';ctx.fillText('WASD / Arrows: thrust · Space: attach tether / Hold: brake',30,53);
+    if(m.braking){ctx.fillStyle='#95eaff';ctx.font='bold 13px system-ui';ctx.textAlign='right';ctx.fillText('BRAKE',880,33);}
+    if(noticeTime>0){ctx.fillStyle='#102c43e8';ctx.fillRect(125,453,650,32);ctx.fillStyle='#c8f4ff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(notice,450,474);}
+  };
+  return m;
+};
+
+
+
+/* Source: missions/finale.js */
+/* Sol 14: one continuous evacuation, with three different control challenges. */
+MissionTypes.finale = function (env = {}) {
+  const hard = !!env.hard, gear = env.gear || {};
+  const palette = env.cosmetics || {};
+  const color = (value, fallback) => typeof value==='string' && /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
+  const cosmetics = {suit:color(palette.suit,'#e9f4ff'),rover:color(palette.rover,'#e7f0ec'),rocket:color(palette.rocket,'#e2eef8'),trail:color(palette.trail,'#ffaf5e')};
+  const limit = (hard ? 135 : 155) * (env.risk ? .85 : 1);
+  const targetAltitude = 7700, boardingSeconds = 1.25;
+  // Four independent encounters replace every old ascent interval: 5 × 4 = 20.
+  // Both edge lanes are covered, while every encounter leaves steering room.
+  const meteorBands = [1330,2450,3885,5320,6650];
+  const meteorLanes = [110,450,850,285,610,55,840,380,55,180,490,110,820,330,650,55,500,110,230,850];
+  const meteorRadii = [23,20,26,18,28,24,21,25,19,27,22,28,20,24,18,27,23,21,26,25];
+  const meteorField = meteorBands.flatMap((top, band) => {
+    const bottom = band===0 ? 0 : meteorBands[band-1];
+    return Array.from({length:4}, (_, step) => {
+      const i=band*4+step;return {x:meteorLanes[i],a:bottom+(top-bottom)*(step+1)/4,r:meteorRadii[i]};
+    });
+  });
+  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+  const s = {
+    stage: 1, elapsed: 0, hp: 3, hits: 0, inv: 0, banner: 0, shield:env.support==='shield'?1:0,
+    x: 450, y: 405, facing: -Math.PI / 2,
+    nodes: [{x:230,y:215,p:env.support==='repair'?.5:0},{x:670,y:215,p:0}],
+    crew: [{x:245,y:355,safe:false,boarding:0},{x:465,y:155,safe:false,boarding:0},{x:690,y:335,safe:false,boarding:0}],
+    rocks: [{x:355,y:300,r:38},{x:570,y:260,r:42},{x:725,y:175,r:32}],
+    rocket: {x:450,altitude:0,vy:0,fuel:100,launched:false,thrust:false},
+    debris: meteorField,
+    outcome: null
+  };
+  function finish(success, reason) {
+    if (s.outcome) return;
+    s.outcome = {
+      success,
+      title: success ? 'The great evacuation is complete!' : 'Mission failed',
+      summary: success ? 'Two power lines repaired, three crew members rescued, and the craft reached a safe orbit.' : reason,
+      score: success ? 1000 + Math.round(Math.max(0, limit-s.elapsed)*6) + s.hp*100 : 0,
+      rewards: success ? {pow:10,o2:6,h2o:6} : {},
+      tip: success ? 'Your crew is safe. Review your achievements in the expedition report.' : 'Repair the power lines. Stop beside each crew member and hold the pickup button. Launch, avoid debris, and reach 7700 meters.',
+      stats: {stages:success?3:s.stage-1,damage:s.hits,seconds:s.elapsed,crew:s.crew.filter(c=>c.safe).length}
+    };
+  }
+  function hit(reason) {
+    if (s.inv>0 || s.outcome) return;
+    if(s.shield>0){s.shield=0;s.inv=1.6;return;}
+    s.hp--;s.hits++;s.inv=1.6;
+    if(s.hp<=0)finish(false,reason || 'The craft lost all hull integrity. Evacuation failed.');
+  }
+  function movement(input, speed, dt) {
+    const k=input.keys||{};
+    let dx=(k.ArrowRight||k.KeyD?1:0)-(k.ArrowLeft||k.KeyA?1:0);
+    let dy=(k.ArrowDown||k.KeyS?1:0)-(k.ArrowUp||k.KeyW?1:0);
+    if(!dx&&!dy&&input.target){dx=input.target.x-s.x;dy=input.target.y-s.y;if(Math.hypot(dx,dy)<6){dx=0;dy=0;}}
+    const d=Math.hypot(dx,dy);if(d){dx/=d;dy/=d;s.facing=Math.atan2(dy,dx);}
+    s.x=clamp(s.x+dx*speed*dt,45,855);s.y=clamp(s.y+dy*speed*dt,105,455);
+    return d>0;
+  }
+  function nextStage() {
+    s.stage++;s.banner=1.7;s.inv=Math.max(s.inv,1);
+    if(s.stage===2){s.x=80;s.y=405;s.facing=0;}
+  }
+  s.action=function(){};
+  s.actionLabel=()=>s.stage===1?'🔧 Hold: REPAIR':s.stage===2?'🧑‍🚀 Hold: PICK UP CREW':'🔥 Hold: THRUST';
+  s.hud=()=>`${'♥'.repeat(Math.max(0,s.hp))}${'♡'.repeat(3-Math.max(0,s.hp))} · ${Math.ceil(Math.max(0,limit-s.elapsed))} s · Stage ${s.stage}/3 · ${s.stage===1?s.nodes.filter(n=>n.p>=1).length+'/2 lines':s.stage===2?s.crew.filter(c=>c.safe).length+'/3 crew':Math.floor(s.rocket.altitude)+'/'+targetAltitude+' m · Meteor ×4'}${env.support==='shield'?(s.shield?' · 🛡️ Shield ready':' · 🛡️ Shield used'):''}`;
+  s.update=function(dt,input) {
+    if(s.outcome)return;s.elapsed+=dt;s.inv=Math.max(0,s.inv-dt);s.banner=Math.max(0,s.banner-dt);
+    if(s.hp<=0){finish(false,'Hull integrity lost. Evacuation failed.');return;}
+    if(s.elapsed>=limit){finish(false,'The storm reached the base. Evacuation time ran out.');return;}
+    const k=input.keys||{};
+    if(s.stage===1){
+      const moving=movement(input,210,dt);
+      for(const n of s.nodes)if(n.p<1&&Math.hypot(s.x-n.x,s.y-n.y)<56&&k.Space&&!moving)n.p=Math.min(1,n.p+dt/(gear.tools?1.2:2));
+      if(s.nodes.every(n=>n.p>=1))nextStage();
+    }else if(s.stage===2){
+      const moving=movement(input,gear.battery?245:225,dt);
+      for(const r of s.rocks){let dx=s.x-r.x,dy=s.y-r.y,d=Math.hypot(dx,dy),min=r.r+18;if(d<min){if(d<.01){dx=1;dy=0;d=1;}s.x=clamp(r.x+dx/d*min,45,855);s.y=clamp(r.y+dy/d*min,105,455);hit('The rover lost all hull integrity. The crew did not reach the launch pad.');}}
+      if(s.outcome)return;
+      for(const c of s.crew)if(!c.safe){
+        if(k.Space&&!moving&&Math.hypot(s.x-c.x,s.y-c.y)<42){c.boarding=Math.min(1,c.boarding+dt/boardingSeconds);if(c.boarding>=1)c.safe=true;}
+        else c.boarding=0;
+      }
+      if(s.crew.every(c=>c.safe)&&Math.hypot(s.x-820,s.y-115)<47)nextStage();
+    }else{
+      const r=s.rocket;
+      let steer=(k.ArrowRight||k.KeyD?1:0)-(k.ArrowLeft||k.KeyA?1:0);
+      if(!steer&&input.target){const dx=input.target.x-r.x;steer=Math.abs(dx)>6?Math.sign(dx):0;}
+      const gust=r.altitude>2800&&r.altitude<4900?Math.sin(s.elapsed*3.2)*(hard?42:28):0;
+      r.x=clamp(r.x+(steer*240+gust)*dt,35,865);
+      r.thrust=!!(k.Space||k.ArrowUp||k.KeyW)&&r.fuel>0;
+      r.vy=clamp(r.vy+(r.thrust?(gear.thruster?100:85):-45)*dt,-90,145);
+      if(r.thrust)r.fuel=Math.max(0,r.fuel-(gear.thruster?.85:1.15)*dt);
+      r.altitude+=r.vy*dt;
+      if(r.altitude>30)r.launched=true;
+      if(r.altitude<0){if(r.launched&&r.vy< -45)hit('The launch craft hit the ground and lost all hull integrity.');r.altitude=0;r.vy=0;r.launched=false;}
+      if(s.outcome)return;
+      for(const d of s.debris)if(!d.passed&&Math.abs(r.altitude-d.a)<29&&Math.abs(r.x-d.x)<d.r+17){d.passed=true;hit('Debris destroyed the launch craft.');}
+      if(s.outcome)return;
+      if(r.fuel<=0){finish(false,'Launch fuel ran out before the craft reached orbit.');return;}
+      if(r.altitude>=targetAltitude)finish(true,'');
+    }
+  };
+  function text(ctx,t,x,y,size=16,color='#e8f5ff',align='left'){ctx.font=`600 ${size}px system-ui,sans-serif`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(t,x,y);}
+  function astronaut(ctx,x,y,color='#e9f4ff'){
+    ctx.fillStyle='#07112170';ctx.beginPath();ctx.ellipse(x,y+16,13,5,0,0,7);ctx.fill();ctx.fillStyle=color;ctx.fillRect(x-9,y-3,18,19);ctx.fillRect(x-14,y,5,12);ctx.fillRect(x+9,y,5,12);ctx.beginPath();ctx.arc(x,y-10,12,0,7);ctx.fill();ctx.fillStyle='#60d2e7';ctx.beginPath();ctx.ellipse(x,y-11,8,6,0,0,7);ctx.fill();
+  }
+  function storm(ctx){ctx.strokeStyle='#bdcce820';ctx.lineWidth=2;for(let i=0;i<24;i++){const x=(i*113+s.elapsed*170)%1000-70,y=(i*83)%500;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-45,y+8);ctx.stroke();}}
+  s.draw=function(ctx){
+    const bg=ctx.createLinearGradient(0,0,0,500);bg.addColorStop(0,s.stage===3?'#08152e':'#162239');bg.addColorStop(1,s.stage===3?'#29445d':'#63494b');ctx.fillStyle=bg;ctx.fillRect(0,0,900,500);
+    if(s.stage===1){
+      ctx.fillStyle='#203247';ctx.fillRect(50,110,800,350);ctx.strokeStyle='#5e748e';ctx.lineWidth=3;ctx.strokeRect(50,110,800,350);
+      ctx.strokeStyle='#3b5267';ctx.lineWidth=1;for(let x=70;x<850;x+=40){ctx.beginPath();ctx.moveTo(x,110);ctx.lineTo(x,460);ctx.stroke();}for(let y=110;y<460;y+=40){ctx.beginPath();ctx.moveTo(50,y);ctx.lineTo(850,y);ctx.stroke();}
+      for(let i=0;i<s.nodes.length;i++){const n=s.nodes[i];ctx.fillStyle=n.p>=1?'#154e47':'#462e3f';ctx.fillRect(n.x-75,n.y-58,150,116);ctx.strokeStyle=n.p>=1?'#7bffbd':'#ffb77c';ctx.lineWidth=2;ctx.strokeRect(n.x-75,n.y-58,150,116);ctx.fillStyle='#0c1c30';ctx.fillRect(n.x-57,n.y-41,114,52);ctx.strokeStyle=n.p>=1?'#74f5bd':'#ffc574';ctx.beginPath();for(let j=0;j<100;j+=5){const yy=n.y-15+Math.sin(j*.2+s.elapsed*5)*(n.p>=1?4:15);if(j)ctx.lineTo(n.x-48+j,yy);else ctx.moveTo(n.x-48+j,yy);}ctx.stroke();ctx.fillStyle='#112033';ctx.fillRect(n.x-54,n.y+29,108,9);ctx.fillStyle='#83f0c5';ctx.fillRect(n.x-54,n.y+29,108*n.p,9);text(ctx,n.p>=1?'LINE ONLINE':'POWER LINE '+(i+1),n.x,n.y+76,13,n.p>=1?'#98ffd2':'#ffe0b6','center');if(n.p<1&&Math.hypot(s.x-n.x,s.y-n.y)<56)text(ctx,'STOP + REPAIR',n.x,n.y-74,13,'#b8ffee','center');}
+      if(!(s.inv>0&&Math.floor(s.elapsed*12)%2))astronaut(ctx,s.x,s.y,cosmetics.suit);
+      text(ctx,'Approach a power line, stop, and hold Space / REPAIR.',450,486,13,'#c8e3f2','center');
+    }else if(s.stage===2){
+      ctx.fillStyle='#725549';ctx.fillRect(0,100,900,400);for(let i=0;i<80;i++){ctx.fillStyle='#c7987440';ctx.fillRect((i*157)%900,108+(i*67)%390,3,2);}
+      ctx.strokeStyle='#c6aa7545';ctx.setLineDash([12,14]);ctx.lineWidth=28;ctx.beginPath();ctx.moveTo(80,405);ctx.lineTo(245,355);ctx.lineTo(465,155);ctx.lineTo(690,335);ctx.lineTo(820,115);ctx.stroke();ctx.setLineDash([]);
+      for(const r of s.rocks){ctx.fillStyle='#3d333a';ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,7);ctx.fill();ctx.strokeStyle='#a47b63';ctx.lineWidth=4;ctx.beginPath();ctx.arc(r.x-3,r.y-4,r.r-4,Math.PI,Math.PI*1.8);ctx.stroke();}
+      ctx.fillStyle='#164d48';ctx.fillRect(770,83,95,76);ctx.strokeStyle='#82f2c6';ctx.lineWidth=2;ctx.strokeRect(770,83,95,76);text(ctx,'LAUNCH',817,179,13,'#b8ffe0','center');
+      for(const c of s.crew)if(!c.safe){ctx.strokeStyle='#ffe8a2';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c.x,c.y,28+Math.sin(s.elapsed*4)*3,0,7);ctx.stroke();astronaut(ctx,c.x,c.y,'#fff0ce');if(Math.hypot(s.x-c.x,s.y-c.y)<42){ctx.fillStyle='#0b2035';ctx.fillRect(c.x-43,c.y-50,86,8);ctx.fillStyle='#83f0c5';ctx.fillRect(c.x-43,c.y-50,86*c.boarding,8);text(ctx,c.boarding>0?'Boarding '+Math.floor(c.boarding*100)+'%':'STOP + HOLD',c.x,c.y-60,11,'#d0fff0','center');}}
+      ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.facing);if(s.inv>0&&Math.floor(s.elapsed*12)%2)ctx.globalAlpha=.5;ctx.fillStyle='#112032';ctx.fillRect(-26,-23,52,10);ctx.fillRect(-26,13,52,10);ctx.fillStyle=cosmetics.rover;ctx.fillRect(-28,-15,56,30);ctx.fillStyle='#f4b46b';ctx.fillRect(-18,-10,25,20);ctx.fillStyle='#63cae6';ctx.fillRect(10,-10,12,20);ctx.restore();
+      storm(ctx);text(ctx,'Stop beside each crew member and hold pickup. Collect all three, then go to the launch pad.',450,486,13,'#fff0d9','center');
+    }else{
+      const r=s.rocket,rocketY=390;
+      for(let i=0;i<70;i++){ctx.fillStyle=i%4?'#a7c8e980':'#f0fcff';ctx.fillRect((i*163)%900,((i*73+r.altitude*.22)%500),2,2);}
+      const groundY=430+r.altitude*.5;if(groundY<500){ctx.fillStyle='#885d4c';ctx.fillRect(0,groundY,900,500-groundY);ctx.fillStyle='#62d7bd';ctx.fillRect(365,groundY-5,170,8);}
+      const wind=r.altitude>2800&&r.altitude<4900;if(wind){ctx.fillStyle='#94badb15';ctx.fillRect(0,120,900,330);storm(ctx);text(ctx,'CROSSWIND — HOLD YOUR COURSE',450,103,15,'#ffdab3','center');}
+      for(const d of s.debris){const y=rocketY-(d.a-r.altitude)*.45;if(y<70||y>530||d.passed)continue;ctx.fillStyle='#9b8178';ctx.strokeStyle='#d9b7a1';ctx.lineWidth=2;ctx.beginPath();for(let i=0;i<7;i++){const a=i/7*Math.PI*2,rr=d.r*(i%2?.75:1);ctx.lineTo(d.x+Math.cos(a)*rr,y+Math.sin(a)*rr);}ctx.closePath();ctx.fill();ctx.stroke();}
+      ctx.save();ctx.translate(r.x,rocketY);if(s.inv>0&&Math.floor(s.elapsed*12)%2)ctx.globalAlpha=.5;if(r.thrust){ctx.fillStyle=cosmetics.trail;ctx.beginPath();ctx.moveTo(-11,23);ctx.lineTo(0,70+Math.sin(s.elapsed*45)*9);ctx.lineTo(11,23);ctx.fill();ctx.fillStyle='#fff8d4';ctx.beginPath();ctx.moveTo(-5,23);ctx.lineTo(0,50);ctx.lineTo(5,23);ctx.fill();}ctx.fillStyle=cosmetics.rocket;ctx.beginPath();ctx.moveTo(0,-32);ctx.quadraticCurveTo(24,-8,17,26);ctx.lineTo(-17,26);ctx.quadraticCurveTo(-24,-8,0,-32);ctx.fill();ctx.fillStyle='#64d3f0';ctx.beginPath();ctx.arc(0,-5,8,0,7);ctx.fill();ctx.fillStyle='#f7af70';ctx.beginPath();ctx.moveTo(-16,10);ctx.lineTo(-30,31);ctx.lineTo(-14,25);ctx.fill();ctx.beginPath();ctx.moveTo(16,10);ctx.lineTo(30,31);ctx.lineTo(14,25);ctx.fill();ctx.restore();
+      text(ctx,'ALTITUDE '+Math.floor(r.altitude)+' / '+targetAltitude+' m',24,119,15,'#b7efff');text(ctx,'FUEL '+Math.ceil(r.fuel)+'%',875,119,15,'#ffe1a8','right');text(ctx,'Meteor density ×4 · Space / ↑: climb · ← →: dodge · Target: 7700 m',450,486,13,'#cae8ff','center');
+    }
+    if(s.shield>0){ctx.strokeStyle='#77edff';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(s.stage===3?s.rocket.x:s.x,s.stage===3?390:s.y,s.stage===2?40:29,0,Math.PI*2);ctx.stroke();}
+    ctx.fillStyle='#071225e8';ctx.fillRect(0,0,900,78);text(ctx,'FINAL STORM / STAGE '+s.stage+' / 3',24,29,19,'#f7e4c7');text(ctx,s.stage===1?'1. Repair the base power lines':s.stage===2?'2. Evacuate the crew by rover':'3. Launch and reach a safe orbit',24,56,14,'#a8c9e4');
+    for(let i=0;i<3;i++){ctx.fillStyle=i<s.stage?'#75e9cb':'#2c4259';ctx.fillRect(704+i*60,25,48,6);}if(s.banner>0){ctx.fillStyle='#082234dc';ctx.fillRect(220,220,460,63);text(ctx,'STAGE '+s.stage+' STARTED',450,260,24,'#afffe2','center');}
+  };
+  return s;
+};
+
+
+
+/* Source: missions/signal.js */
+/* A radio puzzle: find the bearing, lock the band, and translate a short packet. */
+MissionTypes.signal = (() => {
+  const key = 'junior-astronaut.signal.last.v1', symbols = ['▲', '●', '◆', '■'];
+  const same = (a,b) => Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((v,i)=>v===b[i]);
+  let previous = null;
+  try {
+    const raw = globalThis.localStorage?.getItem(key);
+    if(raw&&raw.length<1000){
+      const data=JSON.parse(raw);
+      if(data&&Number.isInteger(data.angle)&&data.angle>=-58&&data.angle<=58&&Number.isFinite(data.frequency)&&data.frequency>=86&&data.frequency<=114&&Array.isArray(data.packet)&&data.packet.length===3&&data.packet.every(v=>Number.isInteger(v)&&v>=0&&v<4)&&Array.isArray(data.glyphs)&&data.glyphs.length===4&&new Set(data.glyphs).size===4&&data.glyphs.every(v=>symbols.includes(v)))previous=data;
+    }
+  }catch(_){}
+  function challenge(){
+    let angle=-58+Math.floor(Math.random()*117),frequency=86+Math.floor(Math.random()*57)/2;
+    if(previous&&angle===previous.angle)angle=-58+(angle+58+1)%117;
+    if(previous&&frequency===previous.frequency)frequency=86+((Math.round((frequency-86)*2)+1)%57)/2;
+    const packet=Array.from({length:3},()=>Math.floor(Math.random()*4));
+    if(packet.every(v=>v===packet[0]))packet[1]=(packet[1]+1)%4;
+    if(previous&&same(packet,previous.packet))packet[2]=(packet[2]+1)%4;
+    const glyphs=[...symbols];
+    for(let i=glyphs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[glyphs[i],glyphs[j]]=[glyphs[j],glyphs[i]]}
+    if(previous&&same(glyphs,previous.glyphs))glyphs.push(glyphs.shift());
+    previous={angle,frequency,packet:[...packet],glyphs:[...glyphs]};
+    try{globalThis.localStorage?.setItem(key,JSON.stringify(previous))}catch(_){}
+    return Object.freeze({angle,frequency,packet:Object.freeze(packet),glyphs:Object.freeze(glyphs)});
+  }
+  return function (env = {}) {
+  const hard = !!env.hard;
+  const limit = (hard ? 60 : 75) * (env.risk ? .85 : 1);
+  const puzzle=challenge(),targetAngle=puzzle.angle,targetFrequency=puzzle.frequency;
+  const angleTolerance = hard ? 5 : 9, frequencyTolerance = hard ? .8 : 1.6;
+  const lockSeconds = env.gear?.tools ? 1.3 : 2;
+  const glyphs=puzzle.glyphs,packet=puzzle.packet;
+  const s = {challenge:puzzle,stage:1,elapsed:0,angle:0,frequency:100,lock:0,slot:0,code:[0,0,0],mistakes:0,notice:'',noticeTime:0,outcome:null};
+  let pendingSend = false, repeatTime = 0, lastDirection = '';
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  function finish(success) {
+    if (s.outcome) return;
+    s.outcome = {
+      success,
+      title: success ? 'Lost signal decoded!' : 'Mission failed',
+      summary: success ? 'Antenna aligned, radio band locked, and the lost station’s message decoded.' : 'Connection time ran out before the message was fully decoded.',
+      score: success ? 500 + Math.floor(Math.max(0,limit-s.elapsed)*4) : 0,
+      rewards: success ? {pow:6} : {},
+      tip: success ? 'The received energy data was sent to the base systems.' : 'Set the antenna bearing, then tune the frequency. Finally, use the symbol key to decode the incoming numbers.',
+      stats: {decoded:success,seconds:s.elapsed,damage:0,mistakes:s.mistakes}
+    };
+  }
+  function nextStage() {
+    s.stage++;s.lock=0;s.notice='CONNECTION LOCKED';s.noticeTime=1.2;
+    repeatTime=0;lastDirection='';
+  }
+  function editCode(direction) {
+    if(direction==='left')s.slot=(s.slot+2)%3;
+    else if(direction==='right')s.slot=(s.slot+1)%3;
+    else if(direction==='up')s.code[s.slot]=(s.code[s.slot]+1)%4;
+    else if(direction==='down')s.code[s.slot]=(s.code[s.slot]+3)%4;
+  }
+  s.action = function () { if (!s.outcome && s.stage===3) pendingSend=true; };
+  s.actionLabel = function () { return s.stage===3?'📡 Send message':'📡 Hold: LOCK'; };
+  s.hud = function () { return `📡 ${Math.ceil(Math.max(0,limit-s.elapsed))} s · Stage ${s.stage}/3 · ${s.stage===1?'Antenna bearing':s.stage===2?'Frequency lock':'Message decoding'}${env.gear?.tools?' · Fast lock':''}`; };
+  s.update = function (dt,input) {
+    if(s.outcome)return;s.elapsed+=dt;s.noticeTime=Math.max(0,s.noticeTime-dt);
+    if(s.elapsed>=limit){finish(false);return;}
+    const k=input.keys||{};
+    const horizontal=(k.ArrowRight||k.KeyD?1:0)-(k.ArrowLeft||k.KeyA?1:0);
+    const vertical=(k.ArrowUp||k.KeyW?1:0)-(k.ArrowDown||k.KeyS?1:0);
+    if(s.stage===1){
+      s.angle=clamp(s.angle+horizontal*36*dt,-90,90);
+      if(input.target&&!horizontal)s.angle=clamp((input.target.x-450)/4,-90,90);
+      if(Math.abs(s.angle-targetAngle)<=angleTolerance&&k.Space)s.lock+=dt;
+      else s.lock=Math.max(0,s.lock-dt*1.8);
+      if(s.lock>=lockSeconds)nextStage();
+    }else if(s.stage===2){
+      s.frequency=clamp(s.frequency+vertical*10*dt,80,120);
+      if(input.target&&!vertical)s.frequency=clamp(120-(input.target.y-130)/7,80,120);
+      if(Math.abs(s.frequency-targetFrequency)<=frequencyTolerance&&k.Space)s.lock+=dt;
+      else s.lock=Math.max(0,s.lock-dt*1.8);
+      if(s.lock>=lockSeconds)nextStage();
+    }else{
+      const direction=horizontal<0?'left':horizontal>0?'right':vertical>0?'up':vertical<0?'down':'';
+      if(direction){
+        if(direction!==lastDirection){editCode(direction);repeatTime=.3;}
+        else {repeatTime-=dt;if(repeatTime<=0){editCode(direction);repeatTime=.18;}}
+      }else repeatTime=0;
+      lastDirection=direction;
+      if(pendingSend){
+        pendingSend=false;
+        if(s.code.every((value,index)=>value===packet[index])){finish(true);return;}
+        s.mistakes++;s.elapsed+=2;s.notice='Message mismatch · −2 seconds';s.noticeTime=2.4;
+        if(s.elapsed>=limit)finish(false);
+      }
+    }
+  };
+  function text(ctx,value,x,y,size=16,color='#e7f6ff',align='left') {
+    ctx.font=`600 ${size}px system-ui,sans-serif`;ctx.textAlign=align;ctx.fillStyle=color;ctx.fillText(value,x,y);
+  }
+  function panel(ctx,x,y,w,h) {
+    ctx.fillStyle='#11263c';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#315c75';ctx.lineWidth=1.5;ctx.strokeRect(x,y,w,h);
+  }
+  function bar(ctx,x,y,w,p,color) {
+    ctx.fillStyle='#0b182b';ctx.fillRect(x,y,w,12);ctx.fillStyle=color;ctx.fillRect(x,y,w*clamp(p,0,1),12);
+  }
+  s.draw = function (ctx) {
+    const bg=ctx.createLinearGradient(0,0,0,500);bg.addColorStop(0,'#07152b');bg.addColorStop(1,'#102e40');ctx.fillStyle=bg;ctx.fillRect(0,0,900,500);
+    for(let i=0;i<65;i++){ctx.fillStyle=i%4?'#4d7890':'#c5edf6';ctx.fillRect((i*173+15)%900,(i*71+28)%400,1.8,1.8);}
+    ctx.fillStyle='#173b4c';ctx.beginPath();ctx.arc(65,494,165,Math.PI,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#08182eeb';ctx.fillRect(0,0,900,78);text(ctx,'LOST SIGNAL / RADIO OPERATION',24,29,21,'#b2eff1');
+    text(ctx,s.stage===1?'1. Point the antenna toward the marker':s.stage===2?'2. Tune to the correct frequency band':'3. Convert the incoming numbers to symbols',24,56,14,'#9fbed3');
+    for(let i=0;i<3;i++){ctx.fillStyle=i<s.stage?'#75e9cb':'#2a465f';ctx.fillRect(704+i*60,25,48,6);}
+    if(s.stage<3){
+      panel(ctx,28,100,366,318);panel(ctx,420,100,452,318);
+      // A physically rotated antenna dish, plus incoming radio wavefronts.
+      ctx.fillStyle='#203e53';ctx.fillRect(148,325,100,56);ctx.fillStyle='#829cb2';ctx.fillRect(191,255,14,88);
+      ctx.save();ctx.translate(198,251);ctx.rotate(s.angle*Math.PI/180);ctx.fillStyle='#7794ae';ctx.beginPath();ctx.moveTo(-83,0);ctx.quadraticCurveTo(0,100,83,0);ctx.closePath();ctx.fill();ctx.strokeStyle='#d9f7f6';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-83,0);ctx.lineTo(83,0);ctx.stroke();ctx.strokeStyle='#adc6cf';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-65,0);ctx.lineTo(0,-38);ctx.lineTo(65,0);ctx.stroke();ctx.fillStyle='#ffcc8a';ctx.beginPath();ctx.arc(0,-38,7,0,7);ctx.fill();
+      ctx.strokeStyle='#5ae3df99';ctx.lineWidth=2;for(let i=0;i<3;i++){const r=34+i*26+(s.elapsed*12)%26;ctx.beginPath();ctx.arc(0,-38,r,Math.PI*1.25,Math.PI*1.75);ctx.stroke();}ctx.restore();
+      text(ctx,'REMOTE STATION',211,393,13,'#88b4ce','center');
+      if(s.stage===1){
+        const strength=clamp(1-Math.abs(s.angle-targetAngle)/65,0,1),aligned=Math.abs(s.angle-targetAngle)<=angleTolerance;
+        text(ctx,'TARGET BEARING',446,132,12,'#94b8ce');text(ctx,targetAngle+'°',446,165,26,'#a6ffd8');text(ctx,'ANTENNA BEARING',690,132,12,'#94b8ce');text(ctx,Math.round(s.angle)+'°',690,165,26,aligned?'#a6ffd8':'#ffd19a');
+        ctx.strokeStyle='#47667c';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(456,230);ctx.lineTo(836,230);ctx.stroke();
+        for(let a=-90;a<=90;a+=30){const x=456+(a+90)/180*380;ctx.beginPath();ctx.moveTo(x,222);ctx.lineTo(x,239);ctx.stroke();text(ctx,a+'°',x,260,11,'#90b1c7','center');}
+        const tx=456+(targetAngle+90)/180*380,px=456+(s.angle+90)/180*380;
+        ctx.fillStyle='#79e6b866';ctx.fillRect(tx-angleTolerance/180*380,211,angleTolerance/180*760,39);ctx.fillStyle='#e9f9ff';ctx.beginPath();ctx.moveTo(px,212);ctx.lineTo(px-7,199);ctx.lineTo(px+7,199);ctx.closePath();ctx.fill();
+        text(ctx,'Signal strength '+Math.round(strength*100)+'%',446,298,14,aligned?'#8af0c5':'#b4d2e1');bar(ctx,446,310,400,strength,'#5ddbd3');
+        text(ctx,aligned?'Bearing found! Hold Space to lock.':'← → move the antenna into the green range.',446,356,13,'#d0e7f2');
+      }else{
+        const aligned=Math.abs(s.frequency-targetFrequency)<=frequencyTolerance;
+        text(ctx,'BROADCAST BAND',446,132,12,'#94b8ce');text(ctx,targetFrequency.toFixed(1)+' MHz',446,165,26,'#a6ffd8');text(ctx,'RECEIVER',694,132,12,'#94b8ce');text(ctx,s.frequency.toFixed(1),694,165,26,aligned?'#a6ffd8':'#ffd19a');
+        ctx.strokeStyle='#31546b';ctx.lineWidth=1;for(let x=448;x<848;x+=20){ctx.beginPath();ctx.moveTo(x,197);ctx.lineTo(x,282);ctx.stroke();}
+        const targetX=448+(targetFrequency-80)/40*400,receiverX=448+(s.frequency-80)/40*400;
+        ctx.fillStyle='#8cf0c844';ctx.fillRect(targetX-frequencyTolerance*10,195,frequencyTolerance*20,90);ctx.strokeStyle='#6cded7';ctx.lineWidth=2;ctx.beginPath();for(let x=448;x<=848;x+=3){const y=240+Math.sin((x-448)*.12+s.elapsed*4)*(12+Math.exp(-(((x-targetX)/50)**2))*22);if(x===448)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
+        ctx.strokeStyle='#ffcf8e';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(receiverX,193);ctx.lineTo(receiverX,289);ctx.stroke();text(ctx,'80 MHz',448,308,11,'#9bbbd0');text(ctx,'120 MHz',848,308,11,'#9bbbd0','right');
+        text(ctx,aligned?'Frequency matched! Hold Space to lock.':'↑ ↓ tune the receiver to the green band.',446,356,13,'#d0e7f2');
+      }
+      text(ctx,'LOCK',446,386,11,'#8eafc5');bar(ctx,496,376,350,s.lock/lockSeconds,'#f2c87d');
+    }else{
+      panel(ctx,28,100,844,318);
+      text(ctx,'INCOMING NUMBER PACKET',450,132,13,'#9fbed3','center');text(ctx,packet.map(n=>n+1).join('  ·  '),450,174,35,'#b8fff0','center');
+      text(ctx,'SYMBOL KEY',450,208,11,'#91afc6','center');text(ctx,glyphs.map((glyph,i)=>(i+1)+' = '+glyph).join('       '),450,234,20,'#ffd6a1','center');
+      for(let i=0;i<3;i++){const x=330+i*120;ctx.fillStyle=i===s.slot?'#1b4b5e':'#102038';ctx.fillRect(x-43,258,86,83);ctx.strokeStyle=i===s.slot?'#8cf4e0':'#36556d';ctx.lineWidth=i===s.slot?3:1;ctx.strokeRect(x-43,258,86,83);text(ctx,glyphs[s.code[i]],x,308,35,'#effaff','center');text(ctx,i===s.slot?'↑  ↓':'',x,330,11,'#92d8d6','center');}
+      text(ctx,'← → select slot  ·  ↑ ↓ change symbol  ·  Space to send',450,378,15,'#b9d8e5','center');
+    }
+    if(s.noticeTime>0){ctx.fillStyle='#143247f0';ctx.fillRect(170,431,560,34);text(ctx,s.notice,450,454,15,s.notice.includes('mismatch')?'#ffbdad':'#b9ffe1','center');}
+    else text(ctx,s.stage<3?'Hold the lock button at the correct setting.':'Decode the numbers with the key and send the message.',450,455,14,'#91b4cc','center');
+  };
+  return s;
+  };
+})();
+
+
+
+/* Source: missions/mining.js */
+/* Asteroid drilling: hold the drill on a fissure, vent its heat, then return the cargo. */
+
+
+
+
+/* Source: missions/coop.js */
+/* Standalone same-keyboard expedition. It deliberately has no campaign/profile hooks. */
+MissionTypes.mining = function (env = {}) {
+  const hard = !!env.hard, tools = !!(env.gear && env.gear.tools), colors = env.cosmetics || {};
+  const suit = ['#e6f4ff', '#ffc28c', '#c8adff'].includes(colors.suit) ? colors.suit : '#e6f4ff';
+  const rocket = ['#e2eef8', '#ffe09a', '#91c6ff'].includes(colors.rocket) ? colors.rocket : '#e2eef8';
+  const trail = ['#ffb161', '#70edff', '#ff8fd8'].includes(colors.trail) ? colors.trail : '#ffb161';
+  const layouts = [
+    [[335,175],[690,170],[645,365]],
+    [[305,340],[515,145],[765,315]],
+    [[345,150],[610,315],[770,145]]
+  ];
+  const sol = Math.floor(env.sol || 1), layout = layouts[((sol - 1) % layouts.length + layouts.length) % layouts.length];
+  const limit = (hard ? 65 : 75) * (env.risk ? .85 : 1) + (env.support === 'oxygen' ? 15 : 0);
+  const pad = {x:110,y:392}, mineralColors = ['#ffca78','#74e5ed','#c8a4ff'];
+  const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+  const m = {
+    x:162,y:392,angle:0,hp:3,heat:0,elapsed:0,limit,pad,hits:0,overheats:0,lock:0,
+    drilling:false,moving:false,active:null,notice:'',noticeTime:0,outcome:null,
+    nodes:layout.map((p,i)=>({x:p[0],y:p[1],progress:0,mined:false,name:['Iron vein','Ice mineral','Rare crystal'][i],color:mineralColors[i]}))
+  };
+  const mined = () => m.nodes.filter(n=>n.mined).length;
+  function contact() {
+    let closest = null, closestDistance = 77;
+    for (const n of m.nodes) {
+      if(n.mined)continue;
+      const dx=n.x-m.x,dy=n.y-m.y,d=Math.hypot(dx,dy);
+      // The drill arm must face the fissure; simply parking beside it does nothing.
+      const aligned=d<14||(dx*Math.cos(m.angle)+dy*Math.sin(m.angle))/d>=.75;
+      if(d<closestDistance&&aligned){closest=n;closestDistance=d;}
+    }
+    return closest;
+  }
+  function finish(success, summary) {
+    if(m.outcome)return;
+    m.drilling=false;
+    m.outcome={
+      success,title:success?'Local-resource samples delivered!':'Mission failed',
+      summary:success?'3 / 3 local-resource samples recovered and returned to the habitat pad. '+m.overheats+' overheats.':summary,
+      score:success?450+Math.floor(Math.max(0,limit-m.elapsed)*5)+(m.hits===0?100:0):0,
+      rewards:success?{pow:12,h2o:5}:{},
+      tip:success?'Short drilling bursts and regular cooling protect the hull.':
+        'Face a fissure and stop. Hold Space to drill; release to cool before overheating. Return to the green shuttle with all three minerals.',
+      stats:{mined:mined(),damage:m.hits,seconds:m.elapsed,overheats:m.overheats}
+    };
+  }
+  // A press alone never adds progress. The engine supplies Space while the button is held.
+  m.action = function () {};
+  m.actionLabel = function () {
+    if(m.lock>0)return 'Cooling lock · '+m.lock.toFixed(1)+' s';
+    if(mined()===3)return '✓ Minerals ready · Return to green shuttle';
+    return m.heat>=.72?'RELEASE · Cool the drill':'Hold Space: DRILL';
+  };
+  m.hud = function () {
+    return '♥'.repeat(Math.max(0,m.hp))+'♡'.repeat(3-Math.max(0,m.hp))+' · '+
+      Math.ceil(Math.max(0,limit-m.elapsed))+' s · Minerals '+mined()+'/3 · Heat '+Math.round(m.heat*100)+'%'+
+      (m.lock>0?' · DRILL LOCKED':mined()===3?' · Return to green shuttle':' · Hold: drill / release: cool')+
+      (tools?' · Efficient drill +20%':'')+(env.support==='oxygen'?' · Spare tank +15 s':'');
+  };
+  m.update = function (dt,input = {}) {
+    if(m.outcome)return;
+    if(m.hp<=0){finish(false,'The drill hull was damaged beyond repair.');return;}
+    if(!(dt>0))return;
+    m.elapsed+=dt;
+    // Health and the oxygen clock always take priority over extraction or a return.
+    if(m.elapsed>=limit){finish(false,'Oxygen ran out before the minerals reached the shuttle.');return;}
+    const k=input.keys||{};
+    let dx=(k.ArrowRight||k.KeyD?1:0)-(k.ArrowLeft||k.KeyA?1:0),dy=(k.ArrowDown||k.KeyS?1:0)-(k.ArrowUp||k.KeyW?1:0);
+    let distance = 0;
+    if(!dx&&!dy&&input.target){dx=input.target.x-m.x;dy=input.target.y-m.y;distance=Math.hypot(dx,dy);if(distance<=6){dx=0;dy=0;}}
+    const length=Math.hypot(dx,dy);
+    m.moving=length>0;
+    if(length>0){
+      dx/=length;dy/=length;m.angle=Math.atan2(dy,dx);
+      const travel=distance?Math.min(190*dt,distance):190*dt;
+      m.x=clamp(m.x+dx*travel,48,852);m.y=clamp(m.y+dy*travel,108,438);
+    }
+    m.noticeTime=Math.max(0,m.noticeTime-dt);m.active=contact();m.drilling=false;
+    // Small thermal steps make a long frame respect the cooling lock as well.
+    let remaining=dt;
+    while(remaining>0&&!m.outcome){
+      const step=Math.min(remaining,1/60);remaining-=step;
+      if(m.lock>0){m.lock=Math.max(0,m.lock-step);m.heat=Math.max(0,m.heat-.58*step);continue;}
+      const node=m.active&&!m.active.mined?m.active:null;
+      if(k.Space&&node&&!m.moving){
+        m.drilling=true;
+        node.progress=Math.min(1,node.progress+step*(tools?1.2:1)/3);
+        m.heat=Math.min(1,m.heat+step*(hard?.44:.4));
+        if(m.heat>=1-1e-9){
+          m.heat=1;m.hp--;m.hits++;m.overheats++;m.lock=1.6;m.drilling=false;
+          m.notice='OVERHEATED! −1 hull · Drill locked until cool';m.noticeTime=2.7;
+        }
+        if(node.progress>=1-1e-9){
+          node.progress=1;node.mined=true;
+          if(m.hp>0){m.notice=mined()===3?'3 / 3 MINERALS · Return to the green habitat pad!':node.name+' mined · Go to the next fissure';m.noticeTime=2.4;}
+          m.active=null;m.drilling=false;
+        }
+        if(m.hp<=0){finish(false,'Three overheats destroyed the drill hull.');return;}
+      } else {
+        m.heat=Math.max(0,m.heat-.58*step);
+      }
+    }
+    if(m.hp<=0){finish(false,'The drill hull failed.');return;}
+    if(mined()===3&&Math.hypot(m.x-pad.x,m.y-pad.y)<48)finish(true,'');
+  };
+  function text(ctx,value,x,y,size,color,align='left') {
+    ctx.fillStyle=color;ctx.font='600 '+size+'px system-ui, sans-serif';ctx.textAlign=align;ctx.fillText(value,x,y);
+  }
+  function bar(ctx,x,y,w,h,value,color) {
+    ctx.fillStyle='#09121de6';ctx.fillRect(x,y,w,h);ctx.fillStyle=color;ctx.fillRect(x+2,y+2,(w-4)*clamp(value,0,1),h-4);
+  }
+  m.draw = function (ctx) {
+    ctx.save();
+    const sky=ctx.createLinearGradient(0,0,900,500);sky.addColorStop(0,'#080f25');sky.addColorStop(1,'#1a2535');ctx.fillStyle=sky;ctx.fillRect(0,0,900,500);
+    for(let i=0;i<95;i++){ctx.fillStyle=i%4?'#7689ac':'#dceeff';ctx.fillRect((i*137+17)%900,(i*83+21)%500,i%5?1.3:2,1.5);}
+    ctx.fillStyle='#39526b';ctx.beginPath();ctx.arc(813,43,60,0,Math.PI*2);ctx.fill();ctx.fillStyle='#193249';ctx.beginPath();ctx.arc(831,30,53,0,Math.PI*2);ctx.fill();
+    // One broad rock shelf, with lit strata and craters, remains readable beneath the rig.
+    const ground=ctx.createLinearGradient(0,90,0,500);ground.addColorStop(0,'#6b6061');ground.addColorStop(1,'#302f3d');ctx.fillStyle=ground;
+    ctx.beginPath();ctx.moveTo(0,147);ctx.lineTo(85,98);ctx.lineTo(220,112);ctx.lineTo(350,82);ctx.lineTo(512,109);ctx.lineTo(680,83);ctx.lineTo(822,109);ctx.lineTo(900,157);ctx.lineTo(900,500);ctx.lineTo(0,500);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#a18c7c55';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,147);ctx.lineTo(85,98);ctx.lineTo(220,112);ctx.lineTo(350,82);ctx.lineTo(512,109);ctx.lineTo(680,83);ctx.lineTo(822,109);ctx.lineTo(900,157);ctx.stroke();
+    for(let i=0;i<50;i++){
+      const x=35+(i*137)%840,y=116+(i*79)%343,r=4+(i*11)%18;
+      ctx.fillStyle='#151c2a35';ctx.beginPath();ctx.ellipse(x,y,r*1.6,r*.6,-.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#baa39120';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,y-2,r*1.6,r*.6,-.2,Math.PI,Math.PI*2);ctx.stroke();
+      ctx.fillStyle='#c8b6a122';ctx.fillRect(x+r+3,y,2,2);
+    }
+    ctx.strokeStyle='#151a2a66';ctx.lineWidth=2;
+    for(let i=0;i<7;i++){ctx.beginPath();ctx.moveTo(180+i*106,110);ctx.lineTo(167+i*106,205);ctx.lineTo(200+i*106,277);ctx.lineTo(178+i*106,455);ctx.stroke();}
+    // Return pad and cargo shuttle use the selected rocket paint.
+    ctx.fillStyle=mined()===3?'#24776888':'#183f4388';ctx.strokeStyle='#79f5bd';ctx.lineWidth=2;
+    ctx.beginPath();ctx.ellipse(pad.x,pad.y,64,42,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.setLineDash([5,7]);ctx.beginPath();ctx.ellipse(pad.x,pad.y,75,52,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    ctx.save();ctx.translate(pad.x-12,pad.y-17);ctx.fillStyle='#111e2c';ctx.fillRect(-25,18,50,7);ctx.fillStyle=rocket;
+    ctx.beginPath();ctx.moveTo(-15,18);ctx.lineTo(-15,-15);ctx.quadraticCurveTo(-12,-37,0,-44);ctx.quadraticCurveTo(12,-37,15,-15);ctx.lineTo(15,18);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(-15,-1);ctx.lineTo(-29,20);ctx.lineTo(-15,15);ctx.moveTo(15,-1);ctx.lineTo(29,20);ctx.lineTo(15,15);ctx.fill();ctx.fillStyle='#6bdfed';ctx.beginPath();ctx.arc(0,-14,8,0,Math.PI*2);ctx.fill();ctx.restore();
+    text(ctx,mined()===3?'RETURN SAMPLES':'RETURN HABITAT',pad.x,pad.y+65,11,'#a0ffce','center');
+    for(const n of m.nodes){
+      const near=m.active===n,phase=m.elapsed*3+n.x;
+      ctx.fillStyle='#111a2c';ctx.beginPath();ctx.ellipse(n.x,n.y,39,26,-.18,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=n.mined?'#65d6aa':n.color;ctx.lineWidth=near?3:1.5;ctx.beginPath();ctx.ellipse(n.x,n.y,42,29,-.18,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle=n.mined?'#3f6e69':n.color;ctx.lineWidth=n.mined?2:4;ctx.beginPath();ctx.moveTo(n.x-28,n.y+7);ctx.lineTo(n.x-13,n.y-7);ctx.lineTo(n.x+1,n.y+4);ctx.lineTo(n.x+13,n.y-11);ctx.lineTo(n.x+30,n.y-5);ctx.stroke();
+      if(!n.mined){
+        ctx.fillStyle=n.color;
+        for(let i=0;i<4;i++){const x=n.x-22+i*14,y=n.y+(i%2?5:-3);ctx.beginPath();ctx.moveTo(x,y-10);ctx.lineTo(x+6,y);ctx.lineTo(x,y+7);ctx.lineTo(x-5,y);ctx.closePath();ctx.fill();}
+        if(near){ctx.strokeStyle='#e4fbff80';ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(n.x,n.y,76,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}
+      }
+      bar(ctx,n.x-40,n.y+36,80,8,n.progress,n.mined?'#79e7b6':n.color);
+      text(ctx,n.mined?'MINED ✓':n.name,n.x,n.y+59,11,n.mined?'#92f2c7':'#eee2d5','center');
+      if(near&&!m.moving&&!n.mined)text(ctx,m.drilling?'DRILLING · '+Math.floor(n.progress*100)+'%':'STOP + HOLD SPACE',n.x,n.y-44,11,'#e7fbff','center');
+      if(m.drilling&&near){ctx.strokeStyle=trail;ctx.lineWidth=2;for(let i=0;i<6;i++){const a=i*Math.PI/3+phase,r=14+(i%3)*4;ctx.beginPath();ctx.moveTo(n.x+Math.cos(a)*r,n.y+Math.sin(a)*r*.7);ctx.lineTo(n.x+Math.cos(a)*(r+7),n.y+Math.sin(a)*(r+7)*.7);ctx.stroke();}}
+    }
+    // Tracked drill rig, helmeted operator and a front-mounted rotating bit.
+    ctx.save();ctx.translate(m.x,m.y);ctx.fillStyle='#0c14277a';ctx.beginPath();ctx.ellipse(0,12,30,15,0,0,Math.PI*2);ctx.fill();ctx.rotate(m.angle);
+    if(m.moving){ctx.fillStyle=trail;ctx.globalAlpha=.4;for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(-27-i*6,Math.sin(m.elapsed*16+i)*7,3+i,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;}
+    ctx.fillStyle='#101d2a';ctx.fillRect(-23,-21,45,11);ctx.fillRect(-23,10,45,11);ctx.fillStyle='#4b5d66';for(let i=0;i<5;i++){ctx.fillRect(-20+i*8,-19,4,7);ctx.fillRect(-20+i*8,12,4,7);}
+    ctx.fillStyle=rocket;ctx.fillRect(-21,-12,38,24);ctx.fillStyle='#263746';ctx.fillRect(7,-8,18,16);ctx.fillStyle=m.lock>0?'#f38169':m.drilling?trail:'#c5ced2';
+    ctx.beginPath();ctx.moveTo(25,-10);ctx.lineTo(44,0);ctx.lineTo(25,10);ctx.closePath();ctx.fill();ctx.strokeStyle='#1c293a';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(26+i*4,-7+i);ctx.lineTo(30+i*4,5-i);ctx.stroke();}
+    ctx.fillStyle=suit;ctx.beginPath();ctx.arc(-5,0,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3dc6df';ctx.beginPath();ctx.ellipse(-1,0,7,8,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d7faff99';ctx.fillRect(-1,-5,3,4);ctx.restore();
+    if(m.heat>.01){ctx.strokeStyle=m.heat>=.72?'#ff8769':'#75d6ee';ctx.lineWidth=3;ctx.beginPath();ctx.arc(m.x,m.y,32,-Math.PI/2,-Math.PI/2+m.heat*Math.PI*2);ctx.stroke();}
+    if(m.lock>0){text(ctx,'LOCKED '+m.lock.toFixed(1)+' s',m.x,m.y-40,12,'#ffb39d','center');}
+    if(mined()===3){const a=Math.atan2(pad.y-m.y,pad.x-m.x);ctx.save();ctx.translate(m.x+Math.cos(a)*49,m.y+Math.sin(a)*49);ctx.rotate(a);ctx.fillStyle='#94ffd2';ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(-6,-7);ctx.lineTo(-6,7);ctx.closePath();ctx.fill();ctx.restore();}
+    ctx.fillStyle='#091624ef';ctx.fillRect(16,12,868,67);
+    text(ctx,'MARS ISRU PROSPECTING',29,35,17,'#f1f2ed');
+    text(ctx,'WASD / Arrows: drive · Face fissure + stop · Hold Space: drill · Release: cool',29,58,12,'#b1c4d6');
+    const hot=m.heat>=.72,heatColor=m.lock>0?'#ff746a':hot?'#ffc075':'#74dcea';
+    text(ctx,m.lock>0?'OVERHEATED · COOLING':hot?'HOT · RELEASE TO COOL':m.drilling?'DRILL RUNNING':m.heat>.02?'COOLING':'DRILL READY',865,32,11,heatColor,'right');
+    bar(ctx,686,44,180,12,m.heat,heatColor);
+    ctx.strokeStyle='#f7cb8d';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(686+180*.72,42);ctx.lineTo(686+180*.72,58);ctx.stroke();
+    text(ctx,'Heat '+Math.round(m.heat*100)+'% · Hull '+Math.max(0,m.hp)+'/3',865,71,10,'#bcd0df','right');
+    if(m.noticeTime>0){ctx.fillStyle='#101e2df0';ctx.fillRect(170,462,700,27);text(ctx,m.notice,520,480,12,m.lock>0?'#ffbaa5':'#b6f4da','center');}
+    else text(ctx,mined()===3?'Three minerals loaded → return to the green habitat pad.':'Mine 3 minerals → Manage heat → Return to the green habitat pad',515,481,12,'#d0e2e8','center');
+    ctx.restore();
+  };
+  return m;
+};
+
+const CoopMode = (() => {
+  'use strict';
+  const W = 900, H = 500, R = 14;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const near = (a, b, d) => Math.hypot(a.x - b.x, a.y - b.y) <= d;
+  const intersects = (p, box) => p.x + R > box.x && p.x - R < box.x + box.w && p.y + R > box.y && p.y - R < box.y + box.h;
+  const keysFor = [ {left:'KeyA',right:'KeyD',up:'KeyW',down:'KeyS',action:'KeyF'}, {left:'ArrowLeft',right:'ArrowRight',up:'ArrowUp',down:'ArrowDown',action:'Enter'} ];
+  const levels = [
+    {name:'Level 1 · Power bridge', limit:210, hardLimit:145,
+      starts:[{x:125,y:330},{x:165,y:390}],
+      walls:[{x:435,y:88,w:30,h:142},{x:435,y:330,w:30,h:146}],
+      doors:[{id:'A',x:435,y:230,w:30,h:100}],
+      switches:[{id:'SOL',x:325,y:170,opens:['A']},{id:'SAĞ',x:535,y:170,opens:['A']}],
+      fuse:{x:745,y:390}, generator:{x:715,y:165}, exit:{x:825,y:390,w:72,h:86},
+      hazards:[{x:242,y:365,axis:'y',span:42,speed:1.05},{x:655,y:290,axis:'x',span:45,speed:.85}]
+    },
+    {name:'Level 2 · Pressure relays', limit:240, hardLimit:170,
+      starts:[{x:95,y:151},{x:135,y:151}],
+      walls:[{x:24,y:226,w:236,h:24},{x:360,y:226,w:516,h:24},{x:24,y:350,w:616,h:24},{x:740,y:350,w:136,h:24}],
+      doors:[{id:'A',x:260,y:226,w:100,h:24},{id:'B',x:640,y:350,w:100,h:24}],
+      switches:[{id:'1',x:185,y:155,opens:['A']},{id:'2',x:430,y:299,opens:['A','B']},{id:'3',x:790,y:426,opens:['B']}],
+      consoles:[{x:550,y:426},{x:640,y:426}], generator:{x:595,y:426}, exit:{x:825,y:426,w:72,h:72},
+      hazards:[{x:490,y:148,axis:'x',span:75,speed:.85},{x:535,y:298,axis:'x',span:38,speed:1.2},{x:340,y:426,axis:'x',span:55,speed:1.05}]
+    }
+  ];
+
+  function createGame(options = {}) {
+    const state = {hard:!!options.hard,level:0,status:'playing',lives:3,remaining:0,elapsed:0,totalElapsed:0,hits:0,players:[],gates:{},switches:[],hazards:[],fuse:false,fuseCarrier:null,repair:0,invincible:0,notice:'',noticeTime:0};
+    let config, inputs = {};
+    function loadLevel(index, freshLives) {
+      config=levels[index];state.level=index;state.status='playing';state.remaining=state.hard?config.hardLimit:config.limit;state.elapsed=0;
+      if(freshLives){state.lives=3;state.totalElapsed=0;state.hits=0;}
+      state.players=config.starts.map((p,id)=>({id,x:p.x,y:p.y,moving:false,acting:false}));
+      state.gates={};config.doors.forEach(d=>{state.gates[d.id]=false;});
+      state.switches=config.switches.map(s=>({...s,active:false,heldBy:[]}));
+      state.hazards=config.hazards.map(h=>({...h,homeX:h.x,homeY:h.y,r:14}));
+      state.fuse=!config.fuse;state.fuseCarrier=null;state.repair=0;state.invincible=0;state.notice='';state.noticeTime=0;inputs={};
+    }
+    function fail(reason){state.status='failed';state.notice=reason;state.noticeTime=10;state.players.forEach(p=>{p.acting=false;p.moving=false;});}
+    function setNotice(text){state.notice=text;state.noticeTime=2.2;}
+    function obstacles(){return config.walls.concat(config.doors.filter(d=>!state.gates[d.id]));}
+    function move(p,dx,dy,dt,blocks){
+      const speed=state.hard?151:145, len=Math.hypot(dx,dy)||1;
+      const stepX=dx/len*speed*dt,stepY=dy/len*speed*dt;
+      const oldX=p.x;p.x=clamp(p.x+stepX,24+R,876-R);
+      for(const b of blocks)if(intersects(p,b)){if(stepX>0)p.x=b.x-R;else if(stepX<0)p.x=b.x+b.w+R;else p.x=oldX;}
+      const oldY=p.y;p.y=clamp(p.y+stepY,88+R,476-R);
+      for(const b of blocks)if(intersects(p,b)){if(stepY>0)p.y=b.y-R;else if(stepY<0)p.y=b.y+b.h+R;else p.y=oldY;}
+      p.moving=!!(dx||dy);
+    }
+    function settleClosingDoor(door){
+      for(const p of state.players)if(intersects(p,door)){
+        // A closing door returns an overlapping astronaut to the side they occupy.
+        // No actor can be carried through a closed wall by its collision response.
+        if(door.h>door.w)p.x=p.x<door.x+door.w/2?door.x-R:door.x+door.w+R;
+        else p.y=p.y<door.y+door.h/2?door.y-R:door.y+door.h+R;
+      }
+    }
+    function substep(dt){
+      state.elapsed+=dt;state.totalElapsed+=dt;state.remaining=Math.max(0,state.remaining-dt);
+      state.invincible=Math.max(0,state.invincible-dt);state.noticeTime=Math.max(0,state.noticeTime-dt);
+      if(state.remaining<=0){fail('Time is up. The station needs both astronauts.');return;}
+      for(const p of state.players)p.acting=!!inputs[keysFor[p.id].action];
+      const previous={...state.gates};Object.keys(state.gates).forEach(id=>{state.gates[id]=false;});
+      for(const s of state.switches){
+        s.heldBy=state.players.filter(p=>p.acting&&near(p,s,31)).map(p=>p.id);s.active=!!s.heldBy.length;
+        if(s.active)s.opens.forEach(id=>{state.gates[id]=true;});
+      }
+      config.doors.forEach(d=>{if(previous[d.id]&&!state.gates[d.id])settleClosingDoor(d);});
+      const blocks=obstacles();
+      for(const p of state.players){const k=keysFor[p.id];move(p,(inputs[k.right]?1:0)-(inputs[k.left]?1:0),(inputs[k.down]?1:0)-(inputs[k.up]?1:0),dt,blocks);}
+      if(!state.fuse){const collector=state.players.find(p=>p.acting&&near(p,config.fuse,34));if(collector){state.fuse=true;state.fuseCarrier=collector.id;setNotice('Fuse collected! Hold the right switch for your teammate.');}}
+      let cooperating=false;
+      if(state.level===0)cooperating=state.fuse&&state.players.every(p=>p.acting&&near(p,config.generator,65));
+      else cooperating=state.players.every(p=>p.acting)&&((near(state.players[0],config.consoles[0],28)&&near(state.players[1],config.consoles[1],28))||(near(state.players[1],config.consoles[0],28)&&near(state.players[0],config.consoles[1],28)));
+      if(cooperating&&state.repair<1){state.repair=Math.min(1,state.repair+dt/(state.hard?3.6:2.8));if(state.repair===1)setNotice('System repaired! Both head to the green exit.');}
+      for(let i=0;i<state.hazards.length;i++){
+        const h=state.hazards[i],offset=Math.sin(state.elapsed*h.speed+i*1.7)*h.span;
+        h.x=h.homeX+(h.axis==='x'?offset:0);h.y=h.homeY+(h.axis==='y'?offset:0);
+        if(state.invincible<=0&&state.players.some(p=>near(p,h,h.r+R-3))){state.lives--;state.hits++;state.invincible=2;setNotice('Electrical hazard! Shared lives −1.');}
+      }
+      if(state.lives<=0){fail('All three shared lives lost. Avoid electrical hazards.');return;}
+      if(state.repair>=1&&state.players.every(p=>Math.abs(p.x-config.exit.x)<config.exit.w/2-3&&Math.abs(p.y-config.exit.y)<config.exit.h/2-3)){
+        state.status=state.level===levels.length-1?'won':'levelComplete';state.players.forEach(p=>{p.acting=false;p.moving=false;});
+      }
+    }
+    function update(dt,input={}){
+      if(state.status!=='playing'||!Number.isFinite(dt)||dt<=0)return;
+      inputs=input.keys||{};let remaining=Math.min(dt,.25);
+      while(remaining>0&&state.status==='playing'){const part=Math.min(remaining,1/60);substep(part);remaining-=part;}
+    }
+    function reset(){loadLevel(0,true);return state;}
+    function retry(){if(state.status!=='failed')return false;loadLevel(state.hard?0:state.level,true);return true;}
+    function advance(){if(state.status!=='levelComplete')return false;loadLevel(state.level+1,false);return true;}
+    loadLevel(0,true);
+    return {state,update,reset,retry,advance,get config(){return config;}};
+  }
+
+  function prefs(){return typeof GameSettings!=='undefined'?GameSettings.get():{effects:.8,lowPerformance:false}}
+  function keyName(code){return ({Space:'Space',Enter:'Enter',ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',ShiftLeft:'Left Shift',ShiftRight:'Right Shift'})[code]||String(code).replace(/^(Key|Digit)/,'')}
+  function configuredKeys(which){return typeof GameSettings!=='undefined'?GameSettings.get().keys[which===0?'p1':'p2']:{up:keysFor[which].up,down:keysFor[which].down,left:keysFor[which].left,right:keysFor[which].right,action:keysFor[which].action}}
+  function actionKey(which){return keyName(configuredKeys(which).action)}
+  function keysLabel(which){const k=configuredKeys(which);return [k.up,k.left,k.down,k.right].map(keyName).join('/')+' + '+keyName(k.action)}
+  function keyHint(){return '<strong style="color:#79e9ff">PLAYER 1: '+keysLabel(0)+'</strong> · <strong style="color:#ffcf79">PLAYER 2: '+keysLabel(1)+'</strong><br>Hold the interact keys. P: pause · Esc: close.'}
+  function successArt(){return typeof GameFX!=='undefined'?GameFX.successHTML(prefs()):''}
+  function music(mode){if(typeof SpaceMusic!=='undefined'){SpaceMusic.play(mode);SpaceMusic.syncControls()}}
+  let session=null;
+  function open(){
+    if(session){session.overlay.focus();return session.overlay;}
+    const previousFocus=document.activeElement;
+    const overlay=document.createElement('div');overlay.id='coopOverlay';overlay.className='overlay';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','coopTitle');overlay.tabIndex=-1;
+    overlay.innerHTML=`<div class="coopShell"><div class="coopTop"><div><b id="coopTitle">TWO ASTRONAUTS · SHARED STATION</b><div class="coopHint">One screen, one keyboard · standalone co-op game</div></div><div class="coopActions"><button id="coopSettings" type="button" aria-label="Game settings">⚙️</button><button id="coopMusic" type="button" data-music-control aria-label="Toggle music" aria-pressed="false">♫</button><button id="coopPause" type="button" disabled>Ⅱ Pause · P</button><button id="coopClose" type="button" aria-label="Close co-op game">✕ Close</button></div></div><div id="coopHud" class="coopHud" aria-live="off"></div><div class="coopStage"><canvas id="coopCanvas" width="900" height="500" tabindex="0" aria-label="Shared space station. Player 1: ${keysLabel(0)}. Player 2: ${keysLabel(1)}."></canvas><div id="coopMessage" class="coopMessage" aria-live="polite"></div></div><div class="coopControls"><div id="coopControlKeys" class="coopHint">${keyHint()}</div><div class="coopPads" aria-label="Two-player touch controls">${padHTML(0)}${padHTML(1)}</div></div></div>`;
+    document.body.appendChild(overlay);
+    const q=id=>overlay.querySelector('#'+id), canvas=q('coopCanvas'),ctx=canvas.getContext('2d'),message=q('coopMessage'),hud=q('coopHud'),pauseButton=q('coopPause');
+    const held={},touchHeld={},cleanups=[];
+    const s={overlay,game:null,paused:false,raf:0,last:0,playingListeners:false,difficulty:false};session=s;
+    const listen=(target,type,handler,opts)=>{target.addEventListener(type,handler,opts);cleanups.push(()=>target.removeEventListener(type,handler,opts));};
+    function clearHeld(){Object.keys(held).forEach(k=>delete held[k]);Object.keys(touchHeld).forEach(k=>delete touchHeld[k]);overlay.querySelectorAll('.coopPressed').forEach(b=>b.classList.remove('coopPressed'));}
+    function setPads(enabled){overlay.querySelectorAll('[data-coop-key]').forEach(b=>{b.disabled=!enabled;});}
+    function stopFrame(){if(s.raf)cancelAnimationFrame(s.raf);s.raf=0;s.last=0;}
+    function inputKeys(){return {...held,...touchHeld};}
+    function keydown(e){
+      if(document.getElementById('settingsOverlay'))return;
+      if(e.code==='KeyP'&&!e.repeat){e.preventDefault();togglePause();return;}
+      if(s.paused||!s.game||s.game.state.status!=='playing')return;
+      if((e.code==='Enter')&&e.target&&e.target.closest&&e.target.closest('button,select,input'))return;
+      const code=typeof GameSettings!=='undefined'?GameSettings.keyForCoop(e.code):e.code;if(code&&keysFor.some(k=>Object.values(k).includes(code))){held[code]=true;if(e.code.startsWith('Arrow')||e.code==='Enter')e.preventDefault();}
+    }
+    function keyup(e){const code=typeof GameSettings!=='undefined'?GameSettings.keyForCoop(e.code):e.code;if(code)delete held[code];}
+    function onBlur(){if(s.game&&s.game.state.status==='playing'&&!s.paused)pause();}
+    function onVisibility(){if(document.hidden)onBlur();}
+    function bindGameplay(){if(s.playingListeners)return;s.playingListeners=true;window.addEventListener('keydown',keydown);window.addEventListener('keyup',keyup);window.addEventListener('blur',onBlur);document.addEventListener('visibilitychange',onVisibility);}
+    function unbindGameplay(){if(!s.playingListeners)return;s.playingListeners=false;window.removeEventListener('keydown',keydown);window.removeEventListener('keyup',keyup);window.removeEventListener('blur',onBlur);document.removeEventListener('visibilitychange',onVisibility);clearHeld();}
+    function updateHud(){
+      if(!s.game){hud.textContent='Two levels · 3 shared lives · open doors together';return;}
+      const m=s.game.state;hud.textContent=levels[m.level].name+' · '+(m.hard?'HARD':'EASY')+' · '+('♥'.repeat(Math.max(0,m.lives))+'♡'.repeat(3-Math.max(0,m.lives)))+' shared lives · '+Math.ceil(m.remaining)+' s · Repair '+Math.floor(m.repair*100)+'%';
+    }
+    function render(){if(ctx)draw(ctx,s.game?s.game.state:null,s.game?s.game.config:levels[0]);updateHud();}
+    function frame(time){
+      s.raf=0;if(session!==s||s.paused||!s.game||s.game.state.status!=='playing')return;
+      const dt=s.last?Math.min(.05,(time-s.last)/1000):0;s.last=time;s.game.update(dt,{keys:inputKeys()});if(!prefs().lowPerformance||!s.lastDraw||time-s.lastDraw>=1000/30){s.lastDraw=time;render();}
+      if(s.game.state.status!=='playing'){result();return;}s.raf=requestAnimationFrame(frame);
+    }
+    function run(){music('game');s.lastDraw=0;s.paused=false;message.hidden=true;pauseButton.disabled=false;pauseButton.textContent='Ⅱ Pause · P';clearHeld();setPads(true);bindGameplay();s.last=0;stopFrame();s.raf=requestAnimationFrame(frame);canvas.focus();render();}
+    function start(){s.difficulty=!!q('coopHard').checked;s.game=createGame({hard:s.difficulty});run();}
+    function lobby(){
+      music('menu');stopFrame();unbindGameplay();setPads(false);pauseButton.disabled=true;
+      message.hidden=false;message.innerHTML=`<div class="eyebrow">TEAMWORK ON ONE KEYBOARD</div><h2>Save the station together</h2><p>One astronaut holds a switch while the other passes through the door. Swap roles, repair the systems together, then <strong>both</strong> reach the green exit.</p><p id="coopLobbyKeys" class="coopHint">${keyHint()}<br>On a phone, use the two control pads below.</p><label class="coopDifficulty"><input type="checkbox" id="coopHard"> Hard mode · less time</label><p id="coopRule" class="coopRule">Easy: retry the current level after a failure.</p><p class="coopHint">2 levels · 3 shared lives · This game is separate from solo missions.</p><button id="coopStart" type="button" class="go">Start when you are both ready</button>`;
+      q('coopHard').addEventListener('change',()=>{q('coopRule').textContent=q('coopHard').checked?'Hard: a failure restarts the two-level game from level 1.':'Easy: retry the current level after a failure.';});
+      q('coopStart').addEventListener('click',start);render();q('coopStart').focus();
+    }
+    function pause(){
+      if(!s.game||s.game.state.status!=='playing'||s.paused)return;music('menu');s.paused=true;stopFrame();clearHeld();setPads(false);pauseButton.textContent='▶ Resume · P';
+      message.hidden=false;message.innerHTML='<div class="eyebrow">TEAM BREAK</div><h2>Game paused</h2><p>Time and lives are paused. Resume when you are both ready.</p><button id="coopResume" type="button" class="go">▶ Resume · P</button>';
+      q('coopResume').addEventListener('click',run);q('coopResume').focus();
+    }
+    function togglePause(){if(!s.game||s.game.state.status!=='playing')return;if(s.paused)run();else pause();}
+    function result(){
+      music('menu');stopFrame();unbindGameplay();setPads(false);pauseButton.disabled=true;message.hidden=false;const m=s.game.state;
+      if(m.status==='levelComplete')message.innerHTML=successArt()+'<div class="eyebrow">FIRST SYSTEM ONLINE</div><h2>Power bridge repaired!</h2><p>Both astronauts made it safely. Next: pressure relays with two doors.</p><p class="coopRule">Your remaining '+m.lives+' shared lives carry over to level 2; the level timer resets.</p><button id="coopNext" type="button" class="go">Go to level 2 together</button>';
+      else if(m.status==='won')message.innerHTML=successArt()+'<div class="eyebrow">TWO ASTRONAUTS · ONE TEAM</div><h2>Station saved! ✨</h2><p>You completed both levels together. Doors, power and pressure systems are working again.</p><p class="coopRule">Your remaining shared lives: '+m.lives+' / 3 · Total time: '+Math.ceil(m.totalElapsed)+' s</p><button id="coopNew" type="button" class="go">New co-op game</button>';
+      else message.innerHTML='<div class="eyebrow">THE TEAM CAN TRY AGAIN</div><h2>Mission failed</h2><p>'+m.notice+'</p><p class="coopRule">'+(m.hard?'Hard mode: retrying takes you back to level 1.':'Easy mode: only level '+(m.level+1)+' restarts.')+'</p><button id="coopRetry" type="button" class="go">'+(m.hard?'Restart from level 1':'Retry this level')+'</button><button id="coopNew" type="button">New game / choose difficulty</button>';
+      if(q('coopNext'))q('coopNext').addEventListener('click',()=>{if(s.game.advance())run();});
+      if(q('coopRetry'))q('coopRetry').addEventListener('click',()=>{if(s.game.retry())run();});
+      if(q('coopNew'))q('coopNew').addEventListener('click',()=>{s.game=null;lobby();});
+      const first=message.querySelector('button');if(first)first.focus();render();
+    }
+    function closeSession(){if(session!==s)return;stopFrame();unbindGameplay();cleanups.forEach(fn=>fn());clearHeld();overlay.remove();session=null;music('menu');if(previousFocus&&previousFocus.isConnected&&previousFocus.focus)previousFocus.focus();}
+    s.close=closeSession;s.pause=pause;s.refresh=()=>{canvas.setAttribute('aria-label','Shared space station. Player 1: '+keysLabel(0)+'. Player 2: '+keysLabel(1)+'.');overlay.querySelectorAll('.coopPad').forEach((pad,id)=>{const label=pad.querySelector('b');if(label)label.textContent='Player '+(id+1)+' · '+keysLabel(id);const button=pad.querySelector('.coopInteract');if(button)button.innerHTML=actionKey(id)+'<small>HOLD TO INTERACT</small>'});if(q('coopControlKeys'))q('coopControlKeys').innerHTML=keyHint();if(q('coopLobbyKeys'))q('coopLobbyKeys').innerHTML=keyHint();render()};
+    listen(q('coopSettings'),'click',()=>{if(typeof openSettings==='function')openSettings()});listen(q('coopMusic'),'click',()=>{if(typeof SpaceMusic!=='undefined')SpaceMusic.toggle()});listen(q('coopClose'),'click',closeSession);listen(pauseButton,'click',togglePause);
+    listen(overlay,'keydown',e=>{
+      if(e.code==='Escape'){e.preventDefault();e.stopPropagation();closeSession();return;}
+      if(e.code!=='Tab')return;
+      const candidates=Array.from(overlay.querySelectorAll('button:not(:disabled),select,input,a[href],canvas[tabindex]')).filter(n=>!n.closest('[hidden]'));
+      const first=candidates[0],last=candidates[candidates.length-1];if(!first)return;
+      if(e.shiftKey&&(document.activeElement===first||document.activeElement===overlay)){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    });
+    overlay.querySelectorAll('[data-coop-key]').forEach(button=>{
+      const code=button.dataset.coopKey,pointers=new Set();
+      const release=e=>{pointers.delete(e.pointerId);if(!pointers.size){delete touchHeld[code];button.classList.remove('coopPressed');}};
+      listen(button,'pointerdown',e=>{if(s.paused||!s.game||s.game.state.status!=='playing')return;e.preventDefault();pointers.add(e.pointerId);touchHeld[code]=true;button.classList.add('coopPressed');if(button.setPointerCapture)button.setPointerCapture(e.pointerId);});
+      listen(button,'pointerup',release);listen(button,'pointercancel',release);listen(button,'lostpointercapture',release);
+      listen(button,'contextmenu',e=>e.preventDefault());
+    });
+    lobby();return overlay;
+  }
+  function padHTML(id){
+    const k=keysFor[id],label='Player '+(id+1)+' · '+keysLabel(id);
+    return `<div class="coopPad" data-player="${id+1}"><b>${label}</b><div class="coopDpad"><button type="button" data-coop-key="${k.up}" aria-label="Player ${id+1} up">▲</button><button type="button" data-coop-key="${k.left}" aria-label="Player ${id+1} left">◀</button><button type="button" data-coop-key="${k.down}" aria-label="Player ${id+1} down">▼</button><button type="button" data-coop-key="${k.right}" aria-label="Player ${id+1} right">▶</button></div><button type="button" class="coopInteract" data-coop-key="${k.action}" aria-label="Player ${id+1} hold to interact">${actionKey(id)}<small>HOLD TO INTERACT</small></button></div>`;
+  }
+  function close(){if(session)session.close();}
+  function objective(m){
+    if(!m)return 'Two astronauts, one station. Work together.';
+    if(m.repair>=1)return 'Both reach the green EXIT area.';
+    if(m.level===0){if(!m.fuse)return 'Hold the left switch → teammate crosses and interacts with the fuse.';if(m.players.some(p=>p.x<435))return 'Hold the right switch → let your teammate through the door.';return 'At the generator, hold '+actionKey(0)+' + '+actionKey(1)+' together.';}
+    if(m.players.some(p=>p.y<250))return 'Switch 1 → door A → hold switch 2 to let your teammate through.';
+    if(m.players.some(p=>p.y<374))return 'Hold switch 2 → door B → use switch 3 to let your teammate through.';
+    return 'At both consoles, hold '+actionKey(0)+' + '+actionKey(1)+' together.';
+  }
+  function roundBox(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function draw(ctx,m,config){
+    ctx.clearRect(0,0,W,H);const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#071427');bg.addColorStop(1,'#17283f');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    for(let i=0;i<85;i++){ctx.fillStyle=i%5?'#536c8f':'#cceaff';ctx.fillRect((i*173+37)%W,(i*71+12)%H,i%6?1:2,1.5);}
+    ctx.fillStyle='#101f32';roundBox(ctx,24,88,852,388,18);ctx.fill();ctx.strokeStyle='#3d637d';ctx.lineWidth=3;ctx.stroke();
+    ctx.save();ctx.beginPath();ctx.rect(26,90,848,384);ctx.clip();ctx.strokeStyle='#3c536522';ctx.lineWidth=1;
+    for(let x=30;x<880;x+=40){ctx.beginPath();ctx.moveTo(x,89);ctx.lineTo(x,476);ctx.stroke();}for(let y=98;y<476;y+=40){ctx.beginPath();ctx.moveTo(24,y);ctx.lineTo(876,y);ctx.stroke();}
+    // Station windows and recessed machinery give the room depth without hiding collisions.
+    for(const [x,y] of [[56,104],[735,104]]){ctx.fillStyle='#071227';ctx.fillRect(x,y,96,35);ctx.strokeStyle='#456882';ctx.strokeRect(x,y,96,35);ctx.fillStyle='#759eb3';for(let i=0;i<7;i++)ctx.fillRect(x+8+i*13,y+8+(i%3)*4,2,2);}
+    for(const b of config.walls){ctx.fillStyle='#2c4053';ctx.fillRect(b.x,b.y,b.w,b.h);ctx.strokeStyle='#536f82';ctx.lineWidth=2;ctx.strokeRect(b.x,b.y,b.w,b.h);ctx.fillStyle='#728696';if(b.w>b.h){for(let x=b.x+14;x<b.x+b.w;x+=38)ctx.fillRect(x,b.y+7,6,9);}else for(let y=b.y+14;y<b.y+b.h;y+=38)ctx.fillRect(b.x+10,y,9,6);}
+    const activeSwitches=m?m.switches:config.switches;
+    for(const sw of activeSwitches){
+      const active=!!sw.active;ctx.strokeStyle=active?'#83ffca':'#80adbf';ctx.fillStyle=active?'#267761':'#1b4051';ctx.lineWidth=2;ctx.beginPath();ctx.arc(sw.x,sw.y,25,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle=active?'#afffda':'#e1f4ff';ctx.textAlign='center';ctx.font='bold 13px system-ui';ctx.fillText(sw.id==='SOL'?'LEFT':sw.id==='SAĞ'?'RIGHT':sw.id,sw.x,sw.y+4);ctx.font='10px system-ui';ctx.fillStyle=active?'#9bffcb':'#9bb9ca';ctx.fillText(active?'HELD':'HOLD',sw.x,sw.y+40);
+      ctx.setLineDash([3,5]);ctx.strokeStyle=active?'#57e7b84d':'#6a899e2b';for(const id of sw.opens){const d=config.doors.find(d=>d.id===id);ctx.beginPath();ctx.moveTo(sw.x,sw.y);ctx.lineTo(d.x+d.w/2,d.y+d.h/2);ctx.stroke();}ctx.setLineDash([]);
+    }
+    for(const d of config.doors){
+      const isOpen=m&&m.gates[d.id];ctx.fillStyle=isOpen?'#48dfad18':'#472b38';ctx.fillRect(d.x,d.y,d.w,d.h);ctx.strokeStyle=isOpen?'#7ff8ce':'#ff8b8e';ctx.lineWidth=3;ctx.strokeRect(d.x,d.y,d.w,d.h);
+      if(!isOpen){ctx.save();ctx.beginPath();ctx.rect(d.x+2,d.y+2,d.w-4,d.h-4);ctx.clip();ctx.strokeStyle='#dc707466';ctx.lineWidth=5;for(let x=d.x-100;x<d.x+d.w+100;x+=18){ctx.beginPath();ctx.moveTo(x,d.y);ctx.lineTo(x+100,d.y+d.h);ctx.stroke();}ctx.restore();}
+      ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillStyle=isOpen?'#8bffd2':'#ffb2b6';ctx.fillText(d.id+' '+(isOpen?'OPEN':'CLOSED'),d.x+d.w/2,d.y-9);
+    }
+    const ex=config.exit,ready=m&&m.repair>=1;ctx.fillStyle=ready?'#247454':'#16372f';ctx.strokeStyle=ready?'#8dffbd':'#42745d';ctx.lineWidth=3;roundBox(ctx,ex.x-ex.w/2,ex.y-ex.h/2,ex.w,ex.h,10);ctx.fill();ctx.stroke();ctx.fillStyle=ready?'#c3ffdf':'#83ad98';ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillText('EXIT',ex.x,ex.y-7);ctx.font='10px system-ui';ctx.fillText(ready?'BOTH HERE':'REPAIR FIRST',ex.x,ex.y+12);
+    if(config.fuse&&(!m||!m.fuse)){const f=config.fuse;ctx.strokeStyle='#ffd072';ctx.lineWidth=2;ctx.beginPath();ctx.arc(f.x,f.y,29,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#ffca67';ctx.fillRect(f.x-8,f.y-13,16,26);ctx.fillStyle='#fff3c0';ctx.fillRect(f.x-10,f.y-14,20,5);ctx.fillRect(f.x-10,f.y+9,20,5);ctx.fillStyle='#ffdf95';ctx.font='bold 11px system-ui';ctx.fillText('FUSE · HOLD',f.x,f.y+47);}
+    if(config.consoles){for(let i=0;i<config.consoles.length;i++){const c=config.consoles[i],color=i===0?'#79e9ff':'#ffcf79';ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(c.x,c.y,28,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#1e4b59';ctx.fillRect(c.x-18,c.y-12,36,24);ctx.fillStyle=color;ctx.fillRect(c.x-12,c.y-6,24,9);ctx.font='bold 9px system-ui';ctx.fillText('CONSOLE '+(i+1),c.x,c.y+41);}}
+    const g=config.generator;if(!config.consoles){ctx.strokeStyle='#78d7c969';ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.arc(g.x,g.y,65,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#2b4f5c';roundBox(ctx,g.x-27,g.y-25,54,50,8);ctx.fill();ctx.strokeStyle='#71d5d1';ctx.stroke();ctx.fillStyle=m&&m.repair>=1?'#96ffd5':'#edbd72';ctx.font='bold 25px system-ui';ctx.fillText('ϟ',g.x,g.y+9);ctx.fillStyle='#b7e9e7';ctx.font='bold 10px system-ui';ctx.fillText('SHARED GENERATOR',g.x,g.y+82);}
+    if(m){for(const h of m.hazards){ctx.save();ctx.translate(h.x,h.y);ctx.rotate(m.elapsed*1.3);ctx.strokeStyle='#ffb54e';ctx.fillStyle='#6a4428';ctx.lineWidth=2;ctx.beginPath();for(let n=0;n<10;n++){const a=n*Math.PI/5,r=n%2?9:17;const x=Math.cos(a)*r,y=Math.sin(a)*r;if(n===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();ctx.fillStyle='#ffe2a1';ctx.font='bold 15px system-ui';ctx.fillText('ϟ',h.x,h.y+5);}
+      for(const p of m.players){ctx.save();if(m.invincible>0&&Math.floor(m.elapsed*9)%2)ctx.globalAlpha=.45;astronaut(ctx,p,m);ctx.restore();}
+      if(m.repair>0){ctx.fillStyle='#102335';ctx.fillRect(337,454,225,12);ctx.fillStyle='#71e7bd';ctx.fillRect(339,456,221*m.repair,8);ctx.strokeStyle='#668e9e';ctx.strokeRect(337,454,225,12);}
+    }else config.starts.forEach((p,id)=>astronaut(ctx,{...p,id},null));
+    ctx.restore();
+    ctx.fillStyle='#071524ee';roundBox(ctx,15,10,870,63,10);ctx.fill();ctx.fillStyle='#b7f8ed';ctx.textAlign='left';ctx.font='bold 15px system-ui';ctx.fillText(config.name.toLocaleUpperCase('en-US'),30,33);ctx.fillStyle='#d2dfeb';ctx.font='13px system-ui';ctx.fillText(objective(m),30,56);
+    ctx.textAlign='center';ctx.fillStyle=m&&m.noticeTime>0?'#ffe0a0':'#94b7cb';ctx.font='11px system-ui';ctx.fillText(m&&m.noticeTime>0?m.notice:'Blue: '+keysLabel(0)+' · Yellow: '+keysLabel(1)+' · Hold the interact keys',450,492);
+  }
+  function astronaut(ctx,p,m){
+    const color=p.id===0?'#7ee4fa':'#ffd18b', visor=p.id===0?'#2c718b':'#886338';ctx.save();ctx.translate(p.x,p.y);if(p.moving)ctx.rotate(Math.sin((m?m.elapsed:0)*14)*.05);
+    ctx.fillStyle='#07101b88';ctx.beginPath();ctx.ellipse(0,18,17,6,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#53657b';ctx.fillRect(-18,-1,8,21);ctx.fillStyle=color;roundBox(ctx,-12,-1,24,24,5);ctx.fill();ctx.fillRect(-19,2,7,15);ctx.fillRect(12,2,7,15);ctx.fillRect(-10,19,7,8);ctx.fillRect(3,19,7,8);ctx.beginPath();ctx.arc(0,-10,15,0,Math.PI*2);ctx.fill();ctx.fillStyle=visor;roundBox(ctx,-11,-17,22,13,5);ctx.fill();ctx.fillStyle='#ffffff9c';ctx.fillRect(-7,-14,8,3);ctx.fillStyle='#0e344a';ctx.fillRect(-5,6,10,7);ctx.restore();ctx.textAlign='center';ctx.font='bold 11px system-ui';ctx.fillStyle=color;ctx.fillText('P'+(p.id+1),p.x,p.y-32);
+    if(p.acting){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,32,0,Math.PI*2);ctx.stroke();}
+    if(m&&m.fuseCarrier===p.id&&m.repair<1){ctx.fillStyle='#ffda7a';ctx.fillRect(p.x+18,p.y-21,6,13);}
+  }
+  return {open,close,isOpen:()=>!!session,createGame,controlsLabel:keysLabel,pauseForSettings:()=>session?.pause(),refreshSettings:()=>session?.refresh()};
+})();
+
+/* Reference-compatible mission runner. Mission factories below retain their supplied
+   drawing, physics, collision rules, timers, action handling and outcome conditions. */
+const REFERENCE_MISSION_INFO = {"landing":{"title":"Precision landing","tag":"PILOTING","goal":"Land the cargo on the green pad. Balance your fuel use, descent speed and crosswind.","controls":"← / → or A / D: steer · ↑ or Space: thrust (hold)","tip":"Use short thruster bursts. Start slowing down before reaching the surface."},"cave":{"title":"Cave exploration","tag":"GEOLOGY & EVA","goal":"Explore by flashlight, find all three crystals, jump over cracks and return to the entrance before oxygen runs out.","controls":"WASD / Arrow keys: move · Space: jump","tip":"Leave enough oxygen for the return journey. The flashlight reveals the chambers as you move."},"repair":{"title":"Emergency base repair","tag":"SYSTEMS RESPONSE","goal":"Move between Life Support, Water Recycling and the Power Room. Reach each system and hold the repair control before its deadline.","controls":"WASD / Arrow keys: walk · Hold Space beside a device: repair","tip":"Prioritize the room with the least time remaining. Stay close while the repair bar fills."},"rescue":{"title":"Astronaut rescue","tag":"EVA & CREW SAFETY","goal":"Approach the drifting astronaut, attach the tether at close range, then brake and tow them back to the airlock.","controls":"WASD / Arrow keys: thrusters · Space: attach tether / brake (hold)","tip":"Momentum continues in space. Brake before approaching the astronaut and before docking."},"finale":{"title":"Final evacuation","tag":"SOL 30 / GRAND FINALE","goal":"Repair both power lines, recover all three crew members with the rover, then launch and reach the safe altitude.","controls":"WASD / Arrow keys: move and steer · Hold Space: repair / pick up crew / thrust","tip":"All three stages form one continuous evacuation mission. Watch the remaining time and hull condition."},"signal":{"title":"Lost signal","tag":"COMMUNICATIONS & DECODING","goal":"Point the antenna at the source, tune the receiver to the correct band, then decode the three-symbol message.","controls":"← / →: antenna and code slot · ↑ / ↓: frequency and symbol · Space: lock / send","tip":"Hold the lock when the signal is aligned. Use the symbol key to decode the incoming number packet."},"mining":{"title":"Mars ISRU prospecting","tag":"LOCAL RESOURCES & DRILL HEAT","goal":"Drive the prospecting rig to three deposits, face each fissure, drill in short bursts, cool the bit and return the samples to the habitat.","controls":"WASD / Arrow keys: drive · Face a fissure and stop · Hold Space: drill · Release: cool","tip":"The drill heats while active. Release it before the heat threshold and return to the habitat pad after all three samples."}};
+let referenceMissionSession = null;
+function referenceEscape(value){
+ return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+function referenceSoloText(value){
+ if(typeof value!=="string")return value;
+ const keys=GameSettings.get().keys.solo;
+ const label=code=>({ArrowUp:"↑",ArrowDown:"↓",ArrowLeft:"←",ArrowRight:"→",Space:"Space",Enter:"Enter",ShiftLeft:"Left Shift",ShiftRight:"Right Shift"}[code]||String(code).replace(/^Key|^Digit/,""));
+ const n={up:label(keys.up),down:label(keys.down),left:label(keys.left),right:label(keys.right),action:label(keys.action)};
+ const directional=/with|select slot|change symbol|ascend|climb|dodge|steer|debris|receiver|antenna|frequency|bearing|symbol/.test(value)||/^[↑↓\s]+$/.test(value);
+ return value.replace(/\bWASD\b|\b(?:Space|SPACE)\b|\bA\/D\b|W\/↑|[←→↑↓]/g,key=>key==="WASD"?n.up+"/"+n.left+"/"+n.down+"/"+n.right:key==="Space"||key==="SPACE"?n.action:key==="A/D"?n.left+"/"+n.right:key==="W/↑"?n.up:directional?({"←":n.left,"→":n.right,"↑":n.up,"↓":n.down})[key]:key);
+}
+function referenceDrawWithControls(ctx,game){
+ const original=ctx.fillText;
+ ctx.fillText=function(text,...args){return original.call(this,referenceSoloText(text),...args)};
+ try{game.draw(ctx)}finally{ctx.fillText=original}
+}
+function referenceEnvironment(id){
+ return {
+  sol:Math.max(1,Number(state.sol)||1),
+  planet:"mars",
+  hard:false,
+  risk:false,
+  weather:id==="landing"?"wind":(id==="cave"&&state.dust>.48?"fog":"clear"),
+  mapIndex:id==="cave"?((Math.max(1,state.sol)-1)%MissionTypes.cave.maps.length):0,
+  crew:state.crew||5,
+  gear:{thruster:false,lamp:false,tools:false,tether:false},
+  support:null,
+  cosmetics:{}
+ };
+}
+function startReferenceMission(id,options={}){
+ if(referenceMissionSession)return false;
+ const info=REFERENCE_MISSION_INFO[id],factory=MissionTypes[id];
+ if(!info||typeof factory!=="function")return false;
+ const game=factory(referenceEnvironment(id));
+ const fx=GameFX.create();
+ const overlay=document.createElement("div");
+ overlay.id="missionOverlay";
+ overlay.innerHTML=`
+  <div class="missionShell">
+   <div class="missionTop">
+    <b>🚀 ${referenceEscape(info.title)} <span class="eyebrow">· ${referenceEscape(info.tag)}</span></b>
+    <div class="row">
+     <button type="button" id="missionSettings" aria-label="Open settings" title="Settings">⚙</button>
+     <button type="button" id="missionMusic" data-music-control aria-label="Toggle music">♫</button>
+     <button type="button" id="leaveAction">✕ Leave</button>
+    </div>
+   </div>
+   <div id="actionHud" aria-live="off">${referenceEscape(game.hud?game.hud():"Mission ready")}</div>
+   <div class="canvasStage">
+    <canvas id="actionCanvas" width="900" height="500" tabindex="0" aria-label="${referenceEscape(info.title)} mission simulation"></canvas>
+    <div class="stageMessage" id="missionBrief">
+     <span class="eyebrow">MISSION BRIEFING</span>
+     <h2>${referenceEscape(info.title)}</h2>
+     <p>${referenceEscape(info.goal)}</p>
+     <p class="mut">${referenceEscape(info.controls)}</p>
+     <p class="mut">This is a playable training simulation. Movement, timing, collisions and mission outcomes are active.</p>
+     <button type="button" class="go" id="startAction">Start mission →</button>
+    </div>
+    <div class="stageMessage" id="pauseMessage" hidden>
+     <span class="eyebrow">MISSION PAUSED</span><h2>Take a moment</h2>
+     <p>Mission time and physics are paused. Resume when you are ready.</p>
+     <button type="button" class="go" id="resumeAction">▶ Resume mission</button>
+    </div>
+    <div id="missionResult" hidden></div>
+   </div>
+   <div class="touchControls">
+    <div class="dpad" aria-label="Directional controls">
+     <button type="button" class="dpadUp" data-key="ArrowUp" aria-label="Up">▲</button>
+     <button type="button" data-key="ArrowLeft" aria-label="Left">◀</button>
+     <button type="button" data-key="ArrowDown" aria-label="Down">▼</button>
+     <button type="button" data-key="ArrowRight" aria-label="Right">▶</button>
+    </div>
+    <div class="controlText"><span>${referenceEscape(info.controls)}</span><small>Keyboard, pointer and touch controls are supported. Press P to pause.</small></div>
+    <button type="button" id="pulseAction" class="primaryAction" disabled>${referenceEscape(game.actionLabel?game.actionLabel():"HOLD TO ACT")}</button>
+   </div>
+   <div class="missionBottom"><span id="missionControlHint">Controls: ${referenceEscape(GameSettings.labels("solo"))}</span><button type="button" id="pauseAction" disabled>Ⅱ Pause · P</button></div>
+  </div>`;
+ document.body.appendChild(overlay);
+ const q=id=>overlay.querySelector("#"+id),canvas=q("actionCanvas"),ctx=canvas.getContext("2d"),hud=q("actionHud"),brief=q("missionBrief"),pauseMessage=q("pauseMessage"),result=q("missionResult"),actionButton=q("pulseAction"),pauseButton=q("pauseAction");
+ const input={keys:Object.create(null),target:null};
+ const session={id,game,overlay,options,fx,input,started:false,paused:false,done:false,raf:0,last:0,lastDraw:0,dragging:false,cleanups:[],lastApplied:false};
+ referenceMissionSession=session;
+ const listen=(target,type,fn,opts)=>{target.addEventListener(type,fn,opts);session.cleanups.push(()=>target.removeEventListener(type,fn,opts));};
+ function clearInput(){
+  Object.keys(input.keys).forEach(key=>delete input.keys[key]);input.target=null;
+  overlay.querySelectorAll(".pressed").forEach(button=>button.classList.remove("pressed"));
+ }
+ function stopFrame(){if(session.raf)cancelAnimationFrame(session.raf);session.raf=0;session.last=0;}
+ function applyPreferences(){
+  const prefs=GameSettings.get();
+  SpaceMusic.setVolume(prefs.musicVolume);
+  if(referenceMissionSession===session&&session.started&&!session.paused){hud.textContent=game.hud?game.hud():"Mission active";}
+  const label=q("missionControlHint");if(label)label.textContent="Controls: "+GameSettings.labels("solo");
+ }
+ function cleanup(){
+  stopFrame();clearInput();session.cleanups.forEach(fn=>{try{fn()}catch(_){}});session.cleanups=[];
+  if(referenceMissionSession===session)referenceMissionSession=null;
+  overlay.remove();
+ }
+ function finishAndReturn(){
+  if(session.lastApplied)return;session.lastApplied=true;
+  const outcome=game.outcome||{success:false,title:"Mission failed",summary:"The mission was ended before its objectives were complete.",score:0,tip:info.tip};
+  cleanup();
+  try{if(typeof options.onOutcome==="function")options.onOutcome(outcome);}
+  catch(error){console.error("Mission result integration failed:",error);brief("MISSION RESULT","The activity ended, but its campaign update could not be applied. Please report this issue.","Check the mission log before continuing.");}
+ }
+ function showResult(outcome){
+  if(session.done)return;session.done=true;stopFrame();clearInput();SpaceMusic.play("menu");
+  pauseButton.disabled=true;actionButton.disabled=true;q("leaveAction").textContent="Return to operations";
+  const success=!!outcome.success;
+  result.innerHTML=`
+   <span class="eyebrow">${success?"MISSION COMPLETE":"MISSION REVIEW"}</span>
+   ${success?GameFX.successHTML(GameSettings.get()):""}
+   <h2>${referenceEscape(outcome.title|| (success?"Mission complete":"Mission failed"))}</h2>
+   <p>${referenceEscape(outcome.summary||"Mission objective resolved.")}</p>
+   ${Number.isFinite(outcome.score)?'<strong>'+Math.max(0,Math.round(outcome.score))+' mission score</strong>':""}
+   <p class="mut">${referenceEscape(outcome.tip||info.tip)}</p>
+   <button type="button" class="go" id="returnBase">Return to outpost →</button>`;
+  result.hidden=false;brief.hidden=true;pauseMessage.hidden=true;
+  q("returnBase").addEventListener("click",finishAndReturn);
+  q("returnBase").focus();
+ }
+ function pause(force){
+  if(!session.started||session.done)return;
+  const next=typeof force==="boolean"?force:!session.paused;
+  if(next===session.paused)return;
+  session.paused=next;clearInput();
+  if(next){stopFrame();pauseMessage.hidden=false;brief.hidden=true;SpaceMusic.play("menu");}
+  else{pauseMessage.hidden=true;SpaceMusic.play("game");session.last=0;session.raf=requestAnimationFrame(frame);canvas.focus();}
+  pauseButton.textContent=session.paused?"▶ Resume · P":"Ⅱ Pause · P";
+ }
+ function canonicalKey(code){return GameSettings.keyForSolo(code)||(String(code).startsWith("Arrow")?code:null);}
+ function keydown(event){
+  if(document.getElementById("settingsOverlay"))return;
+  if(event.code==="KeyP"||event.code==="Escape"){event.preventDefault();if(!event.repeat)pause();return;}
+  if(!session.started||session.paused||session.done)return;
+  const code=canonicalKey(event.code);if(!code)return;
+  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(code))event.preventDefault();
+  input.keys[code]=true;
+  if(code==="Space"&&!event.repeat&&game.action)game.action();
+ }
+ function keyup(event){const code=canonicalKey(event.code);if(code)input.keys[code]=false;}
+ function blur(){if(session.started&&!session.paused&&!session.done)pause(true);else clearInput();}
+ function pointerPosition(event){
+  const rect=canvas.getBoundingClientRect();
+  return {x:Math.max(0,Math.min(900,(event.clientX-rect.left)*900/rect.width)),y:Math.max(0,Math.min(500,(event.clientY-rect.top)*500/rect.height))};
+ }
+ function frame(time){
+  if(referenceMissionSession!==session||session.done||!session.started||session.paused)return;
+  const dt=session.last?Math.min(.04,(time-session.last)/1000):0;session.last=time;
+  game.update(dt,input);
+  const prefs=GameSettings.get();
+  if(!prefs.lowPerformance||!session.lastDraw||time-session.lastDraw>=1000/30){
+   session.lastDraw=time;ctx.fillStyle="#080e20";ctx.fillRect(0,0,900,500);
+   ctx.save();const shake=fx.shake?fx.shake():{x:0,y:0};ctx.translate(shake.x||0,shake.y||0);
+   referenceDrawWithControls(ctx,game);
+   fx.draw(ctx,id,game,{});
+   ctx.restore();
+   hud.textContent=(game.hud?game.hud():"Mission active");
+   actionButton.textContent=game.actionLabel?referenceSoloText(game.actionLabel()):"HOLD TO ACT";
+  }
+  fx.update(id,game,dt,input,prefs,{});
+  if(game.outcome){showResult(game.outcome);return;}
+  session.raf=requestAnimationFrame(frame);
+ }
+ function bindHold(button,key,primary){
+  let held=new Set();
+  const release=event=>{held.delete(event.pointerId);if(!held.size){input.keys[key]=false;button.classList.remove("pressed");}};
+  listen(button,"pointerdown",event=>{
+   if(!session.started||session.paused||session.done)return;
+   event.preventDefault();held.add(event.pointerId);input.keys[key]=true;button.classList.add("pressed");
+   if(button.setPointerCapture)button.setPointerCapture(event.pointerId);
+   if(primary&&game.action)game.action();
+  });
+  listen(button,"pointerup",release);listen(button,"pointercancel",release);listen(button,"lostpointercapture",release);
+  listen(button,"contextmenu",event=>event.preventDefault());
+ }
+ listen(window,"keydown",keydown);listen(window,"keyup",keyup);listen(window,"blur",blur);
+ listen(document,"visibilitychange",()=>{if(document.hidden)blur();});
+ listen(q("missionSettings"),"click",()=>{pause(true);openSettings();});
+ listen(q("missionMusic"),"click",()=>SpaceMusic.toggle());
+ listen(q("leaveAction"),"click",()=>{
+  if(session.done){finishAndReturn();return;}
+  if(!session.started){game.outcome={success:false,title:"Mission not attempted",summary:"The mission was left before starting.",score:0,tip:info.tip};showResult(game.outcome);return;}
+  game.outcome={success:false,title:"Mission ended early",summary:"The activity was ended before every objective was completed.",score:0,tip:info.tip};showResult(game.outcome);
+ });
+ listen(pauseButton,"click",()=>pause());
+ listen(q("resumeAction"),"click",()=>pause(false));
+ listen(q("startAction"),"click",()=>{
+  if(session.started||session.done)return;
+  session.started=true;brief.hidden=true;pauseMessage.hidden=true;pauseButton.disabled=false;actionButton.disabled=false;
+  actionButton.textContent=game.actionLabel?referenceSoloText(game.actionLabel()):"HOLD TO ACT";
+  SpaceMusic.play("game");canvas.focus();session.last=0;session.raf=requestAnimationFrame(frame);
+ });
+ overlay.querySelectorAll("[data-key]").forEach(button=>bindHold(button,button.dataset.key,false));
+ bindHold(actionButton,"Space",true);
+ listen(canvas,"pointerdown",event=>{if(!session.started||session.paused||session.done)return;session.dragging=true;canvas.setPointerCapture?.(event.pointerId);input.target=pointerPosition(event);});
+ listen(canvas,"pointermove",event=>{if(session.dragging)input.target=pointerPosition(event);});
+ listen(canvas,"pointerup",()=>{session.dragging=false;input.target=null;});
+ listen(canvas,"pointercancel",()=>{session.dragging=false;input.target=null;});
+ listen(canvas,"lostpointercapture",()=>{session.dragging=false;input.target=null;});
+ ctx.fillStyle="#080e20";ctx.fillRect(0,0,900,500);referenceDrawWithControls(ctx,game);hud.textContent=game.hud?game.hud():"Mission ready";
+ SpaceMusic.play("menu");GameSettings.subscribe(applyPreferences);q("startAction").focus();
+ return true;
+}
+function openSettings(){
+ if(referenceMissionSession&&!referenceMissionSession.done&&!referenceMissionSession.paused){
+  referenceMissionSession.paused=true;referenceMissionSession.input.keys={};referenceMissionSession.input.target=null;
+  if(referenceMissionSession.raf)cancelAnimationFrame(referenceMissionSession.raf);
+  referenceMissionSession.raf=0;referenceMissionSession.overlay.querySelector("#pauseMessage").hidden=false;
+  referenceMissionSession.overlay.querySelector("#missionBrief").hidden=true;
+  referenceMissionSession.overlay.querySelector("#pauseAction").textContent="▶ Resume · P";
+ }
+ if(typeof CoopMode!=="undefined")CoopMode.pauseForSettings?.();
+ return GameSettings.open();
+}
+function launchReferenceFieldTask(id,key,options={}){
+ const info=options.infoKey||id;
+ return startReferenceMission(id,{onOutcome:outcome=>{
+  if(typeof options.onOutcome==="function")options.onOutcome(outcome);
+  finishFieldTask(key,!!outcome.success,outcome.summary|| (outcome.success?"Activity complete":"Activity incomplete"));
+ }});
+}
+function startLandingChallenge(){
+ clearLandingControls();
+ startReferenceMission("landing",{onOutcome:outcome=>{
+  const l=state.landing||{};
+  state.landingSuccess=!!outcome.success;
+  state.landing={done:true,speed:Math.abs(Number(referenceMissionSession?.game?.vy)||0),offset:Math.abs(Number(referenceMissionSession?.game?.vx)||0),fuel:Number(referenceMissionSession?.game?.fuel??100),label:"STANDARD"};
+  if(state.landingSuccess){
+   state.battery=clamp(state.battery+2,0,batteryCapacity());awardCadetXP(12,"pilot",2);addCadetBadge("soft-landing");log("Soft touchdown • +2 starting battery reserve");
+  }else{
+   state.arrayDamage=1.5;state.spareParts=Math.max(0,state.spareParts-1);state.battery=Math.max(0,state.battery-2);state.safety=92;awardCadetXP(4,"pilot",0);log("Rough touchdown • solar frame damaged and one spare kit used");
+  }
+  renderLandingChallenge();
+ }});
+}
+function launchCaveTask(){return launchReferenceFieldTask("cave","cave");}
+function launchRescueTask(){return launchReferenceFieldTask("rescue","rescue");}
+function launchSignalTask(){return launchReferenceFieldTask("signal","signal");}
+function launchRelayTask(){return launchReferenceFieldTask("signal","relay");}
+function launchProspectingTask(){return launchReferenceFieldTask("mining","prospect");}
+function launchEmergencyRepairTask(){
+ const issues=[
+  {id:"solar",label:"Solar array bus",active:()=>state.arrayDamage>.05||state.dust>.1,fix:()=>{state.arrayDamage=clamp(state.arrayDamage-.8,0,5);state.dust=clamp(state.dust-.06,0,.85);}},
+  {id:"filter",label:"Water recycler filter",active:()=>state.filterClog>.05,fix:()=>state.filterClog=clamp(state.filterClog-.45,0,2)},
+  {id:"blight",label:"Greenhouse grow beds",active:()=>state.cropBlight>.05||state.cropEfficiency<1,fix:()=>{state.cropBlight=clamp(state.cropBlight-.1,0,.7);state.cropEfficiency=clamp(state.cropEfficiency+.06,0,1);}},
+  {id:"leak",label:"Habitat pressure seal",active:()=>state.pressureLeak>.05,fix:()=>state.pressureLeak=clamp(state.pressureLeak-.55,0,5)},
+  {id:"heater",label:"Thermal controller",active:()=>state.heaterFault>.05,fix:()=>state.heaterFault=clamp(state.heaterFault-.5,0,3)}
+ ].filter(item=>item.active());
+ if(!issues.length||state.spareParts<=0)return;
+ const fault=issues[0];
+ return startReferenceMission("repair",{onOutcome:outcome=>{
+  if(outcome.success&&state.spareParts>0){state.spareParts--;fault.fix();}
+  finishFieldTask("emergency",!!outcome.success,outcome.summary||"Emergency repair resolved.");
+ }});
+}
+function startFinalEvacuation(){
+ showOnlyStage("final-evacuation-view");
+ startReferenceMission("finale",{onOutcome:outcome=>{
+  state.finalEvacuation={phase:3,gridRestored:outcome.success?2:0,crewRescued:outcome.success?3:0,launchFuel:outcome.success?0:50,altitude:outcome.success?7700:0,offset:0,done:!!outcome.success};
+  state.missionOps.evacuationDone=!!outcome.success;
+  if(outcome.success)addCadetBadge("final-takeoff");
+  endMission(!!outcome.success);
+ }});
+}
+function launchStandaloneCoop(){if(typeof CoopMode!=="undefined")CoopMode.open();}
+function toggleMusic(){return SpaceMusic.toggle();}
+function startAmbientMusic(){return SpaceMusic.play("menu");}
+function stopAmbientMusic(){return SpaceMusic.toggle();}
+function beep(freq,duration){
+ if(!soundOn)return;
+ const volume=GameSettings.get().fxVolume;if(volume<=0)return;
+ try{
+  audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();
+  const osc=audioContext.createOscillator(),gain=audioContext.createGain();
+  osc.frequency.value=freq;gain.gain.setValueAtTime(.045*volume,audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);
+  osc.connect(gain);gain.connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+duration);
+ }catch(_){}
+}
+
+/* END reference-aligned mission system */
+
 })();
 </script>
 </body>

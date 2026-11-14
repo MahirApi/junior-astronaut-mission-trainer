@@ -357,7 +357,9 @@ const state = {
   arrayDamage:0,recyclerDamage:0,cropEfficiency:1,shieldLoss:0,shieldBonus:0,
   filterClog:0,cropBlight:0,pressureLeak:0,heaterFault:0,dustStormSols:0,shelterDrillPending:false,
   filterClogSeen:false,cropBlightSeen:false,pressureLeakSeen:false,heaterFaultSeen:false,
-  spareParts:3,repairTarget:null,repairStarted:{},repairNoPartsNotified:{}
+  spareParts:3,repairTarget:null,repairStarted:{},repairNoPartsNotified:{},
+  science:0,skillAssessment:{},siteKey:"gale",landing:null,incidentLog:[],
+  fieldOps:{slots:2,completed:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0}
 };
 const sliders = {life:$("life-slider"),green:$("green-slider"),shelter:$("shelter-slider"),repair:$("repair-slider")};
 const crewRoster=[
@@ -373,6 +375,75 @@ const taskDefinitions=[
 {id:"shield",title:"Seal the radiation shelter",role:"RADIATION PROTECTION",recommended:"pavel",brief:"Inspect six wall sections and reinforce the three seams where shielding is incomplete."}
 ];
 let soundOn=false, audioContext=null;
+const SKILLS=["pilot","engineering","life","botany","science"];
+let cadetProgress={xp:0,missions:0,skills:{pilot:0,engineering:0,life:0,botany:0,science:0},badges:[]};
+try{
+  const saved=JSON.parse(localStorage.getItem("outpost-zero-cadet-v1")||"null");
+  if(saved)cadetProgress={...cadetProgress,...saved,skills:{...cadetProgress.skills,...(saved.skills||{})},badges:Array.isArray(saved.badges)?saved.badges:[]};
+}catch(e){}
+const PRELIGHT_QUESTIONS=[
+ {skill:"pilot",label:"PILOTING",question:"Your lander is descending too quickly. What should you do first?",options:["Increase engine thrust to slow down","Turn off every engine","Aim for the steepest slope"],answer:0,explain:"Thrust can reduce your downward speed. A controlled landing protects the crew and equipment."},
+ {skill:"engineering",label:"ENGINEERING",question:"Dust is covering the solar panels. What happens to the outpost?",options:["It makes more power","It makes less power","It stores more energy"],answer:1,explain:"Dust blocks some sunlight, so the panels produce less electricity."},
+ {skill:"life",label:"LIFE SUPPORT",question:"Why does a habitat recycle water?",options:["Water can be reused instead of always needing new supplies","It makes the habitat heavier","It replaces the need for oxygen"],answer:0,explain:"A closed-loop life-support system cleans and reuses water, helping the crew conserve supplies."},
+ {skill:"botany",label:"PLANT SCIENCE",question:"What do hydroponic plants need to grow?",options:["Only dry dust","Water, light and nutrients","Metal fragments"],answer:1,explain:"Hydroponic plants grow without soil, but still need water, light and dissolved nutrients."},
+ {skill:"science",label:"SPACE WEATHER",question:"During a radiation alert, what helps protect a shelter?",options:["Thin glass windows","Water-rich supplies and shielding mass","Turning off the radio"],answer:1,explain:"Hydrogen-rich materials such as water can help shield against some space radiation. The game uses an abstract protection score."}
+];
+const SITES={
+ gale:{name:"Gale Crater",tag:"BALANCED START",desc:"A balanced training location with no starting bonus or penalty.",water:82,battery:2,dust:0,science:0},
+ jezero:{name:"Jezero Crater",tag:"SCIENCE ROUTE",desc:"A research-focused game route: start with +8 Science Data, but one less battery unit.",water:82,battery:1,dust:0,science:8},
+ utopia:{name:"Utopia Planitia",tag:"WATER ROUTE",desc:"A supply-focused game route: start with +10 water, but the panels begin with a light dust coating.",water:92,battery:2,dust:.06,science:0}
+};
+function saveCadetProgress(){
+ try{localStorage.setItem("outpost-zero-cadet-v1",JSON.stringify(cadetProgress));}catch(e){}
+ updateCadetHeader();
+}
+function updateCadetHeader(){
+ const xp=cadetProgress.xp||0;
+ const level=1+Math.floor(xp/100);
+ if($("cadet-level"))$("cadet-level").textContent="LV "+level;
+ if($("cadet-xp"))$("cadet-xp").textContent=(xp%100)+"/100 XP";
+}
+function awardCadetXP(amount,skill,skillPoints=0){
+ cadetProgress.xp=(cadetProgress.xp||0)+amount;
+ if(skill&&SKILLS.includes(skill))cadetProgress.skills[skill]=(cadetProgress.skills[skill]||0)+skillPoints;
+ saveCadetProgress();
+}
+function addScience(points){
+ state.science=Math.max(0,state.science+points);
+ if($("v-science"))$("v-science").textContent=state.science;
+ if($("m-science"))$("m-science").style.width=clamp(state.science,0,100)+"%";
+ if($("n-science"))$("n-science").textContent="Samples studied: "+(state.fieldOps?.studied||0);
+}
+function skillTier(skill){
+ const test=state.skillAssessment[skill]||0;
+ const learned=Math.floor((cadetProgress.skills[skill]||0)/4);
+ return clamp(1+test+learned,1,3);
+}
+function startAssessment(){
+ state.skillAssessment={};state.assessmentIndex=0;state.siteKey="gale";
+ showOnlyStage("preflight-view");renderAssessmentQuestion();
+}
+function renderAssessmentQuestion(){
+ const q=PRELIGHT_QUESTIONS[state.assessmentIndex],content=$("preflight-content");
+ if(!q){renderAssessmentSummary();return;}
+ content.innerHTML='<div class="task-progress"><i style="width:'+((state.assessmentIndex)/PRELIGHT_QUESTIONS.length*100)+'%"></i></div><div class="preflight-question"><div class="task-kicker">QUESTION '+(state.assessmentIndex+1)+' / '+PRELIGHT_QUESTIONS.length+' • '+q.label+'</div><h2>'+q.question+'</h2><div class="preflight-options">'+q.options.map((o,i)=>'<button class="secondary-btn" data-answer="'+i+'">'+o+'</button>').join("")+'</div><div id="preflight-result"></div></div>';
+ content.querySelectorAll("[data-answer]").forEach(btn=>btn.addEventListener("click",()=>{
+  const correct=+btn.dataset.answer===q.answer;
+  state.skillAssessment[q.skill]=correct?1:0;
+  if(correct){awardCadetXP(5,q.skill,1);beep(620,.12);}
+  else beep(220,.16);
+  content.querySelectorAll("[data-answer]").forEach(b=>b.disabled=true);
+  $("preflight-result").innerHTML='<div class="preflight-feedback"><strong>'+(correct?"✓ Correct — +5 Cadet XP":"Training hint")+'</strong><br>'+q.explain+'</div><div class="puzzle-actions"><button class="primary-btn" id="preflight-next">'+(state.assessmentIndex===PRELIGHT_QUESTIONS.length-1?"Review your cadet profile →":"Next question →")+'</button></div>';
+  $("preflight-next").addEventListener("click",()=>{state.assessmentIndex++;renderAssessmentQuestion();});
+ }));
+}
+function renderAssessmentSummary(){
+ const cards=[["pilot","Piloting"],["engineering","Engineering"],["life","Life support"],["botany","Plant science"],["science","Space science"]];
+ $("preflight-content").innerHTML='<div class="preflight-question"><div class="task-kicker">TRAINING PROFILE READY</div><h2>Mission Control has tuned your training.</h2><p class="tiny muted">Your answers set the starting difficulty for matching tasks. As you complete missions and learn, your persistent Cadet skills can unlock more advanced versions.</p><div class="skill-grid">'+cards.map(([k,n])=>'<div class="skill-chip"><b>'+(skillTier(k)===1?"PRACTICE":skillTier(k)===2?"STANDARD":"ADVANCED")+'</b><span>'+n+'</span></div>').join("")+'</div><h3 style="font-size:13px">Choose your landing region</h3><div class="site-picks">'+Object.entries(SITES).map(([k,s])=>'<button class="site-pick '+(state.siteKey===k?"selected":"")+'" data-site="'+k+'"><b>'+s.name+'</b><span>'+s.tag+'<br>'+s.desc+'</span></button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="preflight-launch">Start descent simulation →</button></div></div>';
+ $("preflight-content").querySelectorAll("[data-site]").forEach(btn=>btn.addEventListener("click",()=>{state.siteKey=btn.dataset.site;renderAssessmentSummary();}));
+ $("preflight-launch").addEventListener("click",beginLanding);
+}
+updateCadetHeader();
 
 function values(){return {life:+sliders.life.value,green:+sliders.green.value,shelter:+sliders.shelter.value,repair:+sliders.repair.value};}
 function upgrades(){return new Set(state.upgrades);}
@@ -458,7 +529,7 @@ function updateLoadouts(){
 }
 
 function showOnlyStage(id){
-  ["setup-view","landing-view","assignment-view","task-view","game-view","debrief-view"].forEach(view=>{
+  ["setup-view","preflight-view","landing-minigame-view","landing-view","assignment-view","task-view","game-view","debrief-view"].forEach(view=>{
     const el=$(view);if(el)el.style.display=view===id?"block":"none";
   });
 }
@@ -869,7 +940,7 @@ document.querySelectorAll(".component-hotspot").forEach(el=>{
 });
 inspectComponent("solar");
 Object.values(sliders).forEach(s=>s.addEventListener("input",()=>{forecast();}));
-$("start-btn").addEventListener("click",beginLanding);
+$("start-btn").addEventListener("click",startAssessment);
 $("touchdown-btn").addEventListener("click",()=>{renderAssignments();showOnlyStage("assignment-view");});
 $("assignments-confirm").addEventListener("click",startTaskSequence);
 $("advance-btn").addEventListener("click",advance);
@@ -881,7 +952,7 @@ $("debrief-science").addEventListener("click",openScience);
 $("play-again").addEventListener("click",reset);
 $("reset-btn").addEventListener("click",reset);
 $("sound-toggle").addEventListener("click",()=>{soundOn=!soundOn;$("sound-toggle").textContent=soundOn?"♫ Sound on":"♫ Sound off";$("sound-toggle").setAttribute("aria-pressed",String(soundOn));beep(520,.08);});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeScience();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeScience();closeOpsModal();}});
 updateLoadouts();renderIssues();render();
 
 // Small self-checks for the non-trivial resource model.

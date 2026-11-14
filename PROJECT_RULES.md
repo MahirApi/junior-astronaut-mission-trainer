@@ -97,3 +97,13 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 - Keep the operations board at three available operation slots per Sol, including Sol 1.
 - The game includes landing, day-to-day outpost operations, and a final evacuation sequence. Do not add the floating meteor-shower resupply/point-collection minigame: it does not reinforce the challenge objective.
 - Retained optional activities must connect to a mission purpose: cave geology and rover prospecting inform local-resource knowledge; the signal activity supports communications; rescue and final extraction support crew safety; emergency repair and base construction support outpost reliability.
+
+
+## Reference-accurate mission modules
+- The team supplied `JuniorAstronaut.html` as the visual and code reference for the arcade activities. Keep the supplied factory implementations for precision landing, cave exploration, three-room emergency repair, orbital tether rescue, the final evacuation, signal recovery and drill-heat resource prospecting intact: visuals, drawing routines, timing, input handling, collisions, movement and success/failure thresholds are part of the intended parity.
+- The shared mission runner is only an adapter to OUTPOST ZERO. Do not rewrite the imported factories into sliders, quizzes, tile buttons or simplified look-alikes. Route their outcomes into OUTPOST ZERO's existing campaign/resource logic.
+- Keep the 30-Sol campaign, fission-primary power model, daily operation slots, materials/energy construction economy and commissioning activities. The reference's older 14-Sol campaign and tech-point engineering economy are not to be copied.
+- Keep the current continuous, large procedural rover expedition with slope-aware energy, safe corridor, samples, science tools, on-foot recovery and the 400 game-metre follow-up extension. Do not substitute the reference's compact fixed rover map.
+- The reference drilling minigame is the intended prospecting physics/visual reference, but its on-screen theme must be Mars local-resource prospecting / ISRU, not asteroid mining. The three-stage finale must occur after Sol 30, not Sol 14.
+- The meteor-shower floating supply/point pickup minigame remains excluded. Meteor debris used as a hazard during the final evacuation is not the excluded pickup activity.
+- Keep the reference's original synthesized music, canvas effects, remappable controls/settings and two-player shared-keyboard station game. Settings must remain separate from campaign resources; they must never replace the energy/material construction economy.

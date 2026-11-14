@@ -867,7 +867,10 @@ function launchRoverTask(){
  }
  function cleanup(){document.removeEventListener("keydown",keyDown);document.removeEventListener("keyup",keyUp);activeOpsCleanup=null;}
  function finish(success,message){
-  if(done)return;done=true;cleanup();f.recoverActiveRover=null;
+  if(done)return;done=true;
+  document.removeEventListener("keydown",keyDown);document.removeEventListener("keyup",keyUp);
+  if(activeOpsCleanup){activeOpsCleanup();activeOpsCleanup=null;}
+  f.recoverActiveRover=null;
   f.navFrames=rover.frames;f.wheelMoves=Math.round(rover.distance/10);f.medaReadings=rover.meda;f.roverBattery=Math.max(0,rover.battery);f.roverDamage=rover.wear;
   f.activeExpedition={...f.activeExpedition,failed:!success};finishFieldTask("rover",success,message);
  }
@@ -904,7 +907,7 @@ function launchRoverTask(){
    if(rover.battery<tool.cost){showRecovery("There is not enough rover battery to finish the science package. Recover on foot.");return;}
    rover.battery-=tool.cost;f.roverBattery=rover.battery;tool.done=true;
    if(tool.id==="panorama")rover.frames+=4;if(tool.id==="chemistry")rover.frames+=2;if(tool.id==="meda")rover.meda+=2;
-   if(tools.every(t=>t.done)){phase="return";openMap("Science observations secured. Retrace the terrain to the habitat; the samples only count when the rover returns.");}
+   if(tools.every(t=>t.done)){phase="return";last=performance.now();openMap("Science observations secured. Retrace the terrain to the habitat; the samples only count when the rover returns.");requestAnimationFrame(frame);}
    else openScienceStop();
   }));
   $("rover-abort-science").onclick=()=>showRecovery("The captain ended the science stop. Walk the rover back to base.");
@@ -917,7 +920,7 @@ function launchRoverTask(){
  }
  function keyDown(e){
   const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};
-  if(phase==="recovery")return;
+  if(phase==="recovery"||phase==="science")return;
   if(state.coopMode&&["arrowup","arrowdown","arrowleft","arrowright"].includes(k)){const n=22;scan.x=clamp(scan.x+(k==="arrowright"?n:k==="arrowleft"?-n:0),0,view.w);scan.y=clamp(scan.y+(k==="arrowdown"?n:k==="arrowup"?-n:0),0,view.h);e.preventDefault();return;}
   if(map[k]&&(!state.coopMode||["w","a","s","d"].includes(k))){drive[map[k]]=true;e.preventDefault();}
   if(k===" "||state.coopMode&&k==="enter"){collectSample();e.preventDefault();}

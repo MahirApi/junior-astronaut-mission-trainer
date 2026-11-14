@@ -44,7 +44,12 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 - The mission lasts 30 game Sols. A no-change/default allocation run should fail before the end; a thoughtful strategy should be capable of reaching Sol 30.
 - A full mission restart may reset all task outcomes, but the debrief must explain failed tasks and their downstream resource consequences.
 - Failed commissioning and later crisis events must change simulation state and expose meaningful captain recovery choices. Do not present failure as cosmetic.
+- An over-budget plan must have visible, numerical consequences. Raising every allocation to maximum must not outperform a focused strategy.
+- Show requested versus delivered allocations in the forecast. Clearly explain when a repair cannot begin because its power threshold or spare-parts cost is unmet.
 - The default power preset must not carry the outpost through all 30 Sols without active decisions.
+- Power is a shared pool: serve habitat essentials first, then proportionally ration the remaining available energy across player requests. Battery surplus carries forward.
+- Daily slider allocations persist until changed by the player; do not silently reset their plan every Sol.
+- Each major repair must be selected as a target from its component inspector, meet a minimum delivered-power threshold, and consume one limited spare kit. The mission starts with three kits for four later repairable faults.
 - Keep seven escalating crisis beats on Sols 3, 7, 11, 15, 19, 23 and 27. Each must have a persistent resource or system consequence that can be mitigated by a relevant allocation.
 - Open the mission alert briefing when a crisis begins and show active faults on the matching outpost hotspot.
 - Keep the minigames short, accessible, keyboard/touch friendly, and explain their objective before the one-shot submission.

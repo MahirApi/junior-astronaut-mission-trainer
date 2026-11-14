@@ -544,7 +544,7 @@ updateCadetHeader();
 function values(){return {life:+sliders.life.value,green:+sliders.green.value,shelter:+sliders.shelter.value,repair:+sliders.repair.value};}
 function upgrades(){return new Set(state.upgrades);}
 function batteryCapacity(){return state.powerCapacity+(upgrades().has("battery")?8:0)+(state.baseModules?.batteryBank?8:0);}
-function solarOutput(){return Math.max(2,Math.round((9+(upgrades().has("panels")?3:0)+(state.baseModules?.solarWing?3:0)-state.arrayDamage)*(1-state.dust)*(state.dustStormSols>0?.82:1)));}
+function solarOutput(){return Math.max(2,Math.round((10+(upgrades().has("panels")?3:0)+(state.baseModules?.solarWing?3:0)-state.arrayDamage)*(1-state.dust)*(state.dustStormSols>0?.82:1)));}
 function energyToKWh(units){return Math.round(units*100);}
 function canSpendStoredEnergy(units){return state.battery>=units;}
 function basePowerDemand(){return 4+state.heaterFault;}
@@ -1132,7 +1132,7 @@ function updateLoadouts(){
   $("loadout-count").textContent=total+" / 80 kg packed";
   $("start-btn").disabled=total===0||total>80;
   state.upgrades=active.map(c=>c.value);
-  state.powerCapacity=8+(state.upgrades.includes("battery")?8:0);
+  state.powerCapacity=8;
   if($("power-capacity-unit"))$("power-capacity-unit").textContent=" / "+energyToKWh(batteryCapacity())+" kWh";
 }
 const BASE_BUILDS={
@@ -1208,7 +1208,7 @@ function showOnlyStage(id){
 }
 function beginLanding(){
   const site=SITES[state.siteKey]||SITES.gale;
-  state.sol=1;state.powerCapacity=8+(state.upgrades.includes("battery")?8:0);state.battery=site.battery+(state.upgrades.includes("battery")?2:0);state.oxygen=82;state.water=site.water;state.food=82;state.safety=100;state.crop=0;state.harvests=0;state.dust=site.dust;
+  state.sol=1;state.powerCapacity=8;state.battery=site.battery+(state.upgrades.includes("battery")?2:0);state.oxygen=82;state.water=site.water;state.food=82;state.safety=100;state.crop=0;state.harvests=0;state.dust=site.dust;
   state.science=site.science;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];state.taskResults={};state.taskIndex=0;
   state.arrayDamage=0;state.recyclerDamage=0;state.cropEfficiency=1;state.shieldLoss=0;state.shieldBonus=0;
   state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
@@ -1220,7 +1220,7 @@ function beginLanding(){
   state.baseModules={greenhouse:false,laboratory:false,hangar:false,quarters:false,solarWing:false,batteryBank:false};
   state.missionOps={caveDone:false,rescueDone:false,prospectingDone:false,signalDone:false,evacuationDone:false};
   state.finalEvacuation={phase:0,gridRestored:0,crewRescued:0,launchFuel:100,altitude:0,offset:0,done:false};
-  state.assignments={solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"};state.coopMode=false;
+  state.assignments={solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"};
   state.landingSuccess=null;state.siteName=site.name;
   $("chosen-site-name").textContent=site.name;
   $("landing-report").textContent='Captain\'s log: "Site survey complete. We begin with the equipment we managed to land safely."';
@@ -1688,7 +1688,7 @@ function advance(){
   const oxygenDelta=actualLife*3-10-state.pressureLeak-(1-baseRatio)*7;
   const recyclerPenalty=state.recyclerDamage*Math.max(.55,1-Math.max(0,actualLife-4)*.18);
   const filterPenalty=state.filterClog*Math.max(.25,1-actualLife*.12);
-  const waterDelta=-3.8+actualLife*.9+(upgrades().has("recycler")?1.4:0)+(state.baseModules.laboratory?0:0)-actualGreen*.55-recyclerPenalty-filterPenalty;
+  const waterDelta=-3.8+actualLife*.9+(upgrades().has("recycler")?1.4:0)+(state.baseModules.quarters?.35:0)-actualGreen*.55-recyclerPenalty-filterPenalty;
   state.oxygen=clamp(state.oxygen+oxygenDelta,0,100);
   state.water=clamp(state.water+waterDelta+(state.baseModules.quarters?.4:0),0,100);
   state.food=clamp(state.food-5.5,0,100);
@@ -1752,17 +1752,18 @@ function advance(){
   beep(440,.09);
 
   if(state.oxygen<=0||state.water<=0||state.food<=0||state.safety<=0){endMission(false);return;}
-  if(state.sol>=30){endMission(true);return;}
+  if(state.sol>=30){if(state.safety>=50&&state.oxygen>10&&state.water>10&&state.food>5){startFinalEvacuation();return;}endMission(true);return;}
   state.sol++;
   // Daily field-operation opportunities refresh; rover recharge is slow, not instant.
-  state.fieldOps.slots=2;state.fieldOps.doneToday={};
-  state.fieldOps.roverBattery=clamp(state.fieldOps.roverBattery+(state.baseModules.hangar?90:70),0,100);
+  state.fieldOps.slots=3;state.fieldOps.doneToday={};
+  const roverCharge=state.baseModules.hangar?.5:.3,roverRecharge=state.baseModules.hangar?42:24;
+  if(state.fieldOps.roverBattery<100&&state.battery>=roverCharge){state.battery=clamp(state.battery-roverCharge,0,batteryCapacity());state.fieldOps.roverBattery=clamp(state.fieldOps.roverBattery+roverRecharge,0,100);}
   // Power priorities and the selected repair target carry forward until the captain changes them.
   applyEventForSol(state.sol);render();renderFieldOps();
   $("advance-btn").textContent=state.sol===30?"Complete Sol 30 →":"Advance to Sol "+String(state.sol+1).padStart(2,"0")+" →";
 }
 function endMission(completed){
-  $("game-view").style.display="none";$("debrief-view").style.display="block";
+  $("game-view").style.display="none";if($("final-evacuation-view"))$("final-evacuation-view").style.display="none";$("debrief-view").style.display="block";
   const success=completed&&state.safety>=50&&state.oxygen>10&&state.water>10&&state.food>5;
   cadetProgress.missions=(cadetProgress.missions||0)+1;
   const xpGain=20+Math.max(0,state.sol-1)*2+(state.fieldOps?.completed||0)*3+Math.floor((state.science||0)/4);
@@ -1805,6 +1806,36 @@ function endMission(completed){
   $("debrief-chain").innerHTML=causes.map(c=>"<div>→ "+escapeHtml(c)+"</div>").join("");
   $("reset-btn").classList.add("hidden");beep(success?660:220,.4);
 }
+function startFinalEvacuation(){
+ state.finalEvacuation={phase:1,gridRestored:0,crewRescued:0,launchFuel:100,altitude:0,offset:0,done:false};
+ $("game-view").style.display="none";$("debrief-view").style.display="none";$("final-evacuation-view").style.display="block";
+ renderFinalEvacuation();
+}
+function renderFinalEvacuation(){
+ const f=state.finalEvacuation;
+ if(f.phase===1){
+  $("finale-content").innerHTML='<p class="tiny muted">The ascent vehicle is ready, but two power couplings are offline. Drag each glowing connector to its matching socket to energize the launch bus.</p><canvas id="final-power-canvas" width="620" height="240" style="width:100%;height:auto;touch-action:none" aria-label="Drag the two power connectors to their matching sockets."></canvas><div class="rover-readouts"><div><span>POWER LINES</span><b id="final-lines">0 / 2</b></div><div><span>ASCENT VEHICLE</span><b>STANDBY</b></div><div><span>CREW ON SITE</span><b>'+state.crew+'</b></div><div><span>LAUNCH POWER</span><b>OFFLINE</b></div></div><p class="tiny muted" id="final-power-hint">Connect both power lines.</p>';
+  const canvas=$("final-power-canvas"),ctx=canvas.getContext("2d"),lines=[{y:75,color:"#e5ae61"},{y:165,color:"#63c7d5"}];
+  let dragging=-1,pointer=null;
+  function draw(){
+   ctx.clearRect(0,0,620,240);ctx.fillStyle="#121e26";ctx.fillRect(0,0,620,240);ctx.fillStyle="#24343b";ctx.fillRect(18,26,150,188);ctx.fillRect(450,26,150,188);
+   ctx.fillStyle="#dce5e1";ctx.font="bold 11px system-ui";ctx.textAlign="center";ctx.fillText("HABITAT BUS",93,16);ctx.fillText("ASCENT VEHICLE",525,16);
+   lines.forEach((line,i)=>{
+    ctx.beginPath();ctx.arc(95,line.y,18,0,Math.PI*2);ctx.fillStyle=line.color;ctx.fill();ctx.fillStyle="#111b21";ctx.font="bold 10px system-ui";ctx.fillText(f.gridRestored>i?"✓":"OUT",95,line.y+3);
+    ctx.beginPath();ctx.arc(525,line.y,18,0,Math.PI*2);ctx.fillStyle=f.gridRestored>i?"#69bd91":"#31464c";ctx.fill();ctx.strokeStyle=line.color;ctx.lineWidth=3;ctx.stroke();
+    if(f.gridRestored>i){ctx.beginPath();ctx.moveTo(113,line.y);ctx.bezierCurveTo(220,line.y-30,390,line.y+30,507,line.y);ctx.strokeStyle=line.color;ctx.lineWidth=7;ctx.stroke();}
+   });
+   if(dragging>=0&&pointer){ctx.beginPath();ctx.moveTo(113,lines[dragging].y);ctx.lineTo(pointer.x,pointer.y);ctx.strokeStyle=lines[dragging].color;ctx.lineWidth=7;ctx.lineCap="round";ctx.stroke();}
+  }
+  canvas.addEventListener("pointerdown",e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*620/r.width,y=(e.clientY-r.top)*240/r.height;const idx=lines.findIndex((line,i)=>i>=f.gridRestored&&Math.hypot(x-95,y-line.y)<28);if(idx>=0){dragging=idx;pointer={x,y};canvas.setPointerCapture(e.pointerId);draw();}});
+  canvas.addEventListener("pointermove",e=>{if(dragging<0)return;const r=canvas.getBoundingClientRect();pointer={x:(e.clientX-r.left)*620/r.width,y:(e.clientY-r.top)*240/r.height};draw();});
+  canvas.addEventListener("pointerup",e=>{if(dragging<0)return;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*620/r.width,y=(e.clientY-r.top)*240/r.height;const ok=x>480&&Math.abs(y-lines[dragging].y)<40;if(ok){f.gridRestored++;$("final-lines").textContent=f.gridRestored+" / 2";}else $("final-power-hint").textContent="Connector missed the socket. Re-align it and try again.";dragging=-1;pointer=null;draw();if(f.gridRestored===2){$("final-power-hint").textContent="Launch bus restored. The rover team can depart.";setTimeout(()=>{f.phase=2;renderFinalEvacuation();},450);}});
+  draw();return;
+ }
+ if(f.phase===2){renderFinalRoverRescue();return;}
+ if(f.phase===3){renderFinalTakeoff();return;}
+}
+
 async function loadNasa(){
   const btn=$("load-nasa");btn.disabled=true;btn.textContent="Loading…";$("nasa-state").textContent="Connecting to NASA";
   try{

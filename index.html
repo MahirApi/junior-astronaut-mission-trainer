@@ -963,6 +963,54 @@ function launchCaveTask(){
  draw();canvas.focus();requestAnimationFrame(frame);
 }
 
+function launchRescueTask(){
+ const width=900,height=460,airlock={x:75,y:230},rescuer={x:airlock.x,y:airlock.y},astronaut={x:735,y:145,vx:-9,vy:12};
+ let oxygen=80,tethered=false,last=performance.now(),finished=false;
+ const controls={up:false,down:false,left:false,right:false};
+ openOpsModal("Astronaut rescue • EVA tether operation",'<p class="tiny muted">A crew member has drifted beyond the habitat perimeter. Move alongside them, attach the safety tether and guide both astronauts back to the airlock before the suit oxygen reserve expires.</p><canvas id="rescue-canvas" width="'+width+'" height="'+height+'" class="rover-map" tabindex="0" aria-label="Use WASD or arrows to move the astronaut. Press Space to attach a tether when nearby."></canvas><div class="rover-readouts"><div><span>SUIT OXYGEN</span><b id="rescue-oxygen">80 s</b></div><div><span>TETHER</span><b id="rescue-tether">NOT ATTACHED</b></div><div><span>CREW DISTANCE</span><b id="rescue-distance">—</b></div><div><span>RETURN AIRLOCK</span><b>ACTIVE</b></div></div><p class="tiny muted" id="rescue-hint">Use WASD or arrows to approach the drifting crewmate. Press Space to attach the tether when close enough.</p><button class="secondary-btn" id="rescue-abort">Abort rescue and return to base</button>');
+ const canvas=$("rescue-canvas"),ctx=canvas.getContext("2d");
+ function draw(){
+  ctx.fillStyle="#8b5b45";ctx.fillRect(0,0,width,height);
+  for(let i=0;i<34;i++){const x=(i*127)%width,y=(i*73)%height;ctx.beginPath();ctx.ellipse(x,y,17+i%5*7,8+i%4*4,i*.16,0,Math.PI*2);ctx.fillStyle=i%2?"rgba(53,39,37,.38)":"rgba(221,155,103,.22)";ctx.fill();}
+  ctx.fillStyle="#7bd5a3";ctx.beginPath();ctx.arc(airlock.x,airlock.y,25,0,Math.PI*2);ctx.fill();ctx.fillStyle="#17252c";ctx.font="bold 10px system-ui";ctx.textAlign="center";ctx.fillText("AIRLOCK",airlock.x,airlock.y+4);
+  ctx.strokeStyle="#f5d9a8";ctx.lineWidth=2;ctx.setLineDash([5,6]);ctx.beginPath();ctx.moveTo(airlock.x,airlock.y);ctx.lineTo(rescuer.x,rescuer.y);ctx.stroke();ctx.setLineDash([]);
+  if(tethered){ctx.beginPath();ctx.moveTo(rescuer.x,rescuer.y);ctx.lineTo(astronaut.x,astronaut.y);ctx.strokeStyle="#bff5ed";ctx.lineWidth=4;ctx.stroke();}
+  ctx.fillStyle="#f0c18f";ctx.beginPath();ctx.arc(astronaut.x,astronaut.y,15,0,Math.PI*2);ctx.fill();ctx.fillStyle="#79b8ca";ctx.fillRect(astronaut.x-18,astronaut.y-20,34,10);
+  ctx.fillStyle="#f4e2c6";ctx.beginPath();ctx.arc(rescuer.x,rescuer.y,14,0,Math.PI*2);ctx.fill();ctx.fillStyle="#24313a";ctx.fillRect(rescuer.x-8,rescuer.y-16,19,7);
+  if(!tethered){ctx.strokeStyle="#f0c18f";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(astronaut.x-19,astronaut.y+8);ctx.lineTo(astronaut.x-29,astronaut.y+20);ctx.stroke();}
+ }
+ function finish(success,message){
+  if(finished)return;finished=true;document.removeEventListener("keydown",keyDown);document.removeEventListener("keyup",keyUp);activeOpsCleanup=null;
+  finishFieldTask("rescue",success,message);
+ }
+ function keyDown(e){
+  const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};
+  if(map[k]){controls[map[k]]=true;e.preventDefault();}
+  if(k===" "&&!tethered){
+   if(Math.hypot(rescuer.x-astronaut.x,rescuer.y-astronaut.y)<58){tethered=true;astronaut.vx=0;astronaut.vy=0;$("rescue-hint").textContent="Tether locked. Guide both astronauts back to the airlock.";}
+   else $("rescue-hint").textContent="Move closer to the drifting crewmate before deploying the tether.";
+   e.preventDefault();
+  }
+ }
+ function keyUp(e){const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};if(map[k])controls[map[k]]=false;}
+ document.addEventListener("keydown",keyDown);document.addEventListener("keyup",keyUp);
+ activeOpsCleanup=()=>{document.removeEventListener("keydown",keyDown);document.removeEventListener("keyup",keyUp);activeOpsCleanup=null;};
+ $("rescue-abort").onclick=()=>finish(false,"The rescue was aborted. Mission Control dispatched a separate recovery team.");
+ function frame(now){
+  if(finished)return;const dt=Math.min(.05,(now-last)/1000);last=now;oxygen=Math.max(0,oxygen-dt);
+  const dx=(controls.right?1:0)-(controls.left?1:0),dy=(controls.down?1:0)-(controls.up?1:0),len=Math.hypot(dx,dy)||1;
+  rescuer.x=clamp(rescuer.x+dx/len*(tethered?115:165)*dt,25,width-25);rescuer.y=clamp(rescuer.y+dy/len*(tethered?115:165)*dt,25,height-25);
+  if(!tethered){astronaut.x=clamp(astronaut.x+astronaut.vx*dt,28,width-28);astronaut.y=clamp(astronaut.y+astronaut.vy*dt,28,height-28);astronaut.vx+=Math.sin(now*.0004)*1.8*dt;astronaut.vy+=Math.cos(now*.0003)*1.8*dt;}
+  else{astronaut.x=rescuer.x+21;astronaut.y=rescuer.y-4;}
+  $("rescue-oxygen").textContent=oxygen.toFixed(0)+" s";$("rescue-tether").textContent=tethered?"ATTACHED":"NOT ATTACHED";$("rescue-distance").textContent=Math.round(Math.hypot(rescuer.x-airlock.x,rescuer.y-airlock.y))+" m";
+  draw();
+  if(oxygen<=0){finish(false,"The EVA oxygen reserve ran low before the team reached the airlock. The rescue attempt is recorded as unsuccessful.");return;}
+  if(tethered&&Math.hypot(rescuer.x-airlock.x,rescuer.y-airlock.y)<48){finish(true,"The crewmate was secured with the tether and guided safely back through the airlock.");return;}
+  requestAnimationFrame(frame);
+ }
+ canvas.focus();draw();requestAnimationFrame(frame);
+}
+
 function startFieldTask(id){
  if(state.fieldOps.slots<=0)return;
  const costs={clean:.03,relay:.08,lab:.02,signal:.06,cave:.08,rescue:.07,prospect:.12,emergency:.06,

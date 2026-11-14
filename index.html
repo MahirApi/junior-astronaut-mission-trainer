@@ -1346,7 +1346,7 @@ async function loadNasa(){
 }
 function openScience(){$("science-modal").classList.add("open");}
 function closeScience(){$("science-modal").classList.remove("open");}
-function reset(){showOnlyStage("setup-view");$("reset-btn").classList.add("hidden");}
+function reset(){clearLandingControls();if(activeOpsCleanup){activeOpsCleanup();activeOpsCleanup=null;}if(state.fieldOps)state.fieldOps.recoverActiveRover=null;$("ops-modal").classList.remove("open");$("ops-modal-content").innerHTML="";showOnlyStage("setup-view");$("reset-btn").classList.add("hidden");}
 
 document.querySelectorAll("#loadouts input").forEach(c=>c.addEventListener("change",updateLoadouts));
 document.querySelectorAll(".component-hotspot").forEach(el=>{

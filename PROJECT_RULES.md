@@ -38,9 +38,13 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 
 
 ## Mission progression and one-shot setup tasks
-- Preserve the landing → site confirmation → crew assignment → four commissioning minigames → seven-Sol command loop.
+- Preserve the landing → site confirmation → crew assignment → four commissioning minigames → 30-Sol command campaign.
 - The player is the captain; four specialists each have a distinct field and are assigned one task apiece.
 - A task has one submitted attempt per run. Never add an in-task retry or silently reset a failed result.
+- The mission lasts 30 game Sols. A no-change/default allocation run should fail before the end; a thoughtful strategy should be capable of reaching Sol 30.
 - A full mission restart may reset all task outcomes, but the debrief must explain failed tasks and their downstream resource consequences.
-- Failed commissioning must change later simulation state and expose a meaningful captain recovery choice. Do not present failure as cosmetic.
+- Failed commissioning and later crisis events must change simulation state and expose meaningful captain recovery choices. Do not present failure as cosmetic.
+- The default power preset must not carry the outpost through all 30 Sols without active decisions.
+- Keep seven escalating crisis beats on Sols 3, 7, 11, 15, 19, 23 and 27. Each must have a persistent resource or system consequence that can be mitigated by a relevant allocation.
+- Open the mission alert briefing when a crisis begins and show active faults on the matching outpost hotspot.
 - Keep the minigames short, accessible, keyboard/touch friendly, and explain their objective before the one-shot submission.

@@ -995,27 +995,47 @@ function renderIssues(){
 }
 
 function applyEventForSol(sol){
-  let event=null;
+  let event=null,incidentId=null;
   if(sol===3&&!state.dustSeen){
     state.dustSeen=true;state.dust=clamp(state.dust+.18,0,.85);
     event={kicker:"CRISIS 1 • ENVIRONMENTAL",title:"Dust is choking the solar arrays",copy:"A moving dust front has dimmed the sky and coated the panels. Solar generation is falling. The dust will stay until the crew spends power on maintenance.",note:"Try to keep the life-support loop running while assigning Maintenance to clear the arrays. You may need to pause greenhouse growth for a few Sols."};
     log("Sol 3 • Dust front reduced solar generation");beep(260,.22);
+  }else if(sol===5){
+    incidentId="dust-devil";
+    event={kicker:"FIELD REPORT • SOL 5",title:"A dust devil is crossing the array field",copy:"A fast-moving whirlwind is approaching the solar panels. Your crew can study its wind pattern or use the short lull to secure equipment.",note:"The incident card offers two different uses of time and supplies. Read each cost before choosing."};
+    log("Sol 5 • Dust devil spotted near solar field");beep(300,.18);
   }else if(sol===7&&!state.filterClogSeen){
     state.filterClogSeen=true;state.filterClog=1.5;
     event={kicker:"CRISIS 2 • LIFE SUPPORT",title:"Water recycler filter clogged",copy:"The recycler's filter is packed with fine dust. Water recovery has dropped, so stored water will fall faster until the filter is cleared.",note:"Higher Life Support allocation helps the crew flush and service the filter. But every extra unit spent here is unavailable to the greenhouse, shelter or maintenance."};
     log("Sol 7 • Water recycler filter clogged");beep(310,.22);
+  }else if(sol===9){
+    incidentId="greenhouse-mold";state.cropBlight=clamp(state.cropBlight+.25,0,.7);
+    event={kicker:"CREW REPORT • SOL 9",title:"A patch of greenhouse mold is spreading",copy:"A damp corner of the grow beds shows signs of contamination. The crew must choose between removing plants or running a drying cycle.",note:"Both approaches consume resources. The mold is already reducing crop growth until it is contained."};
+    log("Sol 9 • Greenhouse mold detected");beep(280,.2);
   }else if(sol===11&&!state.cropBlightSeen){
-    state.cropBlightSeen=true;state.cropBlight=.42;
+    state.cropBlightSeen=true;state.cropBlight=clamp(state.cropBlight+.42,0,.7);
     event={kicker:"CRISIS 3 • FOOD PRODUCTION",title:"Greenhouse beds show signs of blight",copy:"A humidity imbalance has spread a simulated crop disease through part of the grow beds. Harvest growth is reduced until the crew stabilizes the greenhouse.",note:"Keep greenhouse power high for several Sols to isolate affected beds and recover production. Water is already limited, so this will hurt."};
     log("Sol 11 • Greenhouse crop blight detected");beep(290,.22);
+  }else if(sol===13){
+    incidentId="battery-heat";
+    event={kicker:"POWER ALERT • SOL 13",title:"The battery bay is running hot",copy:"A temperature sensor reports that the battery compartment is warmer than expected. The crew must choose how to cool it before the next storm season.",note:"One option sacrifices stored energy. The other spends water and power on cooling fans."};
+    log("Sol 13 • Battery bay temperature alert");beep(240,.2);
   }else if(sol===15){
     state.dust=clamp(state.dust+.28,0,.85);state.dustStormSols=3;
     event={kicker:"CRISIS 4 • REGIONAL EMERGENCY",title:"Regional dust storm — power emergency",copy:"The storm has thickened. Visibility is poor and the arrays are producing much less power for the next few Sols. Some systems will have to wait.",note:"Protect habitat basics first. Use the battery carefully and direct Maintenance toward the panels when you can. You cannot run every system at full power during a storm."};
     log("Sol 15 • Regional dust storm; generation sharply reduced");beep(160,.5);
+  }else if(sol===17){
+    incidentId="ice-find";
+    event={kicker:"ROVER DISCOVERY • SOL 17",title:"The rover finds a buried ice signal",copy:"A subsurface scan suggests an ice-rich patch nearby. Your team can drill a small sample now or map the deposit for a later expedition.",note:"Drilling costs battery but can replenish water. Mapping earns science data without improving today's supplies."};
+    log("Sol 17 • Possible buried ice deposit mapped");beep(520,.16);
   }else if(sol===19&&!state.pressureLeakSeen){
     state.pressureLeakSeen=true;state.pressureLeak=2.8;
     event={kicker:"CRISIS 5 • HABITAT DAMAGE",title:"A habitat seal is leaking",copy:"A pressure-seal inspection finds a small leak. The air system must work harder to maintain breathable conditions until the seal is repaired.",note:"Maintenance can gradually close the leak. Life Support must also stay high enough to replace the air being lost. Neglecting either choice makes the other harder."};
     log("Sol 19 • Habitat pressure-seal leak detected");beep(230,.3);
+  }else if(sol===21){
+    incidentId="relay-damage";state.fieldOps.relayOnline=false;
+    event={kicker:"COMMUNICATIONS ALERT • SOL 21",title:"A micrometeorite has damaged the radio relay",copy:"The outpost's long-range relay is offline. Install a spare radio module now or assign a specialist to repair it during a later field operation.",note:"Without the relay, Mission Control's warning may arrive late. One spare module can restore the link immediately."};
+    log("Sol 21 • Radio relay damaged; long-range link offline");beep(230,.22);
   }else if(sol===23&&!state.stormSeen){
     state.stormSeen=true;state.shelterDrillPending=true;
     const rec=state.donki;
@@ -1027,12 +1047,20 @@ function applyEventForSol(sol){
       log("Sol 23 • Simulated solar-weather shelter drill");
     }
     beep(180,.45);
+  }else if(sol===25){
+    incidentId="soil-warning";
+    event={kicker:"GREENHOUSE SCIENCE • SOL 25",title:"The soil sample contains perchlorate salts",copy:"The new sample is not ready for the grow beds. The crew can rinse a small soil batch with water or spend power on a sealed hydroponic tray.",note:"Perchlorate is a real Mars soil chemistry concern. The game choices are simplified and do not represent an operational soil-treatment procedure."};
+    log("Sol 25 • Perchlorate warning in soil sample");beep(260,.2);
   }else if(sol===27&&!state.heaterFaultSeen){
     state.heaterFaultSeen=true;state.heaterFault=2;
     event={kicker:"CRISIS 7 • EQUIPMENT FAILURE",title:"Thermal-control heater has failed",copy:"A habitat heater controller is malfunctioning. The backup system needs extra power until the controller is repaired. Power demand is now higher each Sol.",note:"Maintenance can repair the controller, but the repair itself uses power. Decide which other system can temporarily receive less without putting the crew at risk."};
     log("Sol 27 • Thermal-control heater fault");beep(210,.3);
+  }else if(sol===29){
+    incidentId="impact-leak";state.pressureLeakSeen=true;state.pressureLeak=clamp(state.pressureLeak+1.2,0,5);
+    event={kicker:"HABITAT ALERT • SOL 29",title:"A small impact damages an exterior seal",copy:"A new pressure warning appears near the service hatch. Use a spare kit for a seal patch or isolate the affected compartment and accept a resource loss.",note:"This is the final scheduled incident of the campaign. A repair kit spent now is unavailable for another fault."};
+    log("Sol 29 • Micrometeorite impact damaged a service seal");beep(220,.2);
   }
-  if(event){brief(event.kicker,event.title,event.copy,event.note);document.querySelector(".mission-tools").open=true;}
+  if(event){brief(event.kicker,event.title,event.copy,event.note);document.querySelector(".mission-tools").open=true;if(incidentId)showIncident(incidentId);}
   else brief("DAILY PRIORITY","Protect the essentials","Your crew needs breathable air, usable water and food every Sol. Set power priorities before advancing the mission.","A good captain cannot prevent every crisis. Check the red indicators, choose the most urgent repair, and keep enough reserve for the next surprise.");
   render();
 }
@@ -1114,8 +1142,10 @@ function advance(){
   if(state.shelterDrillPending){
     const passive=upgrades().has("regolith")?45:20;
     const protection=clamp(passive+state.shieldBonus+actualShelter*12-state.shieldLoss,0,85);
-    const hit=Math.max(3,24*(1-protection/100));
+    const lateRelayPenalty=state.fieldOps.relayOnline?0:8;
+    const hit=Math.max(3,24*(1-protection/100))+lateRelayPenalty;
     state.safety=clamp(state.safety-hit,0,100);
+    if(lateRelayPenalty)log("Late storm warning • offline relay increased simulated crew-safety impact by 8");
     state.shelterDrillPending=false;
     log("Shelter drill • simulated crew safety impact -"+Math.round(hit));
   }

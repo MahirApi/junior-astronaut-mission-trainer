@@ -471,7 +471,7 @@ function finishTask(success,detail){
   if(!success){
     if(task.id==="solar")state.arrayDamage=3*severity;
     if(task.id==="water")state.recyclerDamage=1.6*severity;
-    if(task.id==="greenhouse")state.cropEfficiency=matched?.55:.4;
+    if(task.id==="greenhouse")state.cropEfficiency=matched ? 0.55 : 0.4;
     if(task.id==="shield")state.shieldLoss=15*severity;
     log(task.title+" failed • captain must compensate");
   }else{

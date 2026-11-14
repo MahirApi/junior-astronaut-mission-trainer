@@ -540,15 +540,41 @@ shelter:{title:"Storm shelter",system:"RADIATION PROTECTION",copy:"The shelter g
 };
 let selectedComponent="solar";
 function componentHasIssue(key){const c=componentInfo[key];return !!(c&&c.failed());}
+function repairActionList(key){
+  const actions=[];
+  const add=(target,label,slider,value)=>actions.push({target,label,slider,value});
+  if(key==="solar"&&(state.dust>.05||state.arrayDamage>.05))add("solar","Clean panels · Maintenance 2","repair",2);
+  if(key==="life"){
+    if(state.filterClog>.05)add("filter","Service filter · Life support 6","life",6);
+    if(state.pressureLeak>.05)add("leak","Patch seal · Maintenance 2","repair",2);
+    if(state.heaterFault>.05)add("heater","Repair heater · Maintenance 2","repair",2);
+    if(!actions.length)add("none","Prioritize life support · 6","life",6);
+  }
+  if(key==="green"&&(state.cropBlight>.05||state.cropEfficiency<1))add("blight","Treat greenhouse · Greenhouse 4","green",4);
+  if(key==="shelter"&&state.shelterDrillPending)add("none","Prepare shelter · Shelter 3","shelter",3);
+  return actions;
+}
 function inspectComponent(key){
  const info=componentInfo[key];if(!info)return;selectedComponent=key;
  document.querySelectorAll(".component-hotspot").forEach(el=>el.classList.toggle("selected",el.dataset.component===key));
  const failed=componentHasIssue(key),box=$("component-inspector");box.classList.toggle("issue",failed);
  $("inspector-kicker").textContent=(failed?"⚠ ACTIVE FAULT • ":"SYSTEM INSPECTOR • ")+info.system;
- $("inspector-title").textContent=info.title;$("inspector-copy").textContent=failed?info.issue():info.normal+" "+info.copy;
+ $("inspector-title").textContent=info.title;
+ let extra="";
+ if(state.repairTarget)extra=" Current repair target: "+({solar:"solar arrays",filter:"water filter",blight:"greenhouse",leak:"habitat seal",heater:"heater controller"}[state.repairTarget])+".";
+ $("inspector-copy").textContent=(failed?info.issue():info.normal+" "+info.copy)+extra+(failed?" Spare kits remaining: "+state.spareParts+". Major repairs consume one kit; only three are carried.":"");
  const action=$("inspector-action");
- if(failed){action.innerHTML='<button class="secondary-btn" id="inspector-fix">'+info.action+" →</button>";
-  $("inspector-fix").addEventListener("click",()=>{const slider=sliders[info.slider];slider.value=info.slider==="repair"?2:info.slider==="life"?6:info.slider==="green"?4:3;forecast();$("forecast-note").textContent="Priority updated. Review the forecast, then advance the Sol to apply it.";document.querySelector(".command-console").open=true;action.innerHTML='<span class="tiny" style="color:var(--green)">Priority updated in Command Console ✓</span>';});
+ if(failed){
+   const actions=repairActionList(key);
+   action.innerHTML=actions.map(a=>'<button class="secondary-btn" data-repair-target="'+a.target+'" data-slider="'+a.slider+'" data-value="'+a.value+'">'+a.label+' →</button>').join("")||'<span class="tiny muted">No direct repair available</span>';
+   action.querySelectorAll("[data-repair-target]").forEach(button=>button.addEventListener("click",()=>{
+     const target=button.dataset.repairTarget;
+     state.repairTarget=target==="none"?null:target;
+     sliders[button.dataset.slider].value=button.dataset.value;
+     forecast();document.querySelector(".command-console").open=true;
+     $("forecast-note").textContent="Repair plan selected. It only works if the system receives enough power. Check the allocation forecast before advancing.";
+     inspectComponent(key);
+   }));
  }else action.innerHTML='<span class="tiny muted">No active fault detected</span>';
 }
 function refreshComponentIndicators(){
@@ -622,16 +648,29 @@ function startMission(){
   log("Landing complete • crew assignments locked • Sol 1 begins");
   renderIssues();applyEventForSol(1);render();
 }
+function beginRepair(key,actual,threshold){
+  if(state.repairStarted[key])return true;
+  if(actual<threshold)return false;
+  if(state.spareParts<=0){
+    if(!state.repairNoPartsNotified[key]){log("Repair blocked • no spare kit for "+key);state.repairNoPartsNotified[key]=true;}
+    return false;
+  }
+  state.spareParts--;state.repairStarted[key]=true;
+  log("Spare kit used • "+key+" repair underway ("+state.spareParts+" remaining)");
+  return true;
+}
 function advance(){
-  const v=values(), solar=solarOutput(), available=availablePower(), demand=totalDemand(v);
-  const ratio=Math.min(1,available/demand), actualLife=v.life*ratio, actualGreen=v.green*ratio, actualShelter=v.shelter*ratio, actualRepair=v.repair*ratio;
-  const used=Math.min(available,demand);
+  const v=values(),solar=solarOutput(),available=availablePower(),base=basePowerDemand(),demand=totalDemand(v);
+  const requested=requestedAllocations(v),baseRatio=Math.min(1,available/base),ratio=allocationRatio(v,available);
+  const actualLife=v.life*ratio,actualGreen=v.green*ratio,actualShelter=v.shelter*ratio,actualRepair=v.repair*ratio;
+  const delivered=requested*ratio,used=Math.min(available,base*baseRatio+delivered);
   state.battery=clamp(available-used,0,8);
 
-  // Daily resource balances: deliberately simplified teaching units, not engineering specifications.
-  const oxygenDelta=actualLife*3-10-state.pressureLeak;
+  // Habitat essentials are served first. Remaining power is shared between the player's selected jobs.
+  const oxygenDelta=actualLife*3-10-state.pressureLeak-(1-baseRatio)*7;
   const recyclerPenalty=state.recyclerDamage*Math.max(.55,1-Math.max(0,actualLife-4)*.18);
-  const waterDelta=-3.8+actualLife*.9+(upgrades().has("recycler")?1.4:0)-actualGreen*.55-recyclerPenalty-state.filterClog*.6;
+  const filterPenalty=state.filterClog*Math.max(.25,1-actualLife*.12);
+  const waterDelta=-3.8+actualLife*.9+(upgrades().has("recycler")?1.4:0)-actualGreen*.55-recyclerPenalty-filterPenalty;
   state.oxygen=clamp(state.oxygen+oxygenDelta,0,100);
   state.water=clamp(state.water+waterDelta,0,100);
   state.food=clamp(state.food-5.5,0,100);
@@ -644,15 +683,35 @@ function advance(){
     log("Harvest collected • +"+(harvests*20)+" food");
   }
 
-  // Different faults demand different kinds of attention; no single slider fixes everything.
-  state.dust=clamp(state.dust-actualRepair*.08,0,.8);
-  state.arrayDamage=clamp(state.arrayDamage-actualRepair*.45,0,5);
-  state.pressureLeak=clamp(state.pressureLeak-actualRepair*.35,0,5);
-  state.heaterFault=clamp(state.heaterFault-actualRepair*.3,0,3);
-  if(actualLife>=5)state.filterClog=clamp(state.filterClog-(actualLife-4)*.2,0,2);
-  if(actualGreen>=3)state.cropBlight=clamp(state.cropBlight-(actualGreen-2)*.06,0,.7);
+  // A maintenance request is not a universal repair button. The captain must select a fault,
+  // deliver enough power to the right system, and spend one of only three repair kits.
+  if(state.dustStormSols>0)state.dust=clamp(state.dust+.01,0,.85);
+  if(state.repairTarget==="solar"){
+    state.dust=clamp(state.dust-actualRepair*.03,0,.85);
+    state.arrayDamage=clamp(state.arrayDamage-actualRepair*.1,0,5);
+  }else if(state.repairTarget==="filter"&&state.filterClog>0){
+    if(beginRepair("filter",actualLife,5))state.filterClog=clamp(state.filterClog-.3,0,2);
+  }else if(state.repairTarget==="blight"){
+    if(state.cropBlight>0&&beginRepair("blight",actualGreen,3.5))state.cropBlight=clamp(state.cropBlight-.07,0,.7);
+    else if(state.cropEfficiency<1&&beginRepair("blight",actualGreen,3.5))state.cropEfficiency=clamp(state.cropEfficiency+.07,0,1);
+  }else if(state.repairTarget==="leak"&&state.pressureLeak>0){
+    if(beginRepair("leak",actualRepair,1.6))state.pressureLeak=clamp(state.pressureLeak-.35,0,5);
+  }else if(state.repairTarget==="heater"&&state.heaterFault>0){
+    if(beginRepair("heater",actualRepair,1.6))state.heaterFault=clamp(state.heaterFault-.4,0,3);
+  }
+  const repairComplete={
+    solar:state.dust<=.001&&state.arrayDamage<=.001,
+    filter:state.filterClog<=.001,
+    blight:state.cropBlight<=.001&&state.cropEfficiency>=.999,
+    leak:state.pressureLeak<=.001,
+    heater:state.heaterFault<=.001
+  };
+  if(state.repairTarget&&repairComplete[state.repairTarget]){
+    log("Repair complete • "+state.repairTarget);state.repairTarget=null;
+  }
   if(state.dustStormSols>0)state.dustStormSols--;
 
+  if(baseRatio<.999)state.safety=clamp(state.safety-(1-baseRatio)*10,0,100);
   if(state.shelterDrillPending){
     const passive=upgrades().has("regolith")?45:20;
     const protection=clamp(passive+state.shieldBonus+actualShelter*12-state.shieldLoss,0,85);
@@ -665,14 +724,14 @@ function advance(){
   if(state.water<18)state.safety=clamp(state.safety-4,0,100);
   if(state.food<18)state.safety=clamp(state.safety-4,0,100);
   if(state.heaterFault>0&&ratio<.95)state.safety=clamp(state.safety-2,0,100);
-  if(ratio<.999)log("Power shortfall • systems received "+Math.round(ratio*100)+"% of requested power");
-  log("Sol "+state.sol+" complete • solar "+solar+" / demand "+demand);
+  if(baseRatio<.999)log("Habitat base load shortfall • life-support essentials are underpowered");
+  if(ratio<.999)log("Power rationing • allocations received "+Math.round(ratio*100)+"% of requests");
+  log("Sol "+state.sol+" complete • solar "+solar+" / requested "+demand);
   beep(440,.09);
 
   if(state.oxygen<=0||state.water<=0||state.food<=0||state.safety<=0){endMission(false);return;}
   if(state.sol>=30){endMission(true);return;}
   state.sol++;
-  // The captain gets fresh priorities each Sol, but faults and damage persist.
   sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
   applyEventForSol(state.sol);render();
   $("advance-btn").textContent=state.sol===30?"Complete Sol 30 →":"Advance to Sol "+String(state.sol+1).padStart(2,"0")+" →";

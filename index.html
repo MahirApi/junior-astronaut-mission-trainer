@@ -67,6 +67,9 @@
 @media(max-width:950px){.field-task-grid{grid-template-columns:repeat(2,1fr)}.skill-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:650px){.preflight-options,.landing-controls,.incident-choices{grid-template-columns:1fr}.site-picks{grid-template-columns:1fr}.landing-status{grid-template-columns:repeat(2,1fr)}.field-task-grid{grid-template-columns:1fr}.field-ops-footer{flex-direction:column}.cadet-pill{display:none}}
 
+.stats{grid-template-columns:repeat(7,minmax(0,1fr))}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:650px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -595,7 +598,7 @@ function renderFieldOps(){
   $("field-task-grid").innerHTML=tasks.map(t=>'<article class="field-task"><div class="task-icon">'+t.icon+'</div><b>'+t.name+'</b><p>'+t.desc+'</p><button class="secondary-btn" data-field-task="'+t.id+'" '+(!t.ready||f.slots<=0?"disabled":"")+'>'+(t.ready&&f.slots>0?"Start task →":f.slots<=0?"No slots left":t.reason)+'</button></article>').join("");
   $("field-task-grid").querySelectorAll("[data-field-task]").forEach(b=>b.addEventListener("click",()=>startFieldTask(b.dataset.fieldTask)));
   $("field-ops-note").textContent=f.slots===0?"The crew has used both field-operation slots. More slots return next Sol.":"Choose up to two field jobs. A failed attempt still uses time and an operation slot.";
-  $("field-ops-progress").textContent=f.completed+" field jobs completed • "+f.samples+" samples collected • "+f.studied+" studied";
+  $("field-ops-progress").textContent=f.completed+" field jobs attempted • "+f.samples+" samples collected • "+f.studied+" studied";
 }
 function spendFieldSlot(key){
   const f=state.fieldOps;
@@ -767,7 +770,7 @@ function beginLanding(){
 function startLandingChallenge(){
   const tier=skillTier("pilot");
   const cfg=[null,{maxSpeed:8,maxOffset:10,wind:0.55,label:"PRACTICE"},{maxSpeed:5.5,maxOffset:7,wind:0.85,label:"STANDARD"},{maxSpeed:3.5,maxOffset:4.5,wind:1.15,label:"ADVANCED"}][tier];
-  state.landing={turn:0,turns:6,altitude:1200,speed:17,offset:0,fuel:100,steer:0,tier,...cfg,wind:(Math.random()-.5)*cfg.wind*2,done:false};
+  state.landing={turn:0,turns:6,altitude:1200,speed:12,offset:0,fuel:100,steer:0,steerStrength:cfg.wind,tier,...cfg,wind:(Math.random()-.5)*cfg.wind*2,done:false};
   showOnlyStage("landing-minigame-view");
   renderLandingChallenge();
 }
@@ -780,7 +783,7 @@ function renderLandingChallenge(){
     $("landing-continue").addEventListener("click",()=>showOnlyStage("landing-view"));
     return;
   }
-  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong id="landing-altitude">'+Math.round(l.altitude)+' m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong id="landing-speed">'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>LANDING PAD OFFSET</span><strong id="landing-offset">'+l.offset.toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL</span><strong id="landing-fuel">'+Math.round(l.fuel)+'%</strong></div></div><div class="landing-meter"><i id="landing-altitude-bar" style="width:100%"></i></div><div class="landing-controls"><div class="landing-control"><label for="landing-throttle">MAIN ENGINE THRUST <output id="landing-throttle-value">90%</output></label><input id="landing-throttle" type="range" min="45" max="100" step="5" value="90"><p class="tiny muted">More thrust slows your descent, but uses more fuel.</p></div><div class="landing-control"><label>STEER INTO THE CROSSWIND</label><div class="steering-buttons"><button class="secondary-btn" data-steer="-1">← LEFT</button><button class="secondary-btn selected" data-steer="0">CENTER</button><button class="secondary-btn" data-steer="1">RIGHT →</button></div><p class="tiny muted" id="landing-wind-note">Crosswind: '+(l.wind>0?"pushing right":"pushing left")+'. Choose a correction.</p></div></div><div class="power-summary"><span>DESCENT BURN <strong>'+(l.turn+1)+' / '+l.turns+'</strong></span><span>TRAINING <strong>'+l.label+'</strong></span></div><div class="puzzle-actions"><button class="primary-btn" id="landing-burn">Apply thrust & descend →</button></div>';
+  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong id="landing-altitude">'+Math.round(l.altitude)+' m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong id="landing-speed">'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>LANDING PAD OFFSET</span><strong id="landing-offset">'+l.offset.toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL</span><strong id="landing-fuel">'+Math.round(l.fuel)+'%</strong></div></div><div class="landing-meter"><i id="landing-altitude-bar" style="width:'+Math.round(l.altitude/1200*100)+'%"></i></div><div class="landing-controls"><div class="landing-control"><label for="landing-throttle">MAIN ENGINE THRUST <output id="landing-throttle-value">90%</output></label><input id="landing-throttle" type="range" min="45" max="100" step="5" value="90"><p class="tiny muted">More thrust slows your descent, but uses more fuel.</p></div><div class="landing-control"><label>STEER INTO THE CROSSWIND</label><div class="steering-buttons"><button class="secondary-btn" data-steer="-1">← LEFT</button><button class="secondary-btn selected" data-steer="0">CENTER</button><button class="secondary-btn" data-steer="1">RIGHT →</button></div><p class="tiny muted" id="landing-wind-note">Crosswind: '+Math.abs(l.wind).toFixed(1)+' m/s, pushing '+(l.wind>0?"right":"left")+'. Choose a correction.</p></div></div><div class="power-summary"><span>DESCENT BURN <strong>'+(l.turn+1)+' / '+l.turns+'</strong></span><span>TRAINING <strong>'+l.label+'</strong></span></div><div class="puzzle-actions"><button class="primary-btn" id="landing-burn">Apply thrust & descend →</button></div>';
   $("landing-throttle").addEventListener("input",()=>{$("landing-throttle-value").textContent=$("landing-throttle").value+"%";});
   $("landing-burn").addEventListener("click",applyLandingBurn);
   content.querySelectorAll("[data-steer]").forEach(btn=>btn.addEventListener("click",()=>{
@@ -792,7 +795,7 @@ function applyLandingBurn(){
   const throttle=+$("landing-throttle").value;
   l.fuel=Math.max(0,l.fuel-(2+throttle*.065));
   l.speed=clamp(l.speed+1.8-throttle*.036,.5,30);
-  l.offset=clamp(l.offset+l.wind+l.steer*1.8,-30,30);
+  l.offset=clamp(l.offset+l.wind+l.steer*l.steerStrength,-30,30);
   l.altitude=Math.max(0,l.altitude-200);l.turn++;
   l.wind=(Math.random()-.5)*({1:.55,2:.85,3:1.15}[l.tier])*2;
   if(l.turn>=l.turns||l.fuel<=0){
@@ -924,7 +927,7 @@ function finishTask(success,detail){
   const skillForTask={solar:"engineering",water:"life",greenhouse:"botany",shield:"science"}[task.id];
   awardCadetXP(success?12:3,skillForTask,success?1:0);
   if(!success){
-    if(task.id==="solar")state.arrayDamage=3*severity;
+    if(task.id==="solar")state.arrayDamage=clamp(state.arrayDamage+3*severity,0,5);
     if(task.id==="water")state.recyclerDamage=1.6*severity;
     if(task.id==="greenhouse")state.cropEfficiency=matched ? 0.55 : 0.4;
     if(task.id==="shield")state.shieldLoss=15*severity;

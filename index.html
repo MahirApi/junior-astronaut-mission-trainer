@@ -622,48 +622,54 @@ function renderTask(){
   const task=taskDefinitions[state.taskIndex],person=assignedPerson(task);
   $("task-count").textContent="TASK "+(state.taskIndex+1)+" / "+taskDefinitions.length;
   $("task-progress-fill").style.width=((state.taskIndex+1)/taskDefinitions.length*100)+"%";
-  $("task-content").innerHTML='<div class="task-kicker">'+task.role+' • ONE ATTEMPT</div><h2 style="font-size:23px;margin:8px 0">'+task.title+'</h2><div class="task-person">Assigned to '+person.name+' · '+person.role+(isSpecialistMatched(task)?" · SPECIALTY MATCH":" · OUTSIDE SPECIALTY")+'</div><div class="task-box"><p>'+task.brief+'</p><div id="puzzle-area"></div><div class="puzzle-status" id="puzzle-status" role="status"></div></div>';
+  const skillForTask={solar:"engineering",water:"life",greenhouse:"botany",shield:"science"}[task.id],tier=skillTier(skillForTask);
+  $("task-content").innerHTML='<div class="task-kicker">'+task.role+' • ONE ATTEMPT • '+(tier===1?"PRACTICE MODE":tier===2?"STANDARD MODE":"ADVANCED MODE")+'</div><h2 style="font-size:23px;margin:8px 0">'+task.title+'</h2><div class="task-person">Assigned to '+person.name+' · '+person.role+(isSpecialistMatched(task)?" · SPECIALTY MATCH":" · OUTSIDE SPECIALTY")+'</div><div class="task-box"><p>'+task.brief+'</p><div id="puzzle-area"></div><div class="puzzle-status" id="puzzle-status" role="status"></div></div>';
   if(task.id==="solar")renderSolarPuzzle();
   if(task.id==="water")renderWaterPuzzle();
   if(task.id==="greenhouse")renderGreenhousePuzzle();
   if(task.id==="shield")renderShieldPuzzle();
 }
 function renderSolarPuzzle(){
-  const area=$("puzzle-area");
+  const area=$("puzzle-area"),tier=skillTier("engineering");
   const stages=[
     {from:"AMBER",right:"CYAN",options:[["AMBER","CYAN"],["AMBER","VIOLET"],["MINT","CYAN"]]},
     {from:"CYAN",right:"MINT",options:[["CYAN","MINT"],["CYAN","GOLD"],["VIOLET","MINT"]]},
-    {from:"MINT",right:"WHITE",options:[["MINT","WHITE"],["MINT","RED"],["BLUE","WHITE"]]}
-  ];
+    {from:"MINT",right:"WHITE",options:[["MINT","WHITE"],["MINT","RED"],["BLUE","WHITE"]]},
+    {from:"WHITE",right:"GOLD",options:[["WHITE","GOLD"],["WHITE","AMBER"],["BLUE","GOLD"],["MINT","GOLD"]]}
+  ].slice(0,tier===1?2:tier===2?3:4);
   let step=0;
   function draw(){
     const item=stages[step];
-    area.innerHTML='<div class="tiny muted">CONNECTOR '+(step+1)+' OF 3 · LIVE CABLE: <strong style="color:var(--orange)">'+item.from+'</strong></div><div class="puzzle-grid" style="margin-top:10px">'+item.options.map(pair=>'<button class="puzzle-choice" data-wire="'+pair[1]+'">'+pair[0]+' → '+pair[1]+'</button>').join("")+'</div>';
+    area.innerHTML='<div class="tiny muted">'+(tier===1?"GUIDED PRACTICE":tier===2?"STANDARD WIRING":"ADVANCED BUS ROUTING")+' · CONNECTOR '+(step+1)+' OF '+stages.length+' · LIVE CABLE: <strong style="color:var(--orange)">'+item.from+'</strong></div><div class="puzzle-grid" style="margin-top:10px">'+item.options.map(pair=>'<button class="puzzle-choice" data-wire="'+pair[1]+'">'+pair[0]+' → '+pair[1]+'</button>').join("")+'</div>';
     area.querySelectorAll("[data-wire]").forEach(button=>button.addEventListener("click",()=>{
       if(button.dataset.wire!==item.right){finishTask(false,"The connector did not match the live cable. The array bus shorted during deployment.");return;}
-      step++;if(step===stages.length){finishTask(true,"All three connectors matched. The solar array bus is online.");return;}
+      step++;if(step===stages.length){finishTask(true,"All "+stages.length+" connectors matched. The solar array bus is online.");return;}
       $("puzzle-status").textContent="Connection locked. Follow the new cable colour.";draw();
     }));
   }
   draw();
 }
 function renderWaterPuzzle(){
-  const sequence=["💧","〰","◈","💧"],area=$("puzzle-area");
-  area.innerHTML='<div class="tiny muted">VALVE STARTUP PATTERN · STUDY THE ORDER, THEN ENTER IT</div><div class="puzzle-sequence" id="water-preview">'+sequence.map(s=>'<span class="sequence-token">'+s+'</span>').join("")+'</div><div class="tiny muted" style="text-align:center">Press “I memorized it” when ready. The pattern will disappear.</div><div class="puzzle-actions"><button class="secondary-btn" id="water-ready">I memorized it</button></div>';
+  const tier=skillTier("life"),base=["💧","〰","◈","💧"],sequence=tier===1?base.slice(0,3):tier===2?base:base.concat(["〰"]),area=$("puzzle-area");
+  area.innerHTML='<div class="tiny muted">'+(tier===1?"GUIDED VALVE CHECK":tier===2?"STANDARD VALVE SEQUENCE":"ADVANCED PRESSURE-LOOP SEQUENCE")+' · STUDY THE ORDER, THEN ENTER IT</div><div class="puzzle-sequence" id="water-preview">'+sequence.map(s=>'<span class="sequence-token">'+s+'</span>').join("")+'</div><div class="tiny muted" style="text-align:center">Press “I memorized it” when ready. The pattern will disappear.</div><div class="puzzle-actions"><button class="secondary-btn" id="water-ready">I memorized it</button></div>';
   $("water-ready").addEventListener("click",()=>{
     let position=0;
-    area.innerHTML='<div class="tiny muted">REPEAT THE FOUR-STEP VALVE SEQUENCE</div><div class="puzzle-sequence" id="water-entry"></div><div class="puzzle-grid"><button class="puzzle-choice" data-valve="💧">💧 Intake</button><button class="puzzle-choice" data-valve="〰">〰 Pressure</button><button class="puzzle-choice" data-valve="◈">◈ Filter</button></div>';
+    area.innerHTML='<div class="tiny muted">REPEAT THE '+sequence.length+'-STEP VALVE SEQUENCE '+(tier===1?"(INTAKE → PRESSURE → FILTER)":"")+'</div><div class="puzzle-sequence" id="water-entry"></div><div class="puzzle-grid"><button class="puzzle-choice" data-valve="💧">💧 Intake</button><button class="puzzle-choice" data-valve="〰">〰 Pressure</button><button class="puzzle-choice" data-valve="◈">◈ Filter</button></div>';
     area.querySelectorAll("[data-valve]").forEach(button=>button.addEventListener("click",()=>{
       const choice=button.dataset.valve;
       if(choice!==sequence[position]){finishTask(false,"The valve order was incorrect. The recycler's startup cycle contaminated the recovery loop.");return;}
       $("water-entry").innerHTML+='<span class="sequence-token">'+choice+'</span>';position++;
-      if(position===sequence.length)finishTask(true,"Correct sequence. The water recovery loop is circulating cleanly.");
+      if(position===sequence.length)finishTask(true,"Correct "+sequence.length+"-step sequence. The water recovery loop is circulating cleanly.");
     }));
   });
 }
 function renderGreenhousePuzzle(){
-  const correct=["water","light","nutrients"],options=[["water","💧 Water supply"],["light","☀ Full-spectrum light"],["nutrients","✿ Nutrient mix"],["salt","▧ Salty soil"],["dust","◌ Dust sample"],["metal","⬡ Metal fragments"]],area=$("puzzle-area");
-  area.innerHTML='<div class="tiny muted">SELECT EXACTLY THREE INPUTS FOR THE FIRST HYDROPONIC BEDS</div><div class="puzzle-grid" id="green-choices" style="margin-top:10px">'+options.map(([id,label])=>'<button class="puzzle-choice" data-green="'+id+'">'+label+'</button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="green-submit" disabled>Lock greenhouse recipe</button></div>';
+  const tier=skillTier("botany"),correct=["water","light","nutrients"];
+  const base=[["water","💧 Water supply"],["light","☀ Full-spectrum light"],["nutrients","✿ Nutrient mix"],["salt","▧ Salty soil"],["dust","◌ Dust sample"],["metal","⬡ Metal fragments"]];
+  if(tier===1)base.splice(3,3,["salt","▧ Salty soil"]);
+  if(tier===3)base.push(["acid","◍ Acidic residue"],["shade","◒ Deep shade"]);
+  const options=base,area=$("puzzle-area");
+  area.innerHTML='<div class="tiny muted">'+(tier===1?"GUIDED GROW-BED SETUP":tier===2?"STANDARD HYDROPONIC RECIPE":"ADVANCED GREENHOUSE CALIBRATION")+' · SELECT EXACTLY THREE INPUTS</div><div class="puzzle-grid" id="green-choices" style="margin-top:10px">'+options.map(([id,label])=>'<button class="puzzle-choice" data-green="'+id+'">'+label+'</button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="green-submit" disabled>Lock greenhouse recipe</button></div>';
   const selected=new Set();
   area.querySelectorAll("[data-green]").forEach(button=>button.addEventListener("click",()=>{
     const id=button.dataset.green;
@@ -677,24 +683,32 @@ function renderGreenhousePuzzle(){
   });
 }
 function renderShieldPuzzle(){
-  const exposed=["C","E","F"],sections=[["A","━━━━","Seam sealed"],["B","━━━━","Seam sealed"],["C","╱  ╲","Hairline gap"],["D","━━━━","Seam sealed"],["E","╱  ╲","Hairline gap"],["F","╱  ╲","Hairline gap"]],area=$("puzzle-area");
-  area.innerHTML='<div class="tiny muted">SELECT THE THREE SECTIONS WITH A BROKEN SHIELD SEAM</div><div class="puzzle-grid" id="shield-choices" style="margin-top:10px">'+sections.map(([id,mark,note])=>'<button class="puzzle-choice" data-shield="'+id+'"><strong>SECTION '+id+'</strong><br><span style="font-size:18px;color:'+(exposed.includes(id)?"var(--yellow)":"var(--green)")+'">'+mark+'</span><br><span class="tiny">'+note+'</span></button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="shield-submit" disabled>Seal selected sections</button></div>';
+  const tier=skillTier("science");
+  const count=tier===1?4:tier===2?6:8,exposedCount=tier===1?2:tier===2?3:4;
+  const exposed=Array.from({length:exposedCount},(_,i)=>String.fromCharCode(65+i*2));
+  const sections=Array.from({length:count},(_,i)=>{
+    const id=String.fromCharCode(65+i),gap=exposed.includes(id);
+    return [id,gap?"╱  ╲":"━━━━",gap?"Hairline gap":"Seam sealed"];
+  }),area=$("puzzle-area");
+  area.innerHTML='<div class="tiny muted">'+(tier===1?"GUIDED SHIELD INSPECTION":tier===2?"STANDARD SEAM SCAN":"ADVANCED MULTI-SECTION INSPECTION")+' · SELECT THE '+exposedCount+' SECTIONS WITH BROKEN SEAMS</div><div class="puzzle-grid" id="shield-choices" style="margin-top:10px">'+sections.map(([id,mark,note])=>'<button class="puzzle-choice" data-shield="'+id+'"><strong>SECTION '+id+'</strong><br><span style="font-size:18px;color:'+(exposed.includes(id)?"var(--yellow)":"var(--green)")+'">'+mark+'</span><br><span class="tiny">'+note+'</span></button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="shield-submit" disabled>Seal selected sections</button></div>';
   const selected=new Set();
   area.querySelectorAll("[data-shield]").forEach(button=>button.addEventListener("click",()=>{
     const id=button.dataset.shield;
     if(selected.has(id)){selected.delete(id);button.classList.remove("selected");}
-    else if(selected.size<3){selected.add(id);button.classList.add("selected");}
-    $("shield-submit").disabled=selected.size!==3;
+    else if(selected.size<exposedCount){selected.add(id);button.classList.add("selected");}
+    $("shield-submit").disabled=selected.size!==exposedCount;
   }));
   $("shield-submit").addEventListener("click",()=>{
-    const success=exposed.every(id=>selected.has(id))&&selected.size===3;
-    finishTask(success,success?"All exposed seams are reinforced with regolith shielding.":"One or more exposed seams were missed. The storm shelter has a permanent weak point.");
+    const success=exposed.every(id=>selected.has(id))&&selected.size===exposedCount;
+    finishTask(success,success?"All "+exposedCount+" exposed seams are reinforced with regolith shielding.":"One or more exposed seams were missed. The storm shelter has a permanent weak point.");
   });
 }
 function finishTask(success,detail){
   const task=taskDefinitions[state.taskIndex];if(state.taskResults[task.id])return;
   const matched=isSpecialistMatched(task),severity=matched?1:1.25;
   state.taskResults[task.id]={success,matched,assigned:assignedPerson(task).name,detail};
+  const skillForTask={solar:"engineering",water:"life",greenhouse:"botany",shield:"science"}[task.id];
+  awardCadetXP(success?12:3,skillForTask,success?1:0);
   if(!success){
     if(task.id==="solar")state.arrayDamage=3*severity;
     if(task.id==="water")state.recyclerDamage=1.6*severity;
@@ -826,7 +840,7 @@ function applyEventForSol(sol){
 function startMission(){
   state.sol=1;state.battery=clamp(state.battery,0,8);state.oxygen=82;state.food=82;state.safety=100;state.harvests=0;state.dust=0;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];
   state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
-  state.spareParts=3;state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
+  state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
   showOnlyStage("game-view");$("reset-btn").classList.remove("hidden");
   sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
   log("Landing complete • crew assignments locked • Sol 1 begins");

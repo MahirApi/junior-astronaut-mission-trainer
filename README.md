@@ -30,3 +30,10 @@ Add all six team members and their roles before submission.
 
 ## License
 No license has been selected yet. Until one is added, do not assume others have permission to reuse the code.
+
+## Mission flow and one-shot setup tasks
+1. The five-person crew lands at Gale Crater and surveys the outpost site.
+2. The captain assigns four specialists to power, life support, food production, and radiation-protection setup.
+3. Each setup task has a distinct minigame and one attempt. A failed result is locked for that mission; there is no task retry.
+4. Failed setup leaves a persistent system problem. During the seven Sols, the captain compensates by reallocating power among maintenance, life support, greenhouse production, and shelter protection.
+5. A full new mission resets the task results and starts a fresh run.

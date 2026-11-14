@@ -825,41 +825,75 @@ function beginLanding(){
   $("reset-btn").classList.remove("hidden");
   startLandingChallenge();
 }
+function clearLandingControls(){
+  if(landingRAF){cancelAnimationFrame(landingRAF);landingRAF=0;}
+  if(landingCleanup){landingCleanup();landingCleanup=null;}
+  landingKeys={left:false,right:false,engine:false};
+}
+function bindLandingControls(){
+  const keyMap={ArrowLeft:"left",a:"left",ArrowRight:"right",d:"right",ArrowUp:"engine",w:"engine"," ":"engine"};
+  const down=e=>{const action=keyMap[e.key]||keyMap[e.key.toLowerCase()];if(action){e.preventDefault();landingKeys[action]=true;}};
+  const up=e=>{const action=keyMap[e.key]||keyMap[e.key.toLowerCase()];if(action){e.preventDefault();landingKeys[action]=false;}};
+  document.addEventListener("keydown",down);document.addEventListener("keyup",up);
+  const releases=[];
+  $("landing-minigame-content").querySelectorAll("[data-land-control]").forEach(button=>{
+    const action=button.dataset.landControl;
+    const press=e=>{e.preventDefault();landingKeys[action]=true;if(button.setPointerCapture)button.setPointerCapture(e.pointerId);};
+    const release=e=>{e.preventDefault();landingKeys[action]=false;};
+    button.addEventListener("pointerdown",press);button.addEventListener("pointerup",release);
+    button.addEventListener("pointercancel",release);button.addEventListener("lostpointercapture",release);
+    releases.push(()=>{button.removeEventListener("pointerdown",press);button.removeEventListener("pointerup",release);button.removeEventListener("pointercancel",release);button.removeEventListener("lostpointercapture",release);});
+  });
+  landingCleanup=()=>{document.removeEventListener("keydown",down);document.removeEventListener("keyup",up);releases.forEach(fn=>fn());};
+}
 function startLandingChallenge(){
+  clearLandingControls();
   const tier=skillTier("pilot");
-  const cfg=[null,{maxSpeed:8,maxOffset:10,wind:0.55,label:"PRACTICE"},{maxSpeed:5.5,maxOffset:7,wind:0.85,label:"STANDARD"},{maxSpeed:3.5,maxOffset:4.5,wind:1.15,label:"ADVANCED"}][tier];
-  state.landing={turn:0,turns:6,altitude:1200,speed:12,offset:0,fuel:90,steer:0,thrust:[null,75,85,90][tier],steerStrength:cfg.wind,tier,...cfg,wind:(Math.random()-.5)*cfg.wind*2,done:false};
+  const cfg=[null,{maxSpeed:8.5,maxOffset:17,windStrength:.52,label:"PRACTICE"},{maxSpeed:7,maxOffset:13,windStrength:.74,label:"STANDARD"},{maxSpeed:6,maxOffset:10,windStrength:.94,label:"ADVANCED"}][tier];
+  state.landing={altitude:1200,speed:14,offset:0,fuel:100,tier,...cfg,wind:0,windBias:(Math.random()-.5)*.45,elapsed:0,lastFrame:0,done:false};
   showOnlyStage("landing-minigame-view");renderLandingChallenge();
+  landingRAF=requestAnimationFrame(updateLandingFrame);
 }
 function renderLandingChallenge(){
   const l=state.landing,content=$("landing-minigame-content");
   if(l.done){
+    clearLandingControls();
     const ok=state.landingSuccess;
-    content.innerHTML='<div class="preflight-feedback" style="border-color:'+(ok?"#466a59":"#874a45")+'"><strong>'+(ok?"✓ SOFT TOUCHDOWN":"⚠ ROUGH TOUCHDOWN")+'</strong><br>'+(ok?"The lander settles inside the safe zone. The crew and cargo are ready to deploy.":"The lander made it down, but the rough landing damaged the array frame and used one spare repair kit. Your crew is safe and can continue.")+'</div><div class="landing-status"><div class="landing-readout"><span>TOUCHDOWN SPEED</span><strong>'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>PAD OFFSET</span><strong>'+Math.abs(l.offset).toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL LEFT</span><strong>'+Math.round(l.fuel)+'%</strong></div><div class="landing-readout"><span>FLIGHT STYLE</span><strong>'+l.label+'</strong></div></div><div class="puzzle-actions"><button class="primary-btn" id="landing-continue">Continue to site survey →</button></div>';
+    content.innerHTML='<div class="preflight-feedback" style="border-color:'+(ok?"#466a59":"#874a45")+'"><strong>'+(ok?"✓ SOFT TOUCHDOWN":"⚠ ROUGH TOUCHDOWN")+'</strong><br>'+(ok?"The lander settled inside the safe zone. The crew and cargo are ready to deploy.":"The lander reached the surface outside its safe envelope. The array frame is damaged and one spare repair kit was used protecting the crew.")+'</div><div class="landing-status"><div class="landing-readout"><span>TOUCHDOWN SPEED</span><strong>'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>PAD OFFSET</span><strong>'+Math.abs(l.offset).toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL LEFT</span><strong>'+Math.round(l.fuel)+'%</strong></div><div class="landing-readout"><span>FLIGHT STYLE</span><strong>'+l.label+'</strong></div></div><div class="puzzle-actions"><button class="primary-btn" id="landing-continue">Continue to site survey →</button></div>';
     $("landing-continue").addEventListener("click",()=>showOnlyStage("landing-view"));return;
   }
-  const craftLeft=clamp(50+l.offset*1.45,7,93),craftTop=clamp(8+(1-l.altitude/1200)*72,8,82);
-  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong>'+Math.round(l.altitude)+' m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong>'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>PAD OFFSET</span><strong>'+l.offset.toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL</span><strong>'+Math.round(l.fuel)+'%</strong></div></div><div class="landing-arcade"><div class="landing-flightline"><span>ORBITAL APPROACH</span><b>FLIGHT '+(l.turn+1)+' / '+l.turns+'</b></div><div class="landing-sky"><div class="landing-cloud cloud-a"></div><div class="landing-cloud cloud-b"></div><div class="landing-ground"></div><div class="landing-pad"><span>LANDING ZONE</span></div><div class="landing-craft" style="left:'+craftLeft+'%;top:'+craftTop+'%"><span>🚀</span><i></i></div><div class="landing-windflag" style="left:'+(l.wind>0?72:18)+'%">'+(l.wind>0?"WIND →":"← WIND")+'</div></div><div class="landing-guidance"><span>Crosswind <b>'+(l.wind>0?"pushing right":"pushing left")+'</b></span><span>Safe zone <b>centre of the pad</b></span></div></div><div class="landing-controls landing-arcade-controls"><div class="landing-control"><label>ENGINE THRUST</label><div class="landing-thrust-buttons"><button class="secondary-btn '+(l.thrust===75?"selected":"")+'" data-thrust="75">GENTLE<br><b>75%</b></button><button class="secondary-btn '+(l.thrust===85?"selected":"")+'" data-thrust="85">STEADY<br><b>85%</b></button><button class="secondary-btn '+(l.thrust===90?"selected":"")+'" data-thrust="90">STRONG<br><b>90%</b></button></div><p class="tiny muted">More thrust slows the fall but spends more fuel. Save enough for the last burn.</p></div><div class="landing-control"><label>STEER AGAINST THE WIND</label><div class="steering-buttons"><button class="secondary-btn '+(l.steer===-1?"selected":"")+'" data-steer="-1">← LEFT</button><button class="secondary-btn '+(l.steer===0?"selected":"")+'" data-steer="0">CENTER</button><button class="secondary-btn '+(l.steer===1?"selected":"")+'" data-steer="1">RIGHT →</button></div><p class="tiny muted">Watch the lander move over the pad after each burn. Counter the gust instead of fighting it too hard.</p></div></div><div class="puzzle-actions"><button class="primary-btn" id="landing-burn">🔥 Apply burn & descend</button></div>';
-  content.querySelectorAll("[data-thrust]").forEach(btn=>btn.addEventListener("click",()=>{l.thrust=+btn.dataset.thrust;renderLandingChallenge();}));
-  content.querySelectorAll("[data-steer]").forEach(btn=>btn.addEventListener("click",()=>{l.steer=+btn.dataset.steer;renderLandingChallenge();}));
-  $("landing-burn").addEventListener("click",applyLandingBurn);
+  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong id="landing-altitude">1,200 m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong id="landing-speed">14.0 m/s</strong></div><div class="landing-readout"><span>PAD OFFSET</span><strong id="landing-offset">0.0 m</strong></div><div class="landing-readout"><span>FUEL</span><strong id="landing-fuel">100%</strong></div></div><div class="landing-arcade"><div class="landing-flightline"><span>ORBITAL APPROACH</span><b id="landing-phase">LIVE DESCENT</b></div><div class="landing-sky"><div class="landing-cloud cloud-a"></div><div class="landing-cloud cloud-b"></div><div class="landing-ground"></div><div class="landing-pad"><span>LANDING ZONE</span></div><div class="landing-craft" id="landing-craft" style="left:50%;top:8%"><span>🚀</span><i></i></div><div class="landing-windflag" id="landing-windflag" style="left:72%">WIND →</div></div><div class="landing-guidance"><span>Crosswind <b id="landing-wind-copy">monitoring</b></span><span>Safe zone <b>centre of the pad</b></span></div></div><div class="landing-controls landing-arcade-controls"><div class="landing-control"><label>MAIN ENGINE • HOLD TO SLOW</label><div class="landing-thrust-buttons"><button class="primary-btn" data-land-control="engine" aria-label="Hold main engine to slow descent">HOLD ENGINE ↑</button></div><p class="tiny muted">The engine reduces your descent speed but uses fuel. Release it when you have enough control.</p></div><div class="landing-control"><label>SIDE THRUSTERS • HOLD TO STEER</label><div class="steering-buttons"><button class="secondary-btn" data-land-control="left" aria-label="Hold left thruster">← LEFT</button><button class="secondary-btn" data-land-control="right" aria-label="Hold right thruster">RIGHT →</button></div><p class="tiny muted">Counter the moving crosswind and keep the lander above the lit landing zone.</p></div></div><div class="power-summary"><span>CONTROLS <strong>WASD / ARROWS • SPACE OR ↑ = ENGINE</strong></span><span>MODE <strong>'+l.label+'</strong></span></div><p class="tiny muted" id="landing-guidance">Use the live controls. Keep an eye on both speed and pad position.</p>';
+  bindLandingControls();
 }
-function applyLandingBurn(){
+function updateLandingFrame(now){
   const l=state.landing;if(!l||l.done)return;
-  const throttle=l.thrust||75;
-  l.fuel=Math.max(0,l.fuel-(2+throttle*.12));
-  l.speed=clamp(l.speed+1.8-throttle*.036,.5,30);
-  l.offset=clamp(l.offset+l.wind+l.steer*l.steerStrength,-30,30);
-  l.altitude=Math.max(0,l.altitude-200);l.turn++;
-  l.wind=(Math.random()-.5)*({1:.55,2:.85,3:1.15}[l.tier])*2;
-  if(l.turn>=l.turns||l.fuel<=0){
-    l.done=true;state.landingSuccess=l.speed<=l.maxSpeed&&Math.abs(l.offset)<=l.maxOffset&&l.fuel>10;
+  const dt=Math.min(.05,(now-(l.lastFrame||now))/1000);l.lastFrame=now;l.elapsed+=dt;
+  const steer=(landingKeys.right?1:0)-(landingKeys.left?1:0);
+  l.wind=Math.sin(l.elapsed*.63)*l.windStrength+l.windBias;
+  if(landingKeys.engine&&l.fuel>0){l.speed=Math.max(4.2,l.speed-1.45*dt);l.fuel=Math.max(0,l.fuel-5.2*dt);}
+  else l.speed=Math.min(32,l.speed+.8*dt);
+  if(steer&&l.fuel>0){l.offset=clamp(l.offset+(l.wind+steer*3.2)*dt,-35,35);l.fuel=Math.max(0,l.fuel-.65*dt);}
+  else l.offset=clamp(l.offset+l.wind*dt,-35,35);
+  l.altitude=Math.max(0,l.altitude-l.speed*14*dt);
+  $("landing-altitude").textContent=Math.round(l.altitude).toLocaleString()+" m";
+  $("landing-speed").textContent=l.speed.toFixed(1)+" m/s";
+  $("landing-offset").textContent=(l.offset>0?"+":"")+l.offset.toFixed(1)+" m";
+  $("landing-fuel").textContent=Math.round(l.fuel)+"%";
+  $("landing-craft").style.left=clamp(50+l.offset*1.7,4,96)+"%";
+  $("landing-craft").style.top=clamp(8+(1-l.altitude/1200)*72,8,82)+"%";
+  $("landing-windflag").style.left=l.wind>0?"72%":"18%";
+  $("landing-windflag").textContent=l.wind>0?"WIND →":"← WIND";
+  $("landing-wind-copy").textContent=(l.wind>0?"pushing right ":"pushing left ")+Math.abs(l.wind).toFixed(1);
+  $("landing-phase").textContent="DESCENT "+Math.round((1-l.altitude/1200)*100)+"%";
+  $("landing-guidance").textContent=l.speed>l.maxSpeed?"Pulse the main engine to slow down.":Math.abs(l.offset)>l.maxOffset*.7?"Steer back toward the centre of the pad.":"Good approach — keep watching the wind.";
+  if(l.altitude<=0){
+    l.done=true;state.landingSuccess=l.speed<=l.maxSpeed&&Math.abs(l.offset)<=l.maxOffset&&l.fuel>5;
     if(state.landingSuccess){state.battery=clamp(state.battery+2,0,8);awardCadetXP(12,"pilot",2);addCadetBadge("soft-landing");log("Soft touchdown • +2 starting battery reserve");}
     else{state.arrayDamage=1.5;state.spareParts=Math.max(0,state.spareParts-1);state.battery=Math.max(0,state.battery-2);state.safety=92;awardCadetXP(4,"pilot",0);log("Rough touchdown • solar frame damaged and one spare kit used");}
+    clearLandingControls();renderLandingChallenge();return;
   }
-  renderLandingChallenge();
+  landingRAF=requestAnimationFrame(updateLandingFrame);
 }
-
 function renderAssignments(){
   $("assignment-grid").innerHTML=taskDefinitions.map(task=>{
     const options=crewRoster.map(person=>'<option value="'+person.id+'" '+(state.assignments[task.id]===person.id?"selected":"")+'>'+person.name+' — '+person.role+'</option>').join("");

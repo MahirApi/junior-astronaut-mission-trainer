@@ -849,13 +849,46 @@ function launchRoverTask(){
   return {height:heightAt(x,y),type,resistance:type==="loose sand"?.27:type==="rocky gravel"?.21:.08};
  }
  const tools=[{id:"panorama",name:"Mastcam-Z stereo panorama",description:"Capture a wide colour panorama and stereo terrain view.",cost:1.2},{id:"chemistry",name:"SuperCam remote chemistry",description:"Record remote elemental and mineral clues.",cost:1.8},{id:"core",name:"Drill, seal & cache a sample",description:"Collect a small core in a sealed sample tube.",cost:2.6},{id:"meda",name:"MEDA weather snapshot",description:"Record wind, temperatures, pressure, humidity and dust.",cost:1.6}];
- const instrumentCost=tools.reduce((n,t)=>n+t.cost,0),idealRoundTrip=2*Math.hypot(target.x-base.x,target.y-base.y);
- console.assert(idealRoundTrip*.0058*1.4+instrumentCost+1.8<75,"Safe round trip and science package should fit the rover battery reserve.");
+ const instrumentCost=tools.reduce((n,t)=>n+t.cost,0);
+ let nominalOneWay=0,previousRoutePoint=route(0);
+ for(let i=1;i<=120;i++){const p=route(i/120);nominalOneWay+=Math.hypot(p.x-previousRoutePoint.x,p.y-previousRoutePoint.y);previousRoutePoint=p;}
+ const roundTripWithSampleDetours=(nominalOneWay+150)*2;
+ console.assert(roundTripWithSampleDetours*.0058*1.45+instrumentCost+2<75,"Generated safe traverse, sample detours and all instruments must fit the launch charge reserve.");
  let rover={x:base.x,y:base.y,angle:Math.atan2(target.y-base.y,target.x-base.x),speed:0,battery:f.roverBattery,wear:f.roverDamage||0,distance:0,frames:0,meda:0};
  let phase="outbound",sampleCount=0,done=false,panorama=false,chemistry=false,core=false,meda=false,last=performance.now();
  const drive={up:false,down:false,left:false,right:false},scan={x:view.w/2,y:view.h/2};
  f.activeExpedition={title:mission[0],target:mission[2],sampleType:mission[1],sol:state.sol};
  function nearestSample(){let point=null,distance=Infinity;samples.forEach(p=>{if(p.found)return;const d=Math.hypot(rover.x-p.x,rover.y-p.y);if(d<distance){distance=d;point=p;}});return {point,distance};}
+ function terrainDriveLoad(from,to,distance){
+  const grade=distance>0?((to.height-from.height)*18)/distance:0;
+  const slopeLoad=grade>=0?grade*3.5:grade*2;
+  return clamp(1+to.resistance*1.7+slopeLoad,.72,2.2);
+ }
+ const flatTerrain={height:0,resistance:.08};
+ console.assert(terrainDriveLoad(flatTerrain,{height:.3,resistance:.08},10)>terrainDriveLoad(flatTerrain,flatTerrain,10),"Uphill terrain must cost more energy than level terrain.");
+ console.assert(terrainDriveLoad(flatTerrain,{height:-.3,resistance:.08},10)<terrainDriveLoad(flatTerrain,flatTerrain,10),"Downhill terrain must cost less energy than level terrain.");
+ function collectSample(){
+  if(done||phase!=="outbound")return;
+  const near=nearestSample();
+  if(!near.point){$("rover-hint").textContent="No sample beacon remains on this traverse.";return;}
+  if(state.coopMode){
+   const sx=near.point.x-rover.x+view.w/2,sy=near.point.y-rover.y+view.h/2;
+   if(sx<0||sx>view.w||sy<0||sy>view.h||Math.hypot(scan.x-sx,scan.y-sy)>34){
+    $("rover-hint").textContent="Player 2: move the scanner reticle onto the glowing sample beacon, then press Enter.";
+    return;
+   }
+  }else{
+   if(near.distance>58){$("rover-hint").textContent="Move closer to the sample beacon before collecting it.";return;}
+   if(Math.abs(rover.speed)>58){$("rover-hint").textContent="Slow the rover before collecting a sample. Current speed is too high.";return;}
+  }
+  near.point.found=true;sampleCount++;
+  $("rover-samples").textContent=sampleCount+" / 3";
+  beep(640,.09);
+  if(sampleCount===3){
+   drive.up=drive.down=drive.left=drive.right=false;
+   phase="science";openScienceStop();
+  }else $("rover-hint").textContent="Sample "+sampleCount+" secured. Follow the next beacon; three samples are required.";
+ }
  function drawTerrain(ctx,cx,cy){
   const g=ctx.createLinearGradient(0,0,view.w,view.h);g.addColorStop(0,"#bb8059");g.addColorStop(.5,"#945c43");g.addColorStop(1,"#69453a");ctx.fillStyle=g;ctx.fillRect(0,0,view.w,view.h);
   for(let i=0;i<105;i++){
@@ -948,9 +981,9 @@ function launchRoverTask(){
   rover.angle+=steer*(.68+Math.abs(rover.speed)/190)*dt*(rover.speed<0?-1:1);
   if(throttle)rover.speed+=throttle*132*dt;else rover.speed*=Math.exp(-1.8*dt);
   rover.speed=clamp(rover.speed,-72,165);
-  const ox=rover.x,oy=rover.y,nx=clamp(ox+Math.cos(rover.angle)*rover.speed*dt,40,world.w-40),ny=clamp(oy+Math.sin(rover.angle)*rover.speed*dt,40,world.h-40),dist=Math.hypot(nx-ox,ny-oy),next=terrainAt(nx,ny),slope=next.elevation-surface.elevation;
+  const ox=rover.x,oy=rover.y,nx=clamp(ox+Math.cos(rover.angle)*rover.speed*dt,40,world.w-40),ny=clamp(oy+Math.sin(rover.angle)*rover.speed*dt,40,world.h-40),dist=Math.hypot(nx-ox,ny-oy),next=terrainAt(nx,ny);
   rover.x=nx;rover.y=ny;rover.distance+=dist;
-  const load=Math.max(.72,1+next.resistance*1.7+Math.max(0,slope)*1.4+Math.min(0,slope)*.8);
+  const load=terrainDriveLoad(surface,next,dist);
   rover.battery=Math.max(0,rover.battery-dist*.0058*load);rover.frames+=dist>1?1:0;
   if(Math.floor(rover.distance/260)>Math.floor((rover.distance-dist)/260))rover.meda++;
   const obstacle=[...rocks,...boulders].find(r=>Math.hypot(rover.x-r.x,rover.y-r.y)<r.r+18),crater=craters.find(c=>Math.hypot(rover.x-c.x,rover.y-c.y)<c.r*.68+8);

@@ -65,9 +65,9 @@
   <div class="hero">
     <div class="hero-copy">
       <div class="eyebrow">NASA SPACE APPS CHALLENGE • TRAINING SIMULATION</div>
-      <h1>ONE CREW.<br>SEVEN SOLS.<br><span>NO EASY</span><br>DECISIONS.</h1>
-      <p>You are mission commander of a small research outpost in Gale Crater, Mars. Keep your crew safe for seven Martian days by balancing power, life support, radiation protection and food production. Every system needs something. You cannot maximize everything at once.</p>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px"><span class="tag">5-PERSON CREW</span><span class="tag">7-SOL MISSION</span><span class="tag">GALE CRATER</span></div>
+      <h1>ONE CREW.<br>THIRTY SOLS.<br><span>NO EASY</span><br>DECISIONS.</h1>
+      <p>You are mission commander of a small research outpost in Gale Crater, Mars. Keep your crew safe through a 30-Sol campaign by balancing power, life support, radiation protection and food production. Crises build on one another, supplies run down, and every repair competes with another need. You will not be able to prevent every problem.</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px"><span class="tag">5-PERSON CREW</span><span class="tag">30-SOL MISSION</span><span class="tag">GALE CRATER</span></div>
     </div>
     <div class="hero-art" aria-label="Stylized Mars outpost illustration">
       <div class="mars-disc"></div><div class="terrain"></div>
@@ -106,9 +106,9 @@
     <section class="panel">
       <div class="eyebrow">YOUR MISSION BRIEF</div>
       <h2 style="margin-top:7px">What does success mean?</h2>
-      <p class="tiny muted">Keep the outpost operating through Sol 7. Your crew needs breathable oxygen, usable water and enough food. A solar-weather alert may require shelter procedures. A dust front can reduce solar generation.</p>
+      <p class="tiny muted">Keep the outpost operating through 30 Sols. Dust storms, clogged filters, crop trouble, habitat leaks, radiation alerts and equipment faults can overlap. Your crew needs breathable oxygen, usable water and enough food.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px">
-        <div class="forecast"><span>MISSION LENGTH</span><strong>7 Sols</strong></div>
+        <div class="forecast"><span>MISSION LENGTH</span><strong>30 Sols</strong></div>
         <div class="forecast"><span>CREW</span><strong>5 explorers</strong></div>
         <div class="forecast"><span>LOCATION</span><strong>Gale Crater</strong></div>
         <div class="forecast"><span>MODE</span><strong>Junior Cadet</strong></div>
@@ -152,7 +152,7 @@
 <main class="dashboard" id="game-view">
   <div class="mission-head">
     <div><div class="eyebrow">GALE CRATER • HABITAT ARES-01</div><div class="mission-title">Mission Control <span class="muted" style="font-weight:500">/ Mars surface</span></div><div class="mission-meta" id="mission-meta">Crew of 3 • Systems nominal • Training mission</div></div>
-    <div class="sol-box"><strong id="sol-label">01 / 07</strong><span>MARTIAN SOL</span><div class="progress"><i id="progress-fill"></i></div></div>
+    <div class="sol-box"><strong id="sol-label">01 / 30</strong><span>MARTIAN SOL</span><div class="progress"><i id="progress-fill"></i></div></div>
   </div>
 
   <section class="stats" aria-label="Outpost resource levels">
@@ -207,7 +207,7 @@
       <div class="event-card"><div class="eyebrow" id="event-kicker">DAILY PRIORITY</div><h3 id="event-title">Protect the essentials</h3><p id="event-copy">Your crew needs oxygen, water and food every Sol. Set power priorities before advancing the mission.</p></div>
       <div class="science-card">
         <h3>NASA SPACE WEATHER • DONKI</h3>
-        <p id="nasa-summary">No live query yet. Load NASA's Solar Energetic Particle records to add a real event reference to the Sol 4 training scenario.</p>
+        <p id="nasa-summary">No live query yet. Load NASA's Solar Energetic Particle records to add real-world context to the Sol 23 shelter drill.</p>
         <div class="science-line"><button class="secondary-btn" id="load-nasa">↻ Load NASA data</button><span class="tiny muted" id="nasa-state">Not loaded</span></div>
       </div>
       <div class="science-card"><h3>COMMANDER'S NOTE</h3><p id="commander-note">A good plan has reserves. Do not spend every available power unit just because you can.</p></div>
@@ -255,7 +255,7 @@
 <section class="debrief" id="debrief-view">
   <div class="debrief-card">
     <div class="eyebrow">MISSION REPORT • GALE CRATER</div><h1 id="debrief-title">Mission complete.</h1>
-    <p class="muted" id="debrief-lead">Your crew made it through seven Sols. Here's what your decisions taught the team.</p>
+    <p class="muted" id="debrief-lead">Your crew made it through the 30-Sol campaign. Here's what your decisions taught the team.</p>
     <div class="debrief-grid">
       <div class="debrief-stat"><span>OXYGEN REMAINING</span><strong id="d-o2">—</strong></div>
       <div class="debrief-stat"><span>WATER REMAINING</span><strong id="d-water">—</strong></div>
@@ -275,7 +275,7 @@
   <div class="modal">
     <div class="modal-head"><h2 id="modal-title">Science & data traceability</h2><button class="quiet-btn" id="science-close" aria-label="Close">✕</button></div>
     <p><strong>What is real:</strong> NASA's DONKI service records observed and analyzed space-weather events. The optional lookup in this prototype retrieves real Solar Energetic Particle (SEP) records and displays their recorded date and source link.</p>
-    <p><strong>What is simulated:</strong> The Sol 4 shelter challenge is an educational scenario. The game does not convert DONKI records into a Mars radiation dose, and the crew-safety changes are not measured NASA telemetry.</p>
+    <p><strong>What is simulated:</strong> The Sol 23 shelter challenge is an educational scenario. The game does not convert DONKI records into a Mars radiation dose, and the crew-safety changes are not measured NASA telemetry.</p>
     <h3>NASA data source</h3>
     <ul><li><a href="https://api.nasa.gov/" target="_blank" rel="noreferrer">NASA Open APIs — DONKI documentation</a></li><li><a href="https://ccmc.gsfc.nasa.gov/DONKI/" target="_blank" rel="noreferrer">NASA Community Coordinated Modeling Center — DONKI</a></li><li><a href="https://science.nasa.gov/resource/life-support-baseline-values-and-assumptions-document/" target="_blank" rel="noreferrer">NASA Life Support Baseline Values and Assumptions Document (BVAD)</a></li></ul>
     <h3>Model assumptions</h3>
@@ -290,11 +290,13 @@
 const $ = (id) => document.getElementById(id);
 const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
 const state = {
-  sol:1, battery:2, oxygen:78, water:74, food:68, safety:100, crop:0, harvests:0,
+  sol:1, battery:2, oxygen:82, water:82, food:82, safety:100, crop:0, harvests:0,
   dust:0, crew:5, upgrades:["panels","recycler"], donki:null, donkiLoaded:false,
   stormSeen:false, dustSeen:false, failed:false, history:[], lastPowerRatio:1,
   assignments:{solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"},taskResults:{},taskIndex:0,
-  arrayDamage:0,recyclerDamage:0,cropEfficiency:1,shieldLoss:0,shieldBonus:0
+  arrayDamage:0,recyclerDamage:0,cropEfficiency:1,shieldLoss:0,shieldBonus:0,
+  filterClog:0,cropBlight:0,pressureLeak:0,heaterFault:0,dustStormSols:0,shelterDrillPending:false,
+  filterClogSeen:false,cropBlightSeen:false,pressureLeakSeen:false,heaterFaultSeen:false
 };
 const sliders = {life:$("life-slider"),green:$("green-slider"),shelter:$("shelter-slider"),repair:$("repair-slider")};
 const crewRoster=[
@@ -313,14 +315,14 @@ let soundOn=false, audioContext=null;
 
 function values(){return {life:+sliders.life.value,green:+sliders.green.value,shelter:+sliders.shelter.value,repair:+sliders.repair.value};}
 function upgrades(){return new Set(state.upgrades);}
-function solarOutput(){return Math.max(2,Math.round((10+(upgrades().has("panels")?3:0)-state.arrayDamage)*(1-state.dust)));}
-function totalDemand(v){return 4+v.life+v.green+v.shelter+v.repair;}
+function solarOutput(){return Math.max(2,Math.round((10+(upgrades().has("panels")?3:0)-state.arrayDamage)*(1-state.dust)*(state.dustStormSols>0?.9:1)));}
+function totalDemand(v){return 4+v.life+v.green+v.shelter+v.repair+state.heaterFault;}
 function availablePower(){return solarOutput()+state.battery;}
 function forecast(){
   const v=values(), demand=totalDemand(v), available=availablePower(), ratio=Math.min(1,available/demand);
   const life=v.life*ratio, green=v.green*ratio;
-  const o2=life*2.6-8;
-  const water=-4.8+life*.75+(upgrades().has("recycler")?1.3:0)-green*.85;
+  const o2=life*3-10-state.pressureLeak;
+  const water=-3.8+life*.9+(upgrades().has("recycler")?1.4:0)-green*.55-state.filterClog*.6;
   const power=available>=demand;
   setForecast("forecast-o2",o2>=0?"↑ replenishing":"↓ reserves falling",o2>=0);
   setForecast("forecast-water",water>=-1?"↓ slowly":"↓ quickly",water>=-1);
@@ -334,8 +336,8 @@ function forecast(){
 function setForecast(id,text,good){const el=$(id);el.textContent=text;el.className=good?"up":"down";}
 function render(){
   refreshComponentIndicators();
-  $("sol-label").textContent=String(state.sol).padStart(2,"0")+" / 07";
-  $("progress-fill").style.width=((state.sol-1)/7*100)+"%";
+  $("sol-label").textContent=String(state.sol).padStart(2,"0")+" / 30";
+  $("progress-fill").style.width=((state.sol-1)/30*100)+"%";
   $("v-power").textContent=state.battery;
   $("v-oxygen").textContent=Math.round(state.oxygen);
   $("v-water").textContent=Math.round(state.water);
@@ -346,11 +348,11 @@ function render(){
   $("n-food").textContent="Greenhouse crop cycle: "+Math.round(state.crop/20*100)+"%";
   $("n-safety").textContent=state.safety<50?"Crew needs attention":"Shelter procedures available";
   $("outpost-panel").classList.toggle("dusty",state.dust>.12);
-  $("outpost-panel").classList.toggle("storm",state.sol===4&&!state.stormSeen);
-  $("habitat-status").textContent=state.safety<50?"CREW ALERT":state.dust>.12?"DUST ON ARRAYS":"ALL SYSTEMS ONLINE";
-  $("scene-caption").textContent="GALE CRATER • "+(state.dust>.12?"DUST ACCUMULATING ON ARRAYS":"HABITAT ARES-01 • SOLAR ARRAYS ACTIVE");
+  $("outpost-panel").classList.toggle("storm",state.dustStormSols>0||state.shelterDrillPending);
+  $("habitat-status").textContent=state.safety<50?"CREW ALERT":state.heaterFault>0?"HEATER FAULT":state.pressureLeak>0?"PRESSURE LEAK":state.dust>.12?"DUST ON ARRAYS":"ALL SYSTEMS ONLINE";
+  $("scene-caption").textContent="GALE CRATER • "+(state.dustStormSols>0?"REGIONAL DUST STORM":state.dust>.12?"DUST ACCUMULATING ON ARRAYS":"HABITAT ARES-01 • SYSTEMS UNDER WATCH");
   $("brief-tag").textContent="SOL "+String(state.sol).padStart(2,"0");
-  $("mission-meta").textContent="Crew of 5 • "+(state.safety<50?"Crew safety needs attention":"Training mission active")+" • "+state.upgrades.length+" cargo upgrades";
+  $("mission-meta").textContent="Crew of 5 • "+(state.safety<50?"Crew safety needs attention":"30-Sol campaign active")+" • "+state.upgrades.length+" cargo upgrades";
   forecast();
 }
 function meter(name,value){const el=$("m-"+name);el.style.width=clamp(value,0,100)+"%";el.style.background=value<25?"var(--red)":value<50?"var(--yellow)":"var(--green)";}
@@ -376,9 +378,11 @@ function showOnlyStage(id){
   });
 }
 function beginLanding(){
-  state.sol=1;state.battery=2;state.oxygen=78;state.water=74;state.food=68;state.safety=100;state.crop=0;state.harvests=0;state.dust=0;
+  state.sol=1;state.battery=2;state.oxygen=82;state.water=82;state.food=82;state.safety=100;state.crop=0;state.harvests=0;state.dust=0;
   state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];state.taskResults={};state.taskIndex=0;
   state.arrayDamage=0;state.recyclerDamage=0;state.cropEfficiency=1;state.shieldLoss=0;state.shieldBonus=0;
+  state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
+  state.filterClogSeen=false;state.cropBlightSeen=false;state.pressureLeakSeen=false;state.heaterFaultSeen=false;
   state.assignments={solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"};
   showOnlyStage("landing-view");$("reset-btn").classList.remove("hidden");
 }
@@ -548,26 +552,45 @@ function renderIssues(){
 }
 
 function applyEventForSol(sol){
-  if(sol===2&&!state.dustSeen){
-    state.dust=clamp(state.dust+.28,0,.65);state.dustSeen=true;
-    brief("ENVIRONMENTAL ALERT","A dust front is approaching","Dust is settling on the solar arrays and reducing power generation. Allocate maintenance power to clear the panels, or conserve battery.","Maintenance competes with the power needed for life support and the greenhouse. A little repair work now may protect power later.");
-    log("Sol 2 • Dust front reduced solar output");beep(260,.18);
-  }else if(sol===4&&!state.stormSeen){
-    state.stormSeen=true;
+  let event=null;
+  if(sol===3&&!state.dustSeen){
+    state.dustSeen=true;state.dust=clamp(state.dust+.18,0,.8);
+    event={kicker:"CRISIS 1 • ENVIRONMENTAL",title:"Dust is choking the solar arrays",copy:"A moving dust front has dimmed the sky and coated the panels. Solar generation is falling. The dust will stay until the crew spends power on maintenance.",note:"Try to keep the life-support loop running while assigning Maintenance to clear the arrays. You may need to pause greenhouse growth for a few Sols."};
+    log("Sol 3 • Dust front reduced solar generation");beep(260,.22);
+  }else if(sol===7&&!state.filterClogSeen){
+    state.filterClogSeen=true;state.filterClog=1.5;
+    event={kicker:"CRISIS 2 • LIFE SUPPORT",title:"Water recycler filter clogged",copy:"The recycler's filter is packed with fine dust. Water recovery has dropped, so stored water will fall faster until the filter is cleared.",note:"Higher Life Support allocation helps the crew flush and service the filter. But every extra unit spent here is unavailable to the greenhouse, shelter or maintenance."};
+    log("Sol 7 • Water recycler filter clogged");beep(310,.22);
+  }else if(sol===11&&!state.cropBlightSeen){
+    state.cropBlightSeen=true;state.cropBlight=.42;
+    event={kicker:"CRISIS 3 • FOOD PRODUCTION",title:"Greenhouse beds show signs of blight",copy:"A humidity imbalance has spread a simulated crop disease through part of the grow beds. Harvest growth is reduced until the crew stabilizes the greenhouse.",note:"Keep greenhouse power high for several Sols to isolate affected beds and recover production. Water is already limited, so this will hurt."};
+    log("Sol 11 • Greenhouse crop blight detected");beep(290,.22);
+  }else if(sol===15){
+    state.dust=clamp(state.dust+.28,0,.8);state.dustStormSols=3;
+    event={kicker:"CRISIS 4 • REGIONAL EMERGENCY",title:"Regional dust storm — power emergency",copy:"The storm has thickened. Visibility is poor and the arrays are producing much less power for the next few Sols. Some systems will have to wait.",note:"Protect habitat basics first. Use the battery carefully and direct Maintenance toward the panels when you can. You cannot run every system at full power during a storm."};
+    log("Sol 15 • Regional dust storm; generation sharply reduced");beep(160,.5);
+  }else if(sol===19&&!state.pressureLeakSeen){
+    state.pressureLeakSeen=true;state.pressureLeak=2.8;
+    event={kicker:"CRISIS 5 • HABITAT DAMAGE",title:"A habitat seal is leaking",copy:"A pressure-seal inspection finds a small leak. The air system must work harder to maintain breathable conditions until the seal is repaired.",note:"Maintenance can gradually close the leak. Life Support must also stay high enough to replace the air being lost. Neglecting either choice makes the other harder."};
+    log("Sol 19 • Habitat pressure-seal leak detected");beep(230,.3);
+  }else if(sol===23&&!state.stormSeen){
+    state.stormSeen=true;state.shelterDrillPending=true;
     const rec=state.donki;
     if(rec){
-      brief("NASA DONKI REFERENCE • TRAINING SCENARIO","Solar particle event drill","This shelter drill references a real SEP record dated "+rec.eventDate+". The record is space-weather context; this game does not convert it into a Mars dose. Route power to shelter procedures to reduce the simulated crew impact.","A stronger passive regolith berm helps even when you cannot spare much power for shelter systems.");
-      log("Sol 4 • Shelter drill references NASA DONKI "+rec.eventDate);
+      event={kicker:"CRISIS 6 • NASA DONKI CONTEXT",title:"Solar particle event: shelter now",copy:"This training drill references a real SEP record dated "+rec.eventDate+". The record is space-weather context only; it is not a Mars surface dose measurement. The crew must move to the sheltered habitat area.",note:"Route power to shelter procedures. The game uses an invented crew-safety penalty for the exercise; it does not estimate radiation exposure."};
+      log("Sol 23 • Shelter drill references NASA DONKI "+rec.eventDate);
     }else{
-      brief("SIMULATED TRAINING EVENT","Solar weather shelter drill","A fictional training alert is issued for Sol 4. This is not a live NASA event. Use the shelter systems and your passive shielding upgrade to protect the crew in this exercise.","Shelter power competes with life support and food production. A trade-off is unavoidable.");
-      log("Sol 4 • Simulated solar-weather shelter drill");
+      event={kicker:"CRISIS 6 • SIMULATED SPACE WEATHER",title:"Solar particle event: shelter now",copy:"A fictional solar-weather alert triggers a shelter drill. This is a training scenario, not a live NASA alert or a measured radiation level at Gale Crater.",note:"Route power to shelter procedures. Passive shielding helps even when power is scarce; this exercise does not calculate a real radiation dose."};
+      log("Sol 23 • Simulated solar-weather shelter drill");
     }
-    $("outpost-panel").classList.add("storm");beep(180,.45);
-  }else if(sol===6){
-    brief("MISSION OPPORTUNITY","Greenhouse growth window","The crops are entering a productive growth phase. Maintaining greenhouse power and water can produce a harvest, but the crew still needs today's supplies.","A greenhouse is a long-term investment. Cutting its power may delay food production even if it saves energy today.");
-  }else{
-    brief("DAILY PRIORITY","Protect the essentials","Your crew needs oxygen, water and food every Sol. Set power priorities before advancing the mission.","A good plan has reserves. Do not spend every available power unit just because you can.");
+    beep(180,.45);
+  }else if(sol===27&&!state.heaterFaultSeen){
+    state.heaterFaultSeen=true;state.heaterFault=2;
+    event={kicker:"CRISIS 7 • EQUIPMENT FAILURE",title:"Thermal-control heater has failed",copy:"A habitat heater controller is malfunctioning. The backup system needs extra power until the controller is repaired. Power demand is now higher each Sol.",note:"Maintenance can repair the controller, but the repair itself uses power. Decide which other system can temporarily receive less without putting the crew at risk."};
+    log("Sol 27 • Thermal-control heater fault");beep(210,.3);
   }
+  if(event)brief(event.kicker,event.title,event.copy,event.note);
+  else brief("DAILY PRIORITY","Protect the essentials","Your crew needs breathable air, usable water and food every Sol. Set power priorities before advancing the mission.","A good captain cannot prevent every crisis. Check the red indicators, choose the most urgent repair, and keep enough reserve for the next surprise.");
   render();
 }
 function startMission(){

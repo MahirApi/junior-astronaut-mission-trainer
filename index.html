@@ -702,17 +702,32 @@ function closeOpsModal(){
   $("ops-modal").classList.remove("open");$("ops-modal-content").innerHTML="";
 }
 function renderFieldOps(){
- if(!state.fieldOps||!$("field-task-grid"))return;const f=state.fieldOps,used=f.doneToday||{};$("ops-slots").textContent=f.slots+" FIELD OPS / SOL";
+ if(!state.fieldOps||!$("field-task-grid"))return;
+ const f=state.fieldOps,used=f.doneToday||{},done=id=>!!state.taskResults[id];
  const tasks=[
-  {id:"clean",icon:"☀",name:"Scrub solar panels",desc:"Drag the brush across the array to remove accumulated dust.",ready:state.dust>.025&&!used.clean,reason:used.clean?"Completed this Sol":state.dust<=.025?"Panels are clean":"One EVA slot"},
-  {id:"rover",icon:"🚙",name:"Long-range rover expedition",desc:"Drive a long procedural route with WASD or arrow keys. Slopes, sand, rubble and boulders affect energy and rover wear.",ready:f.roverBattery>=70&&state.sol-f.lastRoverSol>=1&&!used.rover,reason:used.rover?"Rover operation already used":f.roverBattery<70?"Recharge needed for the long return route":state.sol-f.lastRoverSol<1?"Rover is still out this Sol":"One EVA slot"},
-  {id:"lab",icon:"🔬",name:"Scan a returned sample",desc:"Sweep the instrument over the sample canvas to reveal mineral signals. No quiz or multiple-choice test.",ready:f.samples>f.studied&&!used.lab,reason:used.lab?"Lab slot used today":f.samples<=f.studied?"No unstudied samples":"One EVA slot"},
-  {id:"relay",icon:"📡",name:"Repair radio relay",desc:"Reconnect the damaged communications link with a wire-routing puzzle.",ready:!f.relayOnline&&!used.relay,reason:used.relay?"Relay task already attempted":f.relayOnline?"Relay is online":"One EVA slot"}
+  {id:"commission-solar",icon:"🔌",name:"Connect the solar bus",desc:"Route live cables to matching sockets. One commissioning attempt per mission.",ready:!done("solar"),reason:"Already commissioned"},
+  {id:"commission-water",icon:"💧",name:"Tune the water recycler",desc:"Balance intake, pump and filter while watching live pressure and flow.",ready:!done("water"),reason:"Already commissioned"},
+  {id:"commission-greenhouse",icon:"🌱",name:"Calibrate the grow beds",desc:"Tune water, light and nutrients while the seedling responds.",ready:!done("greenhouse"),reason:"Already commissioned"},
+  {id:"commission-shield",icon:"🛡",name:"Seal the radiation shelter",desc:"Brush sealant over exposed seams using the limited patch supply.",ready:!done("shield"),reason:"Already commissioned"},
+  {id:"clean",icon:"☀",name:"Scrub solar panels",desc:"Drag the brush across the array to remove accumulated dust and restore generation.",ready:state.dust>.025&&!used.clean,reason:used.clean?"Completed this Sol":"Panels are clean"},
+  {id:"rover",icon:"🚙",name:"Open-world rover expedition",desc:"Drive across generated Martian terrain, collect three geological samples and return to base.",ready:f.roverBattery>=55&&state.sol-f.lastRoverSol>=1&&!used.rover,reason:used.rover?"Rover outing used today":f.roverBattery<55?"Rover batteries need charging":"Rover operation ready"},
+  {id:"lab",icon:"🔬",name:"Analyze returned samples",desc:"Sweep the laboratory scanner over the specimen to reveal mineral signals.",ready:f.samples>f.studied&&!used.lab,reason:used.lab?"Lab slot used today":f.samples<=f.studied?"No unstudied samples":"Sample waiting"},
+  {id:"relay",icon:"📡",name:"Repair the radio relay",desc:"Reconnect a damaged communications link with a wire-routing activity.",ready:!f.relayOnline&&!used.relay,reason:used.relay?"Relay repair attempted today":"Relay online"},
+  {id:"signal",icon:"📻",name:"Find the lost signal",desc:"Aim the antenna and tune the carrier to recover an orbital message.",ready:state.sol>=6&&!state.missionOps.signalDone&&!used.signal,reason:state.sol<6?"Available from Sol 06":state.missionOps.signalDone?"Signal recovered":"Signal recovery ready"},
+  {id:"cave",icon:"🪨",name:"Explore a subsurface cavity",desc:"Explore a cave-like geological formation, collect three samples and return before suit oxygen runs low.",ready:state.sol>=4&&!state.missionOps.caveDone&&!used.cave,reason:state.sol<4?"Available from Sol 04":state.missionOps.caveDone?"Survey complete":"Cave survey ready"},
+  {id:"rescue",icon:"🧑‍🚀",name:"Rescue a stranded crew member",desc:"Approach a drifting astronaut, attach the tether and return them to the airlock.",ready:state.sol>=10&&!state.missionOps.rescueDone&&!used.rescue,reason:state.sol<10?"Available from Sol 10":state.missionOps.rescueDone?"Crew member recovered":"Rescue beacon active"},
+  {id:"prospect",icon:"⛏",name:"Prospect local resources",desc:"Drill test points while balancing torque, coolant and drill heat. Recover ice and construction materials.",ready:state.sol>=5&&!state.missionOps.prospectingDone&&!used.prospect,reason:state.sol<5?"Available from Sol 05":state.missionOps.prospectingDone?"Survey complete":"Prospecting ready"},
+  {id:"emergency",icon:"🧰",name:"Emergency base repair",desc:"Isolate a damaged component, balance repair controls and use a spare kit to stabilize it.",ready:(state.arrayDamage>.05||state.filterClog>.1||state.cropBlight>.1||state.pressureLeak>.1||state.heaterFault>.1)&&state.spareParts>0&&!used.emergency,reason:state.spareParts<=0?"No spare repair kits":used.emergency?"Repair window used today":"No emergency fault"}
  ];
- $("field-task-grid").innerHTML=tasks.map(t=>'<article class="field-task"><div class="task-icon">'+t.icon+'</div><b>'+t.name+'</b><p>'+t.desc+'</p><button class="secondary-btn" data-field-task="'+t.id+'" '+(!t.ready||f.slots<=0?"disabled":"")+'>'+(t.ready&&f.slots>0?"Start task →":f.slots<=0?"No slots left":t.reason)+'</button></article>').join("");
+ $("ops-slots").textContent=f.slots+" OPERATIONS / SOL";
+ $("field-task-grid").innerHTML=tasks.map(t=>{
+  const disabled=!t.ready||f.slots<=0;
+  const reason=f.slots<=0?"No slots left":t.reason;
+  return '<article class="field-task"><div class="task-icon">'+t.icon+'</div><b>'+t.name+'</b><p>'+t.desc+'</p><button class="secondary-btn" data-field-task="'+t.id+'" '+(disabled?"disabled":"")+'>'+(disabled?reason:"Start operation →")+'</button></article>';
+ }).join("");
  $("field-task-grid").querySelectorAll("[data-field-task]").forEach(b=>b.addEventListener("click",()=>startFieldTask(b.dataset.fieldTask)));
- $("field-ops-note").textContent=f.slots===0?"The crew has used both field-operation slots. More slots return next Sol.":(f.roverExtraTiles?"A missed rover experiment added "+f.roverExtraTiles+" extra map tiles to the next expedition. ":"")+"Choose up to two field jobs. A failed attempt still uses time and an operation slot.";
- $("field-ops-progress").textContent=f.completed+" attempts · "+(f.successful||0)+" successful · "+(f.failedRuns||0)+" failed rover experiments • "+f.samples+" samples · "+f.studied+" scanned";
+ $("field-ops-note").textContent=f.slots===0?"All three daily operations slots have been used. More return next Sol.":(f.roverExtraTiles?"The last rover experiment failed. The next traverse is "+f.roverExtraTiles*100+" metres longer. ":"")+"Use the remaining time for repairs, exploration and outpost construction.";
+ $("field-ops-progress").textContent=f.completed+" operations · "+(f.successful||0)+" successful · "+(f.failedRuns||0)+" rover failures · "+f.samples+" samples";
 }
 function spendFieldSlot(key){
   const f=state.fieldOps;
@@ -722,16 +737,39 @@ function spendFieldSlot(key){
   return true;
 }
 function finishFieldTask(key,success,message){
- if(!spendFieldSlot(key)){closeOpsModal();renderFieldOps();return;}const f=state.fieldOps;if(success)f.successful=(f.successful||0)+1;
+ if(!spendFieldSlot(key)){closeOpsModal();renderFieldOps();return;}
+ const f=state.fieldOps;if(success)f.successful=(f.successful||0)+1;
  if(key==="clean"&&success){state.dust=clamp(state.dust-.14,0,.85);awardCadetXP(8,"engineering",1);addScience(3);log("Field job complete • solar panel scrubbed");}
  if(key==="relay"&&success){f.relayOnline=true;f.relayAttempts=0;awardCadetXP(10,"engineering",1);addScience(5);log("Radio relay restored • storm warnings are connected");}
  if(key==="relay"&&!success){f.relayAttempts++;log("Radio relay repair failed • early warning link remains offline");}
- if(key==="rover"&&success){f.samples++;f.lastRoverSol=state.sol;f.sampleType=f.activeExpedition?.sampleType||"Mars rock sample";f.lastRoverReport={...f.activeExpedition,navFrames:f.navFrames||0,wheelMoves:f.wheelMoves||0,medaReadings:f.medaReadings||0};f.roverExtraTiles=0;state.battery=Math.max(0,state.battery-2);if(f.sampleType.includes("ice"))state.water=clamp(state.water+5,0,100);awardCadetXP(12,"science",1);addScience(5);log("Sol "+state.sol+" rover experiment succeeded • "+f.activeExpedition.title+" returned with "+f.sampleType);}
- if(key==="rover"&&!success){f.lastRoverSol=state.sol;f.failedRuns=(f.failedRuns||0)+1;f.roverExtraTiles=4;f.roverBattery=0;f.lastRoverReport={...f.activeExpedition,failed:true,navFrames:f.navFrames||0,wheelMoves:f.wheelMoves||0,medaReadings:f.medaReadings||0};state.battery=Math.max(0,state.battery-1);log("Sol "+state.sol+" FAILED ROVER EXPERIMENT • rover recovered on foot; next Sol's traverse is 4 tiles longer");}
- if(key==="lab"&&success){f.studied++;addScience(12);awardCadetXP(12,"science",1);log("Sample scanner complete • +12 Science Data");}
+ if(key==="rover"&&success){
+  f.samples+=3;f.lastRoverSol=state.sol;f.sampleType=f.activeExpedition?.sampleType||"Mars rock sample";
+  f.lastRoverReport={...f.activeExpedition,navFrames:f.navFrames||0,wheelMoves:f.wheelMoves||0,medaReadings:f.medaReadings||0};
+  f.roverExtraTiles=0;if(f.sampleType.includes("ice")){state.water=clamp(state.water+4,0,100);state.materials.ice+=3;}
+  awardCadetXP(12,"science",1);addScience(8);log("Rover returned with three samples • "+f.activeExpedition.title);
+ }
+ if(key==="rover"&&!success){
+  f.lastRoverSol=state.sol;f.failedRuns=(f.failedRuns||0)+1;f.roverExtraTiles=4;f.roverBattery=0;
+  f.lastRoverReport={...f.activeExpedition,failed:true,navFrames:f.navFrames||0,wheelMoves:f.wheelMoves||0,medaReadings:f.medaReadings||0};
+  log("ROVER EXPERIMENT FAILED • crew recovered the vehicle on foot; next traverse is longer");
+ }
+ if(key==="lab"&&success){f.studied++;const bonus=state.baseModules.laboratory?6:0;addScience(12+bonus);awardCadetXP(12,"science",1);log("Sample scanner complete • +"+(12+bonus)+" Science Data");}
+ if(key==="signal"){state.missionOps.signalDone=true;if(success){f.relayOnline=true;addScience(4);log("Mission Control signal recovered and antenna link aligned");}}
+ if(key==="cave"){state.missionOps.caveDone=true;if(success){state.materials.regolith+=2;state.materials.metal+=1;addScience(5);}}
+ if(key==="rescue"){state.missionOps.rescueDone=true;if(success){state.safety=clamp(state.safety+10,0,100);state.crew=Math.max(state.crew,5);}}
+ if(key==="prospect"){state.missionOps.prospectingDone=true;if(success){state.materials.ice+=state.siteKey==="utopia"?3:1;state.materials.regolith+=3;state.materials.metal+=2;state.water=clamp(state.water+3,0,100);addScience(6);}}
+ if(key==="emergency"&&success){awardCadetXP(8,"engineering",1);log("Emergency repair completed • spare kit consumed");}
+ if(key.startsWith("commission-"))log("Commissioning operation resolved • "+key.replace("commission-",""));
  if(key==="clean"&&!success)log("Panel cleaning incomplete • dust remains");
- f.activeExpedition=null;f.recoverActiveRover=null;closeOpsModal();render();renderFieldOps();brief("FIELD OPERATION",message||(success?"Task complete":"Task incomplete"),"The crew used one of today's two field-operation slots.","Fieldwork takes time away from other duties. Decide which jobs are worth doing before advancing the Sol.");
+ if(key==="emergency"&&success)addCadetBadge("field-operator");
+ if(key==="cave"&&success)addCadetBadge("cave-scout");
+ if(key==="rescue"&&success)addCadetBadge("team-rescuer");
+ if(key==="signal"&&success)addCadetBadge("signal-hunter");
+ if(key==="prospect"&&success)addCadetBadge("resource-scout");
+ f.activeExpedition=null;f.recoverActiveRover=null;closeOpsModal();render();renderFieldOps();renderBaseBuilder();
+ brief("FIELD OPERATION",message||(success?"Task complete":"Task incomplete"),"The crew used one of today's three operation slots.","Electrical energy, construction inventory and EVA time are tracked separately. Cosmetic tokens cannot buy engineering upgrades.");
 }
+
 function launchScrubTask(){
   const markup='<p class="tiny muted">Drag across the dusty array. Clear at least 78% of the surface to complete the task. A wider brush makes more progress but is harder to aim accurately.</p><canvas id="scrub-canvas" width="460" height="220" aria-label="Dusty solar panel. Drag to scrub."></canvas><div class="mini-progress"><i id="scrub-progress"></i></div><div class="tiny muted" id="scrub-status">0% cleaned</div><div class="puzzle-actions"><button class="secondary-btn" id="scrub-cancel">Cancel</button></div>';
   openOpsModal("Solar array cleaning",markup);
@@ -1250,32 +1288,45 @@ function renderShieldPuzzle(){
 }
 
 function finishTask(success,detail){
-  const task=taskDefinitions[state.taskIndex];if(state.taskResults[task.id])return;
-  const matched=isSpecialistMatched(task),severity=matched?1:1.25;
-  state.taskResults[task.id]={success,matched,assigned:assignedPerson(task).name,detail};
-  const skillForTask={solar:"engineering",water:"life",greenhouse:"botany",shield:"science"}[task.id];
-  awardCadetXP(success?12:3,skillForTask,success?1:0);
-  if(!success){
-    if(task.id==="solar")state.arrayDamage=clamp(state.arrayDamage+3*severity,0,5);
-    if(task.id==="water")state.recyclerDamage=1.6*severity;
-    if(task.id==="greenhouse")state.cropEfficiency=matched ? 0.55 : 0.4;
-    if(task.id==="shield")state.shieldLoss=15*severity;
-    log(task.title+" failed • captain must compensate");
-  }else{
-    if(task.id==="solar")state.battery=clamp(state.battery+2,0,batteryCapacity());
-    if(task.id==="water")state.water=clamp(state.water+5,0,100);
-    if(task.id==="greenhouse")state.crop=5;
-    if(task.id==="shield")state.shieldBonus=10;
-    log(task.title+" commissioned successfully");
-  }
-  const outcome=success?"success":"failure";
-  $("task-content").innerHTML+='<div class="task-result '+outcome+'"><h3>'+(success?"✓ Task completed":"⚠ Task failed — no retry")+'</h3><p>'+detail+'</p><p style="margin-top:9px">'+(success?"The system is ready for the first Sol.":(matched?"The specialist was correctly assigned, but the system was damaged.":"The task was outside the assigned specialist's field, increasing the damage."))+' This result is locked for this mission. The captain must adapt the outpost plan instead of replaying the task.</p><div class="puzzle-actions"><button class="primary-btn" id="next-task-btn">'+(state.taskIndex===taskDefinitions.length-1?"Review systems & begin Sol 1 →":"Continue to next crew report →")+'</button></div></div>';
-  $("puzzle-area").classList.add("hidden");
-  $("next-task-btn").addEventListener("click",()=>{
-    state.taskIndex++;if(state.taskIndex<taskDefinitions.length)renderTask();else startMission();
-  });
+ const task=taskDefinitions[state.taskIndex];if(state.taskResults[task.id])return;
+ const matched=isSpecialistMatched(task),severity=matched?1:1.25;
+ state.taskResults[task.id]={success,matched,assigned:assignedPerson(task).name,detail};
+ const skillForTask={solar:"engineering",water:"life",greenhouse:"botany",shield:"science"}[task.id];
+ awardCadetXP(success?12:3,skillForTask,success?1:0);
+ if(!success){
+  if(task.id==="solar")state.arrayDamage=clamp(state.arrayDamage+3*severity,0,5);
+  if(task.id==="water")state.recyclerDamage=1.6*severity;
+  if(task.id==="greenhouse")state.cropEfficiency=matched?.55:.4;
+  if(task.id==="shield")state.shieldLoss=15*severity;
+  log(task.title+" failed • captain must compensate");
+ }else{
+  if(task.id==="solar")state.battery=clamp(state.battery+1,batteryCapacity());
+  if(task.id==="water")state.water=clamp(state.water+5,0,100);
+  if(task.id==="greenhouse")state.crop=5;
+  if(task.id==="shield")state.shieldBonus=10;
+  log(task.title+" commissioned successfully");
+ }
+ if(state.taskFromField){
+  state.taskFromField=false;
+  finishFieldTask("commission-"+task.id,success,detail+(success?" The system is operational.":" The fault remains and will affect the outpost's daily balance."));
+  return;
+ }
+ const outcome=success?"success":"failure";
+ $("task-content").innerHTML+='<div class="task-result '+outcome+'"><h3>'+(success?"✓ Task completed":"⚠ Task failed — no retry")+'</h3><p>'+detail+'</p><p style="margin-top:9px">'+(success?"The system is ready for the first Sol.":(matched?"The specialist was correctly assigned, but the system was damaged.":"The task was outside the assigned specialist's field, increasing the damage."))+' This result is locked for this mission. The captain must adapt the outpost plan instead of replaying the task.</p><div class="puzzle-actions"><button class="primary-btn" id="next-task-btn">Continue →</button></div></div>';
+ $("puzzle-area").classList.add("hidden");
+ $("next-task-btn").addEventListener("click",()=>{state.taskIndex++;if(state.taskIndex<taskDefinitions.length)renderTask();else startMission();});
 }
-
+function startCommissioningTask(id){
+ const index=taskDefinitions.findIndex(t=>t.id===id);if(index<0||state.taskResults[id])return;
+ state.taskIndex=index;state.taskFromField=true;
+ const task=taskDefinitions[index];
+ openOpsModal("Outpost commissioning • "+task.title,'<div class="task-topline"><span class="tag">HANDS-ON OPERATION</span><span class="tiny muted">ONE ATTEMPT THIS MISSION</span></div><div class="task-progress"><i id="task-progress-fill" style="width:100%"></i></div><div id="task-content"></div>');
+ renderTask();
+}
+function consumeStoredEnergy(units){
+ if(state.battery<units){brief("POWER RESERVE","Not enough stored electricity","This operation needs "+energyToKWh(units)+" kWh, but the battery reserve is only "+energyToKWh(state.battery)+" kWh.","Protect the habitat first. Wait for a surplus or choose a less power-intensive operation.");return false;}
+ state.battery=clamp(state.battery-units,0,batteryCapacity());return true;
+}
 const componentInfo={
 solar:{title:"Solar array network",system:"POWER GENERATION",copy:"The solar wings collect energy for every outpost system. Dust and deployment damage reduce available generation.",slider:"repair",failed:()=>state.arrayDamage>0||state.dust>0.05,issue:()=>(state.arrayDamage>0?"Array bus damage: "+state.arrayDamage.toFixed(1)+" modeled units. ":"Dust is reducing solar generation. ")+"Increase Maintenance in the Command Console to clear dust and repair the bus over multiple Sols.",normal:"Arrays are tracking the Sun. Generation is within expected training range.",action:"Set maintenance to 2"},
 life:{title:"Habitat • life support",system:"OXYGEN, WATER & TEMPERATURE",copy:"The habitat contains the air and water recycling equipment and thermal controls that keep the crew supplied.",slider:"life",failed:()=>state.recyclerDamage>0||state.filterClog>0.08||state.pressureLeak>0.08||state.heaterFault>0||state.water<35||state.oxygen<35,issue:()=>[(state.recyclerDamage>0?"Recycler fault: recovery remains degraded. ":""),(state.filterClog>0.08?"Filter clog: "+state.filterClog.toFixed(1)+" modeled units remain. ":""),(state.pressureLeak>0.08?"Pressure leak: "+state.pressureLeak.toFixed(1)+" oxygen-loss units per Sol. ":""),(state.heaterFault>0?"Thermal controller fault: +"+state.heaterFault.toFixed(1)+" power demand. ":""),(state.water<35||state.oxygen<35?"Habitat reserves are running low. ":"")].join("")+"Increase Life Support to clear the water filter; use Maintenance to close leaks and repair the heater.",normal:"Air, water and temperature controls are operating. Watch the reserves.",action:"Set life support to 6"},

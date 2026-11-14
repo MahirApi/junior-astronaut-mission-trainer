@@ -697,28 +697,30 @@ function launchRoverTask(){
   const routeIsValid=route[0][0]===0&&route[0][1]===0&&route[route.length-1][0]===size-1&&route[route.length-1][1]===size-1&&route.every(([rx,ry],i)=>rx>=0&&ry>=0&&rx<size&&ry<size&&!blocked.has(rx+","+ry)&&(i===0||Math.abs(rx-route[i-1][0])+Math.abs(ry-route[i-1][1])===1));
   console.assert(routeIsValid,"Rover route must be a connected, obstacle-free path.");
   let x=0,y=0,steps=0,bumps=0,finished=false,visited=new Set(["0,0"]);
+  let roverHint="Start at BASE and plan a safe route around the rocks.";
   function draw(){
     const markup='<p class="tiny muted">Guide the rover from BASE to the ice/sample marker. Move one square at a time; avoid craters. Tier '+tier+' route. You have '+maxSteps+' moves and two safe retries.</p><div class="rover-grid" id="rover-grid"></div><div class="power-summary"><span>ROVER BATTERY <strong id="rover-battery-readout">'+Math.round(state.fieldOps.roverBattery)+'%</strong></span><span>MOVES <strong id="rover-moves">'+steps+' / '+maxSteps+'</strong></span></div><div class="tiny muted" id="rover-hint">Start at BASE and plan a safe route around the rocks.</div><div class="puzzle-actions"><button class="secondary-btn" id="rover-cancel">Cancel</button></div>';
     $("ops-modal-content").innerHTML=markup;
     const grid=$("rover-grid");grid.style.gridTemplateColumns="repeat("+size+",1fr)";
     for(let yy=0;yy<size;yy++)for(let xx=0;xx<size;xx++){
       const id=xx+","+yy,button=document.createElement("button");button.className="rover-cell";
-      if(blocked.has(id)){button.classList.add("obstacle");button.textContent="◈";button.title="Crater";}
-      else if(xx===x&&yy===y){button.classList.add("current");button.textContent="🚙";}
-      else if(xx===size-1&&yy===size-1){button.textContent="🧊";button.title="Sample site";}
-      else if(visited.has(id)){button.classList.add("visited");button.textContent="·";}
-      else button.textContent=" ";
+      if(blocked.has(id)){button.classList.add("obstacle");button.textContent="◈";button.title="Crater";button.setAttribute("aria-label","Crater obstacle");}
+      else if(xx===x&&yy===y){button.classList.add("current");button.textContent="🚙";button.setAttribute("aria-label",x===0&&y===0?"BASE: rover starting position":"Rover current position");}
+      else if(xx===size-1&&yy===size-1){button.textContent="🧊";button.title="Sample site";button.setAttribute("aria-label","Sample collection site");}
+      else if(visited.has(id)){button.classList.add("visited");button.textContent="·";button.setAttribute("aria-label","Previously visited tile");}
+      else{button.textContent=" ";button.setAttribute("aria-label","Open terrain tile");}
       button.addEventListener("click",()=>move(xx,yy));grid.appendChild(button);
     }
+    $("rover-hint").textContent=roverHint;
     $("rover-cancel").onclick=closeOpsModal;
   }
   function move(nx,ny){
     if(finished)return;
-    if(Math.abs(nx-x)+Math.abs(ny-y)!==1){$("rover-hint").textContent="Move to a neighbouring square.";return;}
+    if(Math.abs(nx-x)+Math.abs(ny-y)!==1){roverHint="Move to a neighbouring square.";draw();return;}
     steps++;state.fieldOps.roverBattery=Math.max(0,state.fieldOps.roverBattery-4);
     const id=nx+","+ny;
-    if(blocked.has(id)){bumps++;$("rover-hint").textContent="Crater detected! The rover loses battery. Find another route.";if(bumps>=3||steps>=maxSteps){finished=true;finishFieldTask("rover",false,"The rover used its EVA window avoiding craters and returned without a sample.");return;}}
-    else{x=nx;y=ny;visited.add(id);}
+    if(blocked.has(id)){bumps++;roverHint="Crater detected! The rover loses battery. Find another route ("+bumps+" / 2 safe retries used).";if(bumps>=3||steps>=maxSteps){finished=true;finishFieldTask("rover",false,"The rover used its EVA window avoiding craters and returned without a sample.");return;}}
+    else{x=nx;y=ny;visited.add(id);roverHint="Rover moved safely. "+(maxSteps-steps)+" moves remain.";}
     if(x===size-1&&y===size-1){finished=true;finishFieldTask("rover",true,"Rover sample collected and safely returned to the outpost.");return;}
     if(steps>=maxSteps||state.fieldOps.roverBattery<=5){finished=true;finishFieldTask("rover",false,"The rover reached its route limit before the sample site.");return;}
     draw();

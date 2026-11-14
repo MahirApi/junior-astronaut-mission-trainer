@@ -31,7 +31,7 @@ This document separates source observations from the educational model used by O
 
 ## Simulation assumptions (game-only)
 - The mission lasts 30 game Sols and tracks a fictional five-person crew.
-- The quiz gives each skill a Practice, Standard or Advanced tier. Correct answers and completed minigames contribute local XP/skill progression. This personalizes gameplay difficulty and is not a validated measure of student knowledge.
+- Cadet skill tracks start in Practice and become more demanding through XP earned by playing the minigames. There is no knowledge quiz or scored preflight assessment; XP is a game progression system, not a measure of student knowledge.
 - Habitat essentials draw a fixed four game power units per Sol before the player allocations are served. The remaining supply is a shared pool divided proportionally among requested life-support, greenhouse, shelter and maintenance allocations. Over-budget allocations receive only a fraction of the requested power.
 - A successful solar commissioning minigame adds starting battery reserve; solar generation, battery capacity and dust penalties are simplified deterministic rules. NASA's Mars surface power studies consider architectures beyond the solar-only system shown in this game.
 - The player carries three abstract spare repair kits. Servicing a major filter, greenhouse, seal or heater fault consumes one kit when a repair successfully begins. This scarcity is a game mechanic, not a NASA supply estimate.
@@ -46,7 +46,7 @@ This document separates source observations from the educational model used by O
 - Food and water are consumed over time. Crew safety can decline if reserves become critically low. The all-maximum allocation strategy is intentionally insufficient: power rationing lowers the actual power delivered to every requested system, prevents some repairs from starting, and allows reserves to run down. The player must change priorities and accept that some systems will temporarily receive less.
 - The exact power budget, battery reserve, repair thresholds, spare-kit count, EVA capacity, rover battery, landing tolerance, site bonuses, XP rewards and resource rates are invented training values. They are not scaled spacecraft engineering specifications or an operational Mars habitat design.
 - The visual landing arcade uses an intentionally simplified speed/crosswind model. It is not a physics-accurate Mars descent simulation and must not be presented as piloting instruction.
-- The relay puzzle and drag-to-scan sample activity are simplified educational interactions, not operational repair or scientific laboratory procedures.
+- The solar-cable routing, recycler pressure balancing, grow-bed tuning, shelter seam sealant, relay repair and drag-to-scan sample activity are simplified educational interactions, not operational spacecraft, repair or laboratory procedures.
 
 ## Source eligibility check before submission
 The NASA Space Apps Global Awards requirement is to use a NASA data source listed in the **Resources section of this exact challenge**. Before submitting, compare the challenge's live Resources list with the NASA Open APIs / DONKI source above and preserve a screenshot or written record of the match. Do not assume that a generally valid NASA API automatically satisfies the challenge-specific rule.
@@ -77,3 +77,7 @@ The long-range rover activity borrows the *types* of observations made by Mars r
 
 ### Game-only rover accounting
 A map tile is not a fixed real-world distance. The generated routes, terrain elevations, battery percentages, energy cost multipliers, collision wear, simulated weather sets, image counts and EVA recovery are invented gameplay quantities. Navcam/Mastcam-Z/SuperCam/MEDA labels refer to the kinds of observations being illustrated; the counts and outputs are fictional. A successful expedition means only that the in-game rover returned to its base.
+
+
+## Commissioning minigame boundaries
+The solar-cable routing, water pressure/flow balancing, greenhouse grow-bed controls and shelter seam-sealant activity are simplified tactile learning interactions. Their pressure bands, plant-growth response, sealant supply and commissioning outcomes are invented game mechanics; they are not operational procedures for real spacecraft systems.

@@ -213,12 +213,18 @@
         <label class="loadout"><input type="checkbox" value="growlight" data-mass="20"><div class="symbol">🌱</div><strong>Efficient grow lights · 20 kg</strong><span>Improves crop growth per unit of greenhouse electricity.</span></label>
       </div>
       <div class="coop-picker"><div><b>Mission crew</b><p class="tiny muted">Play solo or share the controls with a friend on the same device.</p></div><div class="coop-options"><button type="button" class="coop-option selected" data-coop="solo">🚀 Solo pilot</button><button type="button" class="coop-option" data-coop="coop">👩‍🚀👨‍🚀 Play with a friend</button></div></div>
-      <div class="start-row"><span class="tiny muted" id="loadout-count">50 / 80 kg packed</span><button class="primary-btn" id="start-btn">Begin mission →</button></div>
+      <div class="start-row"><span class="tiny muted" id="loadout-count">50 / 80 kg packed</span><button class="primary-btn" id="start-btn">Begin landing →</button></div>
     </section>
     <section class="panel">
       <div class="eyebrow">YOUR MISSION BRIEF</div>
       <h2 style="margin-top:7px">What does success mean?</h2>
-      <p class="tiny muted">Keep the outpost operating through 30 Sols. Dust storms, clogged filters, crop trouble, habitat leaks, radiation alerts and equipment faults can overlap. Your crew needs breathable oxygen, usable water and enough food.</p>
+      <p class="tiny muted">Choose a landing region, then fly the lander. Keep the outpost operating for 30 Sols, balance electricity, life support, food and radiation protection, and bring the crew home at the end.</p>
+      <h3 style="font-size:12px;margin:15px 0 7px">SELECT A LANDING REGION</h3>
+      <div class="site-picks" id="setup-site-picks">
+        <button class="site-pick selected" type="button" data-setup-site="gale"><b>Gale Crater</b><span>BALANCED START<br>Even starting resources and a mixed science route.</span></button>
+        <button class="site-pick" type="button" data-setup-site="jezero"><b>Jezero Crater</b><span>SCIENCE ROUTE<br>More starting Science Data, slightly lower power reserve.</span></button>
+        <button class="site-pick" type="button" data-setup-site="utopia"><b>Utopia Planitia</b><span>WATER ROUTE<br>More starting water, with light panel dust.</span></button>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px">
         <div class="forecast"><span>MISSION LENGTH</span><strong>30 Sols</strong></div>
         <div class="forecast"><span>CREW</span><strong>5 explorers</strong></div>
@@ -533,9 +539,7 @@ function skillTier(skill){
  return clamp(1+learned,1,3);
 }
 function startAssessment(){
- state.siteKey="gale";
- showOnlyStage("preflight-view");
- renderAssessmentSummary();
+ beginLanding();
 }
 function renderAssessmentSummary(){
  const content=$("preflight-content");
@@ -1989,6 +1993,11 @@ document.querySelectorAll(".component-hotspot").forEach(el=>{
 inspectComponent("solar");
 Object.values(sliders).forEach(s=>s.addEventListener("input",()=>{forecast();}));
 $("start-btn").addEventListener("click",startAssessment);
+$("setup-site-picks").addEventListener("click",e=>{
+ const button=e.target.closest("[data-setup-site]");if(!button)return;
+ state.siteKey=button.dataset.setupSite;
+ $("setup-site-picks").querySelectorAll("[data-setup-site]").forEach(item=>item.classList.toggle("selected",item===button));
+});
 document.querySelectorAll("[data-coop]").forEach(button=>button.addEventListener("click",()=>setCoopMode(button.dataset.coop)));
 $("touchdown-btn").addEventListener("click",()=>{
   state.fieldOps.slots=3;state.fieldOps.doneToday={};

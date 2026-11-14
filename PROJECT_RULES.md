@@ -87,3 +87,13 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 - Greenhouse: tune water, light and nutrient dials while the seedling responds visually.
 - Radiation shelter: drag the sealant brush across exposed seams; the limited supply rewards careful strokes, with a keyboard-accessible patch action.
 - Keep feedback inside the activity. Do not ask players to memorize a pattern, choose the correct answer from a list, or submit a multiple-choice assessment.
+
+
+## NASA-aligned surface-power and upgrade economy
+- Model a steady primary fission supply and optional supplemental solar arrays. Solar dust/array damage must not remove the primary fission baseload.
+- Current game scale: 1 internal energy unit = 100 kWh; the modeled primary fission baseload is 10 units (1,000 kWh per Sol), with 3 supplemental solar units from the selected extra-solar-wing payload and another 3 from a constructed solar wing. These are classroom game values inspired by NASA architecture material, not a reactor design.
+- Battery storage is an energy reserve, not a points wallet. Construction spends stored kWh, available metal/regolith/polymer/electronics inventory and one of the day's operation slots.
+- Badge-earned style tokens may purchase cosmetics only. Never let XP, Science Data, badges or style tokens replace electricity or construction materials for engineering upgrades.
+- Keep the operations board at three available operation slots per Sol, including Sol 1.
+- The game includes landing, day-to-day outpost operations, and a final evacuation sequence. Do not add the floating meteor-shower resupply/point-collection minigame: it does not reinforce the challenge objective.
+- Retained optional activities must connect to a mission purpose: cave geology and rover prospecting inform local-resource knowledge; the signal activity supports communications; rescue and final extraction support crew safety; emergency repair and base construction support outpost reliability.

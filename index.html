@@ -1041,6 +1041,33 @@ function launchSignalTask(){
  update();
 }
 
+function launchProspectingTask(){
+ const deposits=state.siteKey==="utopia"?["ice-rich regolith","ice-bearing soil","perchlorate-rich regolith"]:state.siteKey==="jezero"?["hydrated clay","delta sandstone","iron-rich basalt"]:["layered basalt","hydrated mineral","iron-rich regolith"];
+ let index=0,depth=0,heat=25,done=false,torque=48,coolant=58;
+ openOpsModal("Local resource prospecting • ISRU test",'<p class="tiny muted">Probe three test points for useful local resources. Balance drill torque and coolant to recover sample cores without overheating the bit. This is an educational resource survey, not a real Mars mining forecast.</p><div class="prospect-visual"><div class="prospect-drill">⛏</div><div class="prospect-strata"><i></i><i></i><i></i></div><strong id="prospect-target">'+deposits[0].toUpperCase()+'</strong></div><div class="rover-readouts"><div><span>DRILL DEPTH</span><b id="prospect-depth">0%</b></div><div><span>DRILL HEAT</span><b id="prospect-heat">25°C</b></div><div><span>TEST POINT</span><b id="prospect-point">1 / 3</b></div><div><span>CORES RECOVERED</span><b id="prospect-samples">0 / 3</b></div></div><label class="slider-row">DRILL TORQUE <output id="prospect-torque-value">48%</output><input id="prospect-torque" type="range" min="20" max="90" value="48"></label><label class="slider-row">COOLANT FLOW <output id="prospect-coolant-value">58%</output><input id="prospect-coolant" type="range" min="0" max="100" value="58"></label><div class="mini-progress"><i id="prospect-progress" style="width:0%"></i></div><p class="tiny muted" id="prospect-hint">Choose a manageable torque and coolant level, then drill short passes until the core can be sealed.</p><div class="puzzle-actions"><button class="primary-btn" id="prospect-drill">Drill one pass</button></div>');
+ const torqueEl=$("prospect-torque"),coolantEl=$("prospect-coolant");
+ function paint(){
+  torque=+torqueEl.value;coolant=+coolantEl.value;
+  $("prospect-torque-value").textContent=torque+"%";$("prospect-coolant-value").textContent=coolant+"%";
+  $("prospect-depth").textContent=depth+"%";$("prospect-heat").textContent=Math.round(heat)+"°C";
+  $("prospect-progress").style.width=depth+"%";
+ }
+ torqueEl.addEventListener("input",paint);coolantEl.addEventListener("input",paint);
+ $("prospect-drill").onclick=()=>{
+  if(done)return;
+  heat=clamp(heat+torque*.18-coolant*.12,15,120);
+  if(heat>82){$("prospect-hint").textContent="Thermal protection paused the drill. Increase coolant or lower torque before continuing.";paint();return;}
+  depth=clamp(depth+Math.max(8,torque*.4),0,100);paint();
+  if(depth>=100){
+   index++;
+   $("prospect-samples").textContent=index+" / 3";
+   if(index===3){done=true;finishFieldTask("prospect",true,"Three test cores were recovered: "+deposits.join(", ")+". The crew has logged local-resource evidence for future water and construction planning.");return;}
+   depth=0;heat=30;$("prospect-target").textContent=deposits[index].toUpperCase();$("prospect-point").textContent=(index+1)+" / 3";$("prospect-hint").textContent="Core sealed and logged. The drill has moved to the next test point.";paint();
+  }
+ };
+ paint();
+}
+
 function startFieldTask(id){
  if(state.fieldOps.slots<=0)return;
  const costs={clean:.03,relay:.08,lab:.02,signal:.06,cave:.08,rescue:.07,prospect:.12,emergency:.06,

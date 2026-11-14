@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10171d">
+<title>OUTPOST ZERO — Mars Mission Trainer</title>
+<style>
+:root{color-scheme:dark;--bg:#0c1217;--panel:#141e25;--panel2:#18242c;--line:#2b3a43;--text:#edf2ed;--muted:#9aa9ac;--orange:#f28b58;--green:#87d7a8;--blue:#8cc8e8;--yellow:#edc978;--red:#f27f75;--radius:17px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% -20%,#26343b 0,transparent 42%),var(--bg);color:var(--text);min-height:100vh}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:3px}.shell{max-width:1440px;margin:auto;padding:24px 28px 50px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:4px 0 22px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:42px;height:42px;border:1px solid #82543e;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#51382d,#211f20);color:#ffb17b;font-size:23px}.brand-name{font-weight:850;letter-spacing:.12em;font-size:13px}.brand-sub{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.08em}.top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.quiet-btn,.primary-btn,.secondary-btn{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:#17232a;color:var(--text);font-size:12px;font-weight:700}.quiet-btn:hover,.secondary-btn:hover{background:#21313a}.primary-btn{background:var(--orange);border-color:var(--orange);color:#241710;padding:13px 19px}.primary-btn:hover{filter:brightness(1.08)}.primary-btn:disabled{opacity:.45;cursor:not-allowed}.eyebrow{font-size:10px;color:var(--orange);font-weight:800;letter-spacing:.18em;text-transform:uppercase}.muted{color:var(--muted)}.tiny{font-size:11px;line-height:1.5}.setup{padding:28px 0}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:stretch}.hero-copy,.hero-art,.panel{background:linear-gradient(145deg,#17232b,#111a20);border:1px solid var(--line);border-radius:var(--radius)}.hero-copy{padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;justify-content:center}.hero h1{font-size:clamp(38px,6vw,72px);line-height:.96;letter-spacing:-.065em;margin:14px 0 18px}.hero h1 span{color:var(--orange)}.hero-copy p{max-width:580px;color:#b8c4c2;line-height:1.7;font-size:14px}.hero-art{position:relative;overflow:hidden;min-height:330px;display:grid;place-items:center;background:radial-gradient(circle at 60% 68%,#7d3f2c 0,#3f2a28 25%,#1a2023 59%,#151e23 100%)}.mars-disc{position:absolute;width:265px;height:265px;border-radius:50%;right:5%;top:11%;background:radial-gradient(circle at 35% 30%,#d99165,#a24d35 46%,#612e29 78%,#341f21);box-shadow:inset -20px -12px 35px #1b171a,0 0 60px #b45d3940}.terrain{position:absolute;bottom:-18%;left:-10%;width:125%;height:52%;background:linear-gradient(170deg,#6e4035,#2b2527 62%);border-radius:50% 50% 0 0;transform:rotate(-5deg)}.habitat-mini{position:relative;z-index:1;width:min(90%,470px);filter:drop-shadow(0 22px 18px #090d10aa)}.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}.panel{padding:20px}.panel h2,.panel h3{margin:0 0 12px}.panel h2{font-size:16px}.loadouts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.loadout{border:1px solid var(--line);background:#10191f;border-radius:13px;padding:13px;min-height:130px;cursor:pointer}.loadout.selected{border-color:var(--orange);background:#392a25}.loadout input{accent-color:var(--orange)}.loadout strong{display:block;font-size:12px;margin:9px 0 5px}.loadout span{font-size:10px;line-height:1.45;color:var(--muted);display:block}.loadout .symbol{font-size:24px}.start-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}.dashboard{display:none;padding-top:20px}.mission-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:16px}.mission-title{font-size:22px;font-weight:850;letter-spacing:-.04em}.mission-meta{font-size:11px;color:var(--muted);margin-top:4px}.sol-box{border:1px solid var(--line);border-radius:12px;padding:10px 15px;background:#141e25;text-align:right}.sol-box strong{display:block;font-size:21px;color:var(--orange)}.sol-box span{font-size:9px;color:var(--muted);letter-spacing:.14em}.progress{height:5px;border-radius:8px;background:#26343b;overflow:hidden;margin-top:9px;width:130px}.progress i{display:block;height:100%;width:14.28%;background:var(--orange);transition:width .3s}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:14px}.stat{padding:14px;background:linear-gradient(145deg,#19252c,#131c22);border:1px solid var(--line);border-radius:14px;min-width:0}.stat-top{display:flex;justify-content:space-between;align-items:center;gap:5px}.stat-label{font-size:10px;color:var(--muted);letter-spacing:.1em;font-weight:800}.stat-icon{font-size:17px}.stat-value{font-size:25px;font-weight:850;letter-spacing:-.04em;margin:7px 0 8px}.stat-unit{font-size:10px;color:var(--muted);font-weight:500}.meter{height:6px;background:#29373e;border-radius:8px;overflow:hidden}.meter i{display:block;height:100%;width:60%;background:var(--green);border-radius:8px;transition:width .3s,background .3s}.stat-note{font-size:10px;color:var(--muted);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.main-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}.outpost-panel{overflow:hidden;min-height:330px;position:relative;background:linear-gradient(180deg,#17252d 0%,#202b30 53%,#49332d 100%)}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.panel-head h2{font-size:13px;margin:0}.tag{font-size:9px;letter-spacing:.12em;color:var(--green);border:1px solid #466a59;border-radius:20px;padding:5px 8px;font-weight:800}.outpost-svg{width:100%;height:265px;display:block}.dust-layer{opacity:0;transition:opacity .3s}.storm-lights{opacity:0;transition:opacity .3s}.outpost-panel.dusty .dust-layer{opacity:.55}.outpost-panel.storm .storm-lights{opacity:1}.scene-caption{position:absolute;left:20px;bottom:14px;font-size:10px;color:#d3c2b8;letter-spacing:.1em}.brief-panel{display:flex;flex-direction:column;gap:12px}.event-card{border:1px solid #72503d;background:linear-gradient(130deg,#362921,#1d2528);border-radius:13px;padding:15px}.event-card .eyebrow{color:#ffc18e}.event-card h3{font-size:16px;margin:7px 0}.event-card p{font-size:11px;color:#c4c5ba;line-height:1.55;margin:0}.science-card{border:1px solid var(--line);background:#10191f;border-radius:13px;padding:14px}.science-card h3{font-size:12px;margin:0 0 7px}.science-card p{font-size:10px;line-height:1.5;color:var(--muted);margin:0}.science-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}.link-btn{background:none;border:0;padding:0;color:var(--blue);font-size:10px;text-decoration:underline}.controls{margin-top:14px;display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.slider-list{display:grid;grid-template-columns:1fr 1fr;gap:16px 22px}.slider-row label{display:flex;justify-content:space-between;font-size:11px;font-weight:750;margin-bottom:8px}.slider-row output{color:var(--orange);font-variant-numeric:tabular-nums}.slider-row input{width:100%;accent-color:var(--orange)}.slider-help{font-size:9px;color:var(--muted);margin-top:4px}.power-summary{display:flex;justify-content:space-between;margin-top:18px;border-top:1px solid var(--line);padding-top:13px;font-size:11px}.power-summary strong{color:var(--green)}.forecast-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}.forecast{padding:10px;background:#10191f;border:1px solid var(--line);border-radius:10px}.forecast span{font-size:9px;color:var(--muted);display:block;margin-bottom:4px}.forecast strong{font-size:13px}.forecast .up{color:var(--green)}.forecast .down{color:var(--red)}.commit-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:15px}.log{margin-top:14px}.log-list{display:flex;gap:8px;flex-wrap:wrap}.log-chip{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:10px;color:var(--muted)}.modal-backdrop{display:none;position:fixed;inset:0;background:#05090dcc;z-index:10;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}.modal{max-width:650px;width:100%;max-height:85vh;overflow:auto;background:#17232b;border:1px solid #3a4a51;border-radius:17px;padding:23px;box-shadow:0 25px 90px #0009}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.modal h2{margin:0;font-size:18px}.modal h3{font-size:12px;margin:18px 0 6px}.modal p,.modal li{font-size:11px;line-height:1.65;color:#b8c5c3}.modal a{color:var(--blue)}.debrief{display:none;padding:34px 0}.debrief-card{max-width:900px;margin:auto;background:linear-gradient(145deg,#18252b,#111a20);border:1px solid var(--line);border-radius:20px;padding:clamp(24px,5vw,48px)}.debrief h1{font-size:clamp(34px,5vw,56px);letter-spacing:-.06em;margin:12px 0}.debrief-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}.debrief-stat{background:#10191f;border:1px solid var(--line);border-radius:12px;padding:13px}.debrief-stat span{display:block;color:var(--muted);font-size:9px}.debrief-stat strong{font-size:23px}.chain{border-left:2px solid var(--orange);padding:3px 0 3px 15px;color:#c6d0cc;font-size:12px;line-height:1.8;margin:18px 0}.footer-note{margin-top:22px;font-size:10px;color:var(--muted);line-height:1.6}.hidden{display:none!important}
+@media(max-width:950px){.hero{grid-template-columns:1fr}.hero-art{min-height:260px}.stats{grid-template-columns:repeat(3,1fr)}.main-grid,.controls{grid-template-columns:1fr}}
+@media(max-width:600px){.shell{padding:15px}.topbar{align-items:flex-start}.brand-sub{font-size:9px}.top-actions{justify-content:flex-end}.quiet-btn{padding:8px 9px;font-size:10px}.setup-grid{grid-template-columns:1fr}.loadouts{grid-template-columns:1fr}.loadout{min-height:0}.hero h1{font-size:47px}.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:span 2}.mission-title{font-size:17px}.slider-list{grid-template-columns:1fr}.debrief-grid{grid-template-columns:1fr 1fr}.commit-row,.start-row{align-items:stretch;flex-direction:column}.commit-row button,.start-row button{width:100%}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">⌁</div><div><div class="brand-name">OUTPOST ZERO</div><div class="brand-sub">JUNIOR ASTRONAUT MISSION TRAINER</div></div></div>
+  <div class="top-actions">
+    <button class="quiet-btn" id="science-open">⌁ Science & data</button>
+    <button class="quiet-btn" id="sound-toggle" aria-pressed="false">♫ Sound off</button>
+    <button class="quiet-btn hidden" id="reset-btn">↻ Restart</button>
+  </div>
+</header>
+
+<section class="setup" id="setup-view">
+  <div class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">NASA SPACE APPS CHALLENGE • TRAINING SIMULATION</div>
+      <h1>ONE CREW.<br>SEVEN SOLS.<br><span>NO EASY</span><br>DECISIONS.</h1>
+      <p>You are mission commander of a small research outpost in Gale Crater, Mars. Keep your crew safe for seven Martian days by balancing power, life support, radiation protection and food production. Every system needs something. You cannot maximize everything at once.</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px"><span class="tag">3-PERSON CREW</span><span class="tag">7-SOL MISSION</span><span class="tag">GALE CRATER</span></div>
+    </div>
+    <div class="hero-art" aria-label="Stylized Mars outpost illustration">
+      <div class="mars-disc"></div><div class="terrain"></div>
+      <svg class="habitat-mini" viewBox="0 0 520 300" role="img" aria-label="Habitat dome, greenhouse and solar arrays">
+        <g stroke="#e8b78d" stroke-width="2" fill="none" opacity=".9">
+          <path d="M85 210 L435 210 L465 235 L55 235 Z" fill="#704536" stroke="#a86c4f"/>
+          <path d="M180 209 V145 Q180 88 248 88 Q316 88 316 145 V209" fill="#78969a" fill-opacity=".22" stroke="#d5c0a6" stroke-width="3"/>
+          <path d="M193 207 V150 Q193 100 248 100 Q303 100 303 150 V207" stroke="#88b4bd" stroke-width="1.5"/>
+          <path d="M248 91 V208 M186 161 H310" stroke="#b6c6bf" opacity=".55"/>
+          <path d="M340 207 L376 160 L412 207 Z" fill="#496c68" fill-opacity=".6" stroke="#9fc4b5"/>
+          <path d="M355 192 H398 M365 176 H388" stroke="#a8cbbb"/>
+          <path d="M70 200 L95 135 L168 135 L151 200 Z" fill="#263e4b" stroke="#90b6c9"/>
+          <path d="M84 155 H159 M78 178 H153 M108 137 L91 198 M134 137 L118 198" stroke="#8ab0c5" opacity=".7"/>
+          <path d="M430 201 L449 144 L495 144 L478 201 Z" fill="#263e4b" stroke="#90b6c9"/>
+          <path d="M439 163 H489 M435 183 H484 M457 147 L445 197 M475 147 L465 197" stroke="#8ab0c5" opacity=".7"/>
+          <path d="M205 211 V229 M294 211 V229" stroke="#e9c1a0"/>
+        </g>
+        <g fill="#f2a66f"><circle cx="248" cy="128" r="5"/><circle cx="227" cy="183" r="3"/><circle cx="272" cy="183" r="3"/></g>
+        <g stroke="#b0cfc3" stroke-width="2" fill="none"><path d="M217 198 Q215 180 223 169 Q230 180 228 198 M267 198 Q266 178 275 166 Q283 179 279 198"/><path d="M208 198 H288"/></g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="setup-grid">
+    <section class="panel">
+      <div class="eyebrow">PRE-LAUNCH CONFIGURATION</div>
+      <h2 style="margin-top:7px">Choose two cargo upgrades</h2>
+      <p class="tiny muted">Your lander has room for only two specialist upgrades. Pick the systems you want to strengthen before landing.</p>
+      <div class="loadouts" id="loadouts">
+        <label class="loadout selected"><input type="checkbox" value="panels" checked><div class="symbol">☀</div><strong>Extra solar wings</strong><span>+3 power generation each Sol. Helps when dust reduces sunlight.</span></label>
+        <label class="loadout selected"><input type="checkbox" value="recycler" checked><div class="symbol">⟳</div><strong>Advanced water recycler</strong><span>Recovers more water from the habitat's life-support loop.</span></label>
+        <label class="loadout"><input type="checkbox" value="regolith"><div class="symbol">⬡</div><strong>Regolith storm berm</strong><span>Improves passive radiation protection around the shelter.</span></label>
+      </div>
+      <div class="start-row"><span class="tiny muted" id="loadout-count">2 of 2 upgrades selected</span><button class="primary-btn" id="start-btn">Begin mission →</button></div>
+    </section>
+    <section class="panel">
+      <div class="eyebrow">YOUR MISSION BRIEF</div>
+      <h2 style="margin-top:7px">What does success mean?</h2>
+      <p class="tiny muted">Keep the outpost operating through Sol 7. Your crew needs breathable oxygen, usable water and enough food. A solar-weather alert may require shelter procedures. A dust front can reduce solar generation.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px">
+        <div class="forecast"><span>MISSION LENGTH</span><strong>7 Sols</strong></div>
+        <div class="forecast"><span>CREW</span><strong>3 explorers</strong></div>
+        <div class="forecast"><span>LOCATION</span><strong>Gale Crater</strong></div>
+        <div class="forecast"><span>MODE</span><strong>Junior Cadet</strong></div>
+      </div>
+      <p class="footer-note">Educational simulation. Resource rates and event consequences are simplified for learning; they are not operational spacecraft specifications or a prediction of actual Mars conditions.</p>
+    </section>
+  </div>
+</section>
+
+<main class="dashboard" id="game-view">
+  <div class="mission-head">
+    <div><div class="eyebrow">GALE CRATER • HABITAT ARES-01</div><div class="mission-title">Mission Control <span class="muted" style="font-weight:500">/ Mars surface</span></div><div class="mission-meta" id="mission-meta">Crew of 3 • Systems nominal • Training mission</div></div>
+    <div class="sol-box"><strong id="sol-label">01 / 07</strong><span>MARTIAN SOL</span><div class="progress"><i id="progress-fill"></i></div></div>
+  </div>
+
+  <section class="stats" aria-label="Outpost resource levels">
+    <div class="stat"><div class="stat-top"><span class="stat-label">POWER</span><span class="stat-icon">ϟ</span></div><div class="stat-value"><span id="v-power">2</span><span class="stat-unit"> / 8 battery</span></div><div class="meter"><i id="m-power"></i></div><div class="stat-note" id="n-power">Solar generation: 13 units</div></div>
+    <div class="stat"><div class="stat-top"><span class="stat-label">OXYGEN</span><span class="stat-icon">◌</span></div><div class="stat-value"><span id="v-oxygen">78</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-oxygen"></i></div><div class="stat-note">Crew breathing reserve</div></div>
+    <div class="stat"><div class="stat-top"><span class="stat-label">WATER</span><span class="stat-icon">♒</span></div><div class="stat-value"><span id="v-water">74</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-water"></i></div><div class="stat-note">Storage + recycled water</div></div>
+    <div class="stat"><div class="stat-top"><span class="stat-label">FOOD</span><span class="stat-icon">✿</span></div><div class="stat-value"><span id="v-food">68</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-food"></i></div><div class="stat-note" id="n-food">Greenhouse crop cycle: 0%</div></div>
+    <div class="stat"><div class="stat-top"><span class="stat-label">CREW SAFETY</span><span class="stat-icon">⌂</span></div><div class="stat-value"><span id="v-safety">100</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-safety"></i></div><div class="stat-note" id="n-safety">Shelter systems ready</div></div>
+  </section>
+
+  <section class="main-grid">
+    <div class="panel outpost-panel" id="outpost-panel">
+      <div class="panel-head"><h2>OUTPOST STATUS • LIVE VIEW</h2><span class="tag" id="habitat-status">ALL SYSTEMS ONLINE</span></div>
+      <svg class="outpost-svg" viewBox="0 0 660 300" role="img" aria-label="Illustrated Mars outpost with solar panels, habitat, greenhouse and storm shelter">
+        <defs>
+          <linearGradient id="dome" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#b9d6d2" stop-opacity=".5"/><stop offset="1" stop-color="#6a8a8b" stop-opacity=".12"/></linearGradient>
+          <linearGradient id="ground" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#986047"/><stop offset="1" stop-color="#4e312b"/></linearGradient>
+          <pattern id="panelgrid" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M18 0H0V18" fill="none" stroke="#9bc4d8" stroke-opacity=".55" stroke-width="1"/></pattern>
+        </defs>
+        <path d="M0 237 Q140 211 260 230 T660 222 V300 H0Z" fill="url(#ground)"/>
+        <path d="M0 255 Q120 237 210 251 T430 249 T660 240" stroke="#ca8762" stroke-opacity=".35" fill="none" stroke-width="2"/>
+        <g stroke="#a9c6d0" stroke-width="2">
+          <path d="M26 214 L56 112 L183 112 L151 214Z" fill="#24404d"/><path d="M26 214 L56 112 L183 112 L151 214Z" fill="url(#panelgrid)"/><path d="M46 213 L77 218 M163 213 L177 218" stroke="#d0b59b"/>
+          <path d="M496 213 L521 128 L626 128 L605 213Z" fill="#24404d"/><path d="M496 213 L521 128 L626 128 L605 213Z" fill="url(#panelgrid)"/>
+        </g>
+        <g stroke="#ddc8ad" stroke-width="2">
+          <path d="M202 231 V152 Q202 76 296 76 Q390 76 390 152 V231Z" fill="url(#dome)"/>
+          <path d="M215 230 V153 Q215 88 296 88 Q377 88 377 153 V230" fill="none" stroke="#80aeb2" stroke-width="2"/>
+          <path d="M296 78 V230 M205 162 H387" stroke="#b7c9c1" stroke-opacity=".7"/>
+          <path d="M397 230 V168 L438 137 L479 168 V230Z" fill="#5a6e69" stroke="#bac9b4"/>
+          <path d="M411 230 V174 L438 154 L465 174 V230" fill="none" stroke="#9cbeb0"/>
+          <path d="M423 206 Q420 185 429 177 Q437 186 434 206 M445 206 Q443 185 452 178 Q460 189 456 206" fill="none" stroke="#9bd29d" stroke-width="3"/>
+        </g>
+        <g fill="#f2a36d"><circle cx="296" cy="128" r="7"/><circle cx="260" cy="192" r="4"/><circle cx="333" cy="192" r="4"/></g>
+        <g stroke="#d2a17c" stroke-width="2" fill="none"><path d="M193 232 H486 M226 232 V247 M365 232 V247 M413 232 V247 M454 232 V247"/></g>
+        <g fill="#e8c4a6" font-size="10" font-family="sans-serif" letter-spacing="1"><text x="77" y="98">SOLAR</text><text x="255" y="57">HABITAT</text><text x="412" y="126">GREENHOUSE</text><text x="528" y="115">ARRAY B</text></g>
+        <g class="dust-layer" fill="#c99a73"><path d="M0 0H660V300H0Z" opacity=".2"/><circle cx="108" cy="90" r="30"/><circle cx="548" cy="78" r="45"/></g>
+        <g class="storm-lights"><path d="M296 76 Q390 76 390 152" stroke="#f06f68" stroke-width="6" opacity=".8" fill="none"/><circle cx="438" cy="151" r="9" fill="#f06f68"/></g>
+      </svg>
+      <div class="scene-caption" id="scene-caption">GALE CRATER • HABITAT ARES-01 • SOLAR ARRAYS NOMINAL</div>
+    </div>
+
+    <div class="panel brief-panel">
+      <div class="panel-head"><h2>FLIGHT DIRECTOR'S BRIEF</h2><span class="tag" id="brief-tag">SOL 01</span></div>
+      <div class="event-card"><div class="eyebrow" id="event-kicker">DAILY PRIORITY</div><h3 id="event-title">Protect the essentials</h3><p id="event-copy">Your crew needs oxygen, water and food every Sol. Set power priorities before advancing the mission.</p></div>
+      <div class="science-card">
+        <h3>NASA SPACE WEATHER • DONKI</h3>
+        <p id="nasa-summary">No live query yet. Load NASA's Solar Energetic Particle records to add a real event reference to the Sol 4 training scenario.</p>
+        <div class="science-line"><button class="secondary-btn" id="load-nasa">↻ Load NASA data</button><span class="tiny muted" id="nasa-state">Not loaded</span></div>
+      </div>
+      <div class="science-card"><h3>COMMANDER'S NOTE</h3><p id="commander-note">A good plan has reserves. Do not spend every available power unit just because you can.</p></div>
+    </div>
+  </section>
+
+  <section class="controls">
+    <div class="panel">
+      <div class="panel-head"><h2>POWER ROUTING</h2><span class="tag">SET PRIORITIES</span></div>
+      <p class="tiny muted" style="margin:0 0 15px">Route power to the systems that matter most this Sol. Habitat basics require 4 power units before your selected allocations.</p>
+      <div class="slider-list">
+        <div class="slider-row"><label for="life-slider">♡ Life support <output id="life-output">4</output></label><input id="life-slider" type="range" min="1" max="6" value="4"><div class="slider-help">Oxygen generation + water recovery</div></div>
+        <div class="slider-row"><label for="green-slider">♧ Greenhouse <output id="green-output">2</output></label><input id="green-slider" type="range" min="0" max="4" value="2"><div class="slider-help">Crop growth needs power, water and time</div></div>
+        <div class="slider-row"><label for="shelter-slider">⬡ Storm shelter <output id="shelter-output">1</output></label><input id="shelter-slider" type="range" min="0" max="3" value="1"><div class="slider-help">Shelter ventilation and storm procedures</div></div>
+        <div class="slider-row"><label for="repair-slider">⚒ Maintenance <output id="repair-output">1</output></label><input id="repair-slider" type="range" min="0" max="2" value="1"><div class="slider-help">Clear dust and maintain equipment</div></div>
+      </div>
+      <div class="power-summary"><span>Estimated demand: <strong id="demand-value">12 units</strong></span><span>Solar + battery: <strong id="available-value">15 units</strong></span></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>DECISION FORECAST</h2><span class="tag">BEFORE YOU COMMIT</span></div>
+      <p class="tiny muted" style="margin:0 0 13px">A simplified forecast shows how your priorities affect the crew. Actual results can change with events and available power.</p>
+      <div class="forecast-list">
+        <div class="forecast"><span>OXYGEN</span><strong id="forecast-o2">↑ stable</strong></div>
+        <div class="forecast"><span>WATER</span><strong id="forecast-water">↓ slowly</strong></div>
+        <div class="forecast"><span>FOOD</span><strong id="forecast-food">↗ growing</strong></div>
+        <div class="forecast"><span>POWER</span><strong id="forecast-power">✓ within budget</strong></div>
+      </div>
+      <div class="commit-row"><span class="tiny muted" id="forecast-note">Your choices are not permanent. Adjust the sliders before advancing.</span><button class="primary-btn" id="advance-btn">Advance to Sol 02 →</button></div>
+    </div>
+  </section>
+
+  <section class="panel log">
+    <div class="panel-head"><h2>MISSION LOG</h2><span class="tiny muted">Recent decisions and events</span></div>
+    <div class="log-list" id="log-list"><span class="log-chip">Mission initialized • Crew onboard</span></div>
+  </section>
+</main>
+
+<section class="debrief" id="debrief-view">
+  <div class="debrief-card">
+    <div class="eyebrow">MISSION REPORT • GALE CRATER</div><h1 id="debrief-title">Mission complete.</h1>
+    <p class="muted" id="debrief-lead">Your crew made it through seven Sols. Here's what your decisions taught the team.</p>
+    <div class="debrief-grid">
+      <div class="debrief-stat"><span>OXYGEN REMAINING</span><strong id="d-o2">—</strong></div>
+      <div class="debrief-stat"><span>WATER REMAINING</span><strong id="d-water">—</strong></div>
+      <div class="debrief-stat"><span>FOOD REMAINING</span><strong id="d-food">—</strong></div>
+      <div class="debrief-stat"><span>CREW SAFETY</span><strong id="d-safety">—</strong></div>
+      <div class="debrief-stat"><span>HARVESTS</span><strong id="d-harvests">—</strong></div>
+      <div class="debrief-stat"><span>SOLS COMPLETED</span><strong id="d-sols">—</strong></div>
+    </div>
+    <h2 style="font-size:16px">Engineering root-cause debrief</h2><div class="chain" id="debrief-chain"></div>
+    <p class="tiny muted">Remember: the game uses simplified training values. The NASA record shown in the mission is real space-weather context; it is not a measurement of radiation at this outpost or a prediction of a Mars surface dose.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px"><button class="primary-btn" id="play-again">↻ Try a new strategy</button><button class="secondary-btn" id="debrief-science">Read science notes</button></div>
+  </div>
+</section>
+</div>
+
+<div class="modal-backdrop" id="science-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <div class="modal-head"><h2 id="modal-title">Science & data traceability</h2><button class="quiet-btn" id="science-close" aria-label="Close">✕</button></div>
+    <p><strong>What is real:</strong> NASA's DONKI service records observed and analyzed space-weather events. The optional lookup in this prototype retrieves real Solar Energetic Particle (SEP) records and displays their recorded date and source link.</p>
+    <p><strong>What is simulated:</strong> The Sol 4 shelter challenge is an educational scenario. The game does not convert DONKI records into a Mars radiation dose, and the crew-safety changes are not measured NASA telemetry.</p>
+    <h3>NASA data source</h3>
+    <ul><li><a href="https://api.nasa.gov/" target="_blank" rel="noreferrer">NASA Open APIs — DONKI documentation</a></li><li><a href="https://ccmc.gsfc.nasa.gov/DONKI/" target="_blank" rel="noreferrer">NASA Community Coordinated Modeling Center — DONKI</a></li><li><a href="https://science.nasa.gov/resource/life-support-baseline-values-and-assumptions-document/" target="_blank" rel="noreferrer">NASA Life Support Baseline Values and Assumptions Document (BVAD)</a></li></ul>
+    <h3>Model assumptions</h3>
+    <ul><li>Power, battery, oxygen, water, food and crop units are teaching-game units, not engineering specifications.</li><li>Life-support power influences oxygen production and water recovery in a simplified way.</li><li>Greenhouse power and water build crop progress over several Sols; harvests are not immediate.</li><li>Radiation protection combines a passive shelter-upgrade bonus with power allocated to shelter procedures. No active magnetic shield is modeled.</li><li>Solar-array dust and maintenance are simplified gameplay mechanics, not a forecast for a specific Mars location.</li></ul>
+    <p class="tiny">Before submission, verify that NASA Open APIs / DONKI appears in the Resources section of this exact 2026 challenge. Keep this source list in the final project description and README.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $ = (id) => document.getElementById(id);
+const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
+const state = {
+  sol:1, battery:2, oxygen:78, water:74, food:68, safety:100, crop:0, harvests:0,
+  dust:0, crew:3, upgrades:["panels","recycler"], donki:null, donkiLoaded:false,
+  stormSeen:false, dustSeen:false, failed:false, history:[], lastPowerRatio:1
+};
+const sliders = {life:$("life-slider"),green:$("green-slider"),shelter:$("shelter-slider"),repair:$("repair-slider")};
+let soundOn=false, audioContext=null;
+
+function values(){return {life:+sliders.life.value,green:+sliders.green.value,shelter:+sliders.shelter.value,repair:+sliders.repair.value};}
+function upgrades(){return new Set(state.upgrades);}
+function solarOutput(){return Math.max(2,Math.round((10+(upgrades().has("panels")?3:0))*(1-state.dust)));}
+function totalDemand(v){return 4+v.life+v.green+v.shelter+v.repair;}
+function availablePower(){return solarOutput()+state.battery;}
+function forecast(){
+  const v=values(), demand=totalDemand(v), available=availablePower(), ratio=Math.min(1,available/demand);
+  const life=v.life*ratio, green=v.green*ratio;
+  const o2=life*2.6-8;
+  const water=-4.8+life*.75+(upgrades().has("recycler")?1.3:0)-green*.85;
+  const power=available>=demand;
+  setForecast("forecast-o2",o2>=0?"↑ replenishing":"↓ reserves falling",o2>=0);
+  setForecast("forecast-water",water>=-1?"↓ slowly":"↓ quickly",water>=-1);
+  setForecast("forecast-food",green>=1.5?"↗ crop growing":"↓ food consumed",green>=1.5);
+  setForecast("forecast-power",power?"✓ within budget":"⚠ power shortfall",power);
+  $("demand-value").textContent=demand+" units";
+  $("available-value").textContent=available+" units";
+  $("forecast-note").textContent=power?"Power plan is within the current budget.":"Your demand is above supply. Systems will receive reduced power.";
+  ["life","green","shelter","repair"].forEach(k=>$(k+"-output").textContent=sliders[k].value);
+}
+function setForecast(id,text,good){const el=$(id);el.textContent=text;el.className=good?"up":"down";}
+function render(){
+  $("sol-label").textContent=String(state.sol).padStart(2,"0")+" / 07";
+  $("progress-fill").style.width=((state.sol-1)/7*100)+"%";
+  $("v-power").textContent=state.battery;
+  $("v-oxygen").textContent=Math.round(state.oxygen);
+  $("v-water").textContent=Math.round(state.water);
+  $("v-food").textContent=Math.round(state.food);
+  $("v-safety").textContent=Math.round(state.safety);
+  meter("power",state.battery/8*100);meter("oxygen",state.oxygen);meter("water",state.water);meter("food",state.food);meter("safety",state.safety);
+  $("n-power").textContent="Solar generation: "+solarOutput()+" units";
+  $("n-food").textContent="Greenhouse crop cycle: "+Math.round(state.crop/20*100)+"%";
+  $("n-safety").textContent=state.safety<50?"Crew needs attention":"Shelter procedures available";
+  $("outpost-panel").classList.toggle("dusty",state.dust>.12);
+  $("outpost-panel").classList.toggle("storm",state.sol===4&&!state.stormSeen);
+  $("habitat-status").textContent=state.safety<50?"CREW ALERT":state.dust>.12?"DUST ON ARRAYS":"ALL SYSTEMS ONLINE";
+  $("scene-caption").textContent="GALE CRATER • "+(state.dust>.12?"DUST ACCUMULATING ON ARRAYS":"HABITAT ARES-01 • SOLAR ARRAYS ACTIVE");
+  $("brief-tag").textContent="SOL "+String(state.sol).padStart(2,"0");
+  $("mission-meta").textContent="Crew of 3 • "+(state.safety<50?"Crew safety needs attention":"Training mission active")+" • "+state.upgrades.length+" cargo upgrades";
+  forecast();
+}
+function meter(name,value){const el=$("m-"+name);el.style.width=clamp(value,0,100)+"%";el.style.background=value<25?"var(--red)":value<50?"var(--yellow)":"var(--green)";}
+function log(message){state.history.unshift(message);state.history=state.history.slice(0,5);$("log-list").innerHTML=state.history.map(x=>'<span class="log-chip">'+escapeHtml(x)+'</span>').join("");}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function brief(kicker,title,copy,note){$("event-kicker").textContent=kicker;$("event-title").textContent=title;$("event-copy").textContent=copy;$("commander-note").textContent=note;}
+function beep(freq,duration){if(!soundOn)return;try{audioContext=audioContext||new (window.AudioContext||window.webkitAudioContext)();const osc=audioContext.createOscillator(),gain=audioContext.createGain();osc.frequency.value=freq;gain.gain.setValueAtTime(.045,audioContext.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);osc.connect(gain);gain.connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+duration);}catch(e){}}
+
+function updateLoadouts(){
+  const checks=Array.from(document.querySelectorAll("#loadouts input"));
+  const selected=checks.filter(c=>c.checked);
+  if(selected.length>2){selected[selected.length-1].checked=false;}
+  checks.forEach(c=>c.closest(".loadout").classList.toggle("selected",c.checked));
+  const count=checks.filter(c=>c.checked).length;
+  $("loadout-count").textContent=count+" of 2 upgrades selected";
+  $("start-btn").disabled=count!==2;
+  state.upgrades=checks.filter(c=>c.checked).map(c=>c.value);
+}
+function applyEventForSol(sol){
+  if(sol===2&&!state.dustSeen){
+    state.dust=clamp(state.dust+.28,0,.65);state.dustSeen=true;
+    brief("ENVIRONMENTAL ALERT","A dust front is approaching","Dust is settling on the solar arrays and reducing power generation. Allocate maintenance power to clear the panels, or conserve battery.","Maintenance competes with the power needed for life support and the greenhouse. A little repair work now may protect power later.");
+    log("Sol 2 • Dust front reduced solar output");beep(260,.18);
+  }else if(sol===4&&!state.stormSeen){
+    state.stormSeen=true;
+    const rec=state.donki;
+    if(rec){
+      brief("NASA DONKI REFERENCE • TRAINING SCENARIO","Solar particle event drill","This shelter drill references a real SEP record dated "+rec.eventDate+". The record is space-weather context; this game does not convert it into a Mars dose. Route power to shelter procedures to reduce the simulated crew impact.","A stronger passive regolith berm helps even when you cannot spare much power for shelter systems.");
+      log("Sol 4 • Shelter drill references NASA DONKI "+rec.eventDate);
+    }else{
+      brief("SIMULATED TRAINING EVENT","Solar weather shelter drill","A fictional training alert is issued for Sol 4. This is not a live NASA event. Use the shelter systems and your passive shielding upgrade to protect the crew in this exercise.","Shelter power competes with life support and food production. A trade-off is unavoidable.");
+      log("Sol 4 • Simulated solar-weather shelter drill");
+    }
+    $("outpost-panel").classList.add("storm");beep(180,.45);
+  }else if(sol===6){
+    brief("MISSION OPPORTUNITY","Greenhouse growth window","The crops are entering a productive growth phase. Maintaining greenhouse power and water can produce a harvest, but the crew still needs today's supplies.","A greenhouse is a long-term investment. Cutting its power may delay food production even if it saves energy today.");
+  }else{
+    brief("DAILY PRIORITY","Protect the essentials","Your crew needs oxygen, water and food every Sol. Set power priorities before advancing the mission.","A good plan has reserves. Do not spend every available power unit just because you can.");
+  }
+  render();
+}
+function startMission(){
+  state.sol=1;state.battery=2;state.oxygen=78;state.water=74;state.food=68;state.safety=100;state.crop=0;state.harvests=0;state.dust=0;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];
+  $("setup-view").style.display="none";$("debrief-view").style.display="none";$("game-view").style.display="block";$("reset-btn").classList.remove("hidden");
+  sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
+  log("Sol 1 • Mission initialized; crew onboard");
+  applyEventForSol(1);render();
+}
+function advance(){
+  const v=values(), solar=solarOutput(), available=availablePower(), demand=totalDemand(v);
+  const ratio=Math.min(1,available/demand), actualLife=v.life*ratio, actualGreen=v.green*ratio, actualShelter=v.shelter*ratio, actualRepair=v.repair*ratio;
+  const used=Math.min(available,demand);
+  state.battery=clamp(available-used,0,8);
+  const oxygenDelta=actualLife*2.6-8;
+  const waterDelta=-4.8+actualLife*.75+(upgrades().has("recycler")?1.3:0)-actualGreen*.85;
+  state.oxygen=clamp(state.oxygen+oxygenDelta,0,100);
+  state.water=clamp(state.water+waterDelta,0,100);
+  state.food=clamp(state.food-4.8,0,100);
+  state.crop+=actualGreen*1.8;
+  if(state.crop>=20){const harvests=Math.floor(state.crop/20);state.crop-=harvests*20;state.food=clamp(state.food+harvests*16,0,100);state.harvests+=harvests;log("Harvest collected • +"+(harvests*16)+" food");}
+  state.dust=clamp(state.dust-actualRepair*.08,0,.65);
+  if(state.sol===4){
+    const passive=upgrades().has("regolith")?45:20;
+    const protection=clamp(passive+actualShelter*12,0,85);
+    const hit=Math.max(3,24*(1-protection/100));
+    state.safety=clamp(state.safety-hit,0,100);
+    log("Shelter drill • simulated crew safety impact -"+Math.round(hit));
+  }
+  if(state.oxygen<25)state.safety=clamp(state.safety-6,0,100);
+  if(state.water<18)state.safety=clamp(state.safety-4,0,100);
+  if(state.food<18)state.safety=clamp(state.safety-4,0,100);
+  if(ratio<.999){log("Power shortfall • systems received "+Math.round(ratio*100)+"% of requested power");}
+  log("Sol "+state.sol+" complete • solar "+solar+" / demand "+demand);
+  beep(440,.09);
+  if(state.oxygen<=0||state.water<=0||state.food<=0||state.safety<=0){
+    endMission(false);return;
+  }
+  if(state.sol>=7){endMission(true);return;}
+  state.sol++;
+  // Reset to a conservative preset for the next Sol; the commander can change it.
+  sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
+  applyEventForSol(state.sol);render();
+  $("advance-btn").textContent=state.sol===7?"Complete Sol 07 →":"Advance to Sol "+String(state.sol+1).padStart(2,"0")+" →";
+}
+function endMission(completed){
+  $("game-view").style.display="none";$("debrief-view").style.display="block";
+  const success=completed&&state.safety>=50&&state.oxygen>10&&state.water>10&&state.food>5;
+  $("debrief-title").textContent=success?"OUTPOST STABLE. CREW SAFE.":"MISSION REVIEW: LESSONS LEARNED.";
+  $("debrief-lead").textContent=success?"Your crew completed the seven-Sol training mission. Your choices kept the outpost supplied while managing competing engineering needs.":"The outpost could not meet every mission need. That is the point of the debrief: identify the chain reaction and try a different plan.";
+  $("d-o2").textContent=Math.round(state.oxygen)+"%";$("d-water").textContent=Math.round(state.water)+"%";$("d-food").textContent=Math.round(state.food)+"%";$("d-safety").textContent=Math.round(state.safety)+"%";$("d-harvests").textContent=state.harvests;$("d-sols").textContent=state.sol;
+  const causes=[];
+  if(state.dustSeen)causes.push("A dust front reduced solar generation. Maintenance power could clear the arrays, but it competed with other needs.");
+  if(state.stormSeen)causes.push("The Sol 4 shelter drill tested the trade-off between shelter ventilation power and other outpost systems.");
+  if(state.crop<10)causes.push("The greenhouse did not complete much crop progress. Food production needs steady inputs and time.");
+  if(state.oxygen<45)causes.push("Oxygen reserves fell. Life-support power was not high enough to keep the simplified oxygen balance stable.");
+  if(state.water<45)causes.push("Water reserves fell. Crew use, greenhouse demand and recycling efficiency all affected the balance.");
+  if(state.food<45)causes.push("Food reserves fell. The crew consumed supplies while the greenhouse needed time to grow a harvest.");
+  if(state.battery<2)causes.push("The battery reserve was low at the end of the mission, leaving little flexibility for unexpected demand.");
+  if(!causes.length)causes.push("Your power allocations maintained the four core systems. Consider replaying with a different cargo loadout to compare strategies.");
+  $("debrief-chain").innerHTML=causes.map(c=>"<div>→ "+escapeHtml(c)+"</div>").join("");
+  $("reset-btn").classList.add("hidden");beep(success?660:220,.4);
+}
+async function loadNasa(){
+  const btn=$("load-nasa");btn.disabled=true;btn.textContent="Loading…";$("nasa-state").textContent="Connecting to NASA";
+  try{
+    const end=new Date(),start=new Date(end.getTime()-29*86400000);
+    const fmt=d=>d.toISOString().slice(0,10);
+    const url="https://api.nasa.gov/DONKI/SEP?startDate="+fmt(start)+"&endDate="+fmt(end)+"&api_key=DEMO_KEY";
+    const response=await fetch(url,{cache:"no-store"});
+    if(!response.ok)throw new Error("NASA API returned "+response.status);
+    const records=await response.json();
+    if(!Array.isArray(records))throw new Error("Unexpected NASA response");
+    records.sort((a,b)=>String(b.eventDate||"").localeCompare(String(a.eventDate||"")));
+    state.donki=records.length?records[0]:null;state.donkiLoaded=true;
+    if(state.donki){
+      const r=state.donki;
+      $("nasa-summary").textContent="Latest SEP record in the queried window: "+(r.eventDate||"date not supplied")+". This real record can anchor the Sol 4 learning scenario.";
+      $("nasa-state").textContent="NASA record loaded";
+      $("nasa-summary").innerHTML=escapeHtml("Latest SEP record: "+(r.eventDate||"date not supplied")+". ")+(r.link?'<a href="'+escapeHtml(r.link)+'" target="_blank" rel="noreferrer">Open NASA record ↗</a>':"");
+      log("NASA DONKI SEP data loaded • "+(r.eventDate||"record found"));
+    }else{
+      $("nasa-summary").textContent="NASA returned no SEP records in the last 30 days. The Sol 4 event will remain a clearly labelled fictional training scenario.";
+      $("nasa-state").textContent="No recent SEP records";
+    }
+  }catch(error){
+    state.donki=null;state.donkiLoaded=true;
+    $("nasa-summary").textContent="NASA data could not be loaded ("+error.message+"). The mission remains playable offline; Sol 4 will use a simulated training event.";
+    $("nasa-state").textContent="Offline fallback";
+  }finally{btn.disabled=false;btn.textContent="↻ Load NASA data";}
+}
+function openScience(){$("science-modal").classList.add("open");}
+function closeScience(){$("science-modal").classList.remove("open");}
+function reset(){ $("game-view").style.display="none";$("debrief-view").style.display="none";$("setup-view").style.display="block";$("reset-btn").classList.add("hidden");}
+
+document.querySelectorAll("#loadouts input").forEach(c=>c.addEventListener("change",updateLoadouts));
+Object.values(sliders).forEach(s=>s.addEventListener("input",()=>{forecast();}));
+$("start-btn").addEventListener("click",()=>{startMission();});
+$("advance-btn").addEventListener("click",advance);
+$("load-nasa").addEventListener("click",loadNasa);
+$("science-open").addEventListener("click",openScience);
+$("science-close").addEventListener("click",closeScience);
+$("science-modal").addEventListener("click",e=>{if(e.target===$("science-modal"))closeScience();});
+$("debrief-science").addEventListener("click",openScience);
+$("play-again").addEventListener("click",reset);
+$("reset-btn").addEventListener("click",reset);
+$("sound-toggle").addEventListener("click",()=>{soundOn=!soundOn;$("sound-toggle").textContent=soundOn?"♫ Sound on":"♫ Sound off";$("sound-toggle").setAttribute("aria-pressed",String(soundOn));beep(520,.08);});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeScience();});
+updateLoadouts();render();
+
+// Small self-checks for the non-trivial resource model.
+console.assert(clamp(-1,0,100)===0 && clamp(101,0,100)===100,"clamp bounds");
+console.assert(totalDemand({life:4,green:2,shelter:1,repair:1})===12,"baseline power demand");
+console.assert(Math.min(1,5/10)===.5,"power-shortfall ratio");
+})();
+</script>
+</body>
+</html>

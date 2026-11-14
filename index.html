@@ -3453,7 +3453,7 @@ MissionTypes.mining = function (env = {}) {
   m.hud = function () {
     return '♥'.repeat(Math.max(0,m.hp))+'♡'.repeat(3-Math.max(0,m.hp))+' · '+
       Math.ceil(Math.max(0,limit-m.elapsed))+' s · Minerals '+mined()+'/3 · Heat '+Math.round(m.heat*100)+'%'+
-      (m.lock>0?' · DRILL LOCKED':mined()===3?' · Return to green shuttle':' · Hold: drill / release: cool')+
+      (m.lock>0?' · DRILL LOCKED':mined()===3?' · Return to green habitat pad':' · Hold: drill / release: cool')+
       (tools?' · Efficient drill +20%':'')+(env.support==='oxygen'?' · Spare tank +15 s':'');
   };
   m.update = function (dt,input = {}) {
@@ -3462,7 +3462,7 @@ MissionTypes.mining = function (env = {}) {
     if(!(dt>0))return;
     m.elapsed+=dt;
     // Health and the oxygen clock always take priority over extraction or a return.
-    if(m.elapsed>=limit){finish(false,'Oxygen ran out before the minerals reached the shuttle.');return;}
+    if(m.elapsed>=limit){finish(false,'Oxygen ran out before the local-resource samples reached the habitat pad.');return;}
     const k=input.keys||{};
     let dx=(k.ArrowRight||k.KeyD?1:0)-(k.ArrowLeft||k.KeyA?1:0),dy=(k.ArrowDown||k.KeyS?1:0)-(k.ArrowUp||k.KeyW?1:0);
     let distance = 0;

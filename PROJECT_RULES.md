@@ -53,7 +53,7 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 - Daily slider allocations persist until changed by the player; do not silently reset their plan every Sol.
 - Each major repair must be selected as a target from its component inspector, meet a minimum delivered-power threshold, and consume one limited spare kit. The mission starts with three kits for four later repairable faults.
 - Keep seven major crisis beats on Sols 3, 7, 11, 15, 19, 23 and 27, plus seven choice incidents on Sols 5, 9, 13, 17, 21, 25 and 29. Choice effects must persist and be recorded in the debrief.
-- Field operations offer two EVA slots per Sol. Panel cleaning, rover sample collection, lab analysis and communications-relay repair each consume a slot; unsuccessful attempts also consume the slot.
+- Field operations offer three slots per Sol, including Sol 1. Panel cleaning, rover exploration, sample analysis, signal recovery, cave geology, astronaut rescue, local-resource prospecting, emergency repair and base construction consume a slot; unsuccessful attempts also consume a slot.
 - Rover battery recharges slowly. Do not allow unlimited rover trips or unlimited fieldwork in one Sol.
 - Cadet skills can tune challenge length and guidance, but must grow through actual play. Never use quiz correctness as a proxy for a student's real-world capability.
 - Open the mission alert briefing when a crisis begins and show active faults on the matching outpost hotspot.

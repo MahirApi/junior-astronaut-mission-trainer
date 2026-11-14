@@ -502,7 +502,7 @@ function renderIssues(){
   }).join("");
 }
 
-function applyEventForSol(sol){function applyEventForSol(sol){
+function applyEventForSol(sol){
   if(sol===2&&!state.dustSeen){
     state.dust=clamp(state.dust+.28,0,.65);state.dustSeen=true;
     brief("ENVIRONMENTAL ALERT","A dust front is approaching","Dust is settling on the solar arrays and reducing power generation. Allocate maintenance power to clear the panels, or conserve battery.","Maintenance competes with the power needed for life support and the greenhouse. A little repair work now may protect power later.");
@@ -543,7 +543,7 @@ function advance(){
   state.oxygen=clamp(state.oxygen+oxygenDelta,0,100);
   state.water=clamp(state.water+waterDelta,0,100);
   state.food=clamp(state.food-6.2,0,100);
-  const cropRecovery=actualGreen>=3?.2:0;
+  const cropRecovery=actualGreen >= 3 ? 0.2 : 0;
   state.crop+=actualGreen*1.8*Math.min(1,state.cropEfficiency+cropRecovery);
   if(state.crop>=20){const harvests=Math.floor(state.crop/20);state.crop-=harvests*20;state.food=clamp(state.food+harvests*16,0,100);state.harvests+=harvests;log("Harvest collected • +"+(harvests*16)+" food");}
   state.dust=clamp(state.dust-actualRepair*.08,0,.65);

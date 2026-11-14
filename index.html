@@ -969,7 +969,7 @@ function componentHasIssue(key){const c=componentInfo[key];return !!(c&&c.failed
 function repairActionList(key){
   const actions=[];
   const add=(target,label,slider,value)=>actions.push({target,label,slider,value});
-  if(key==="solar"&&(state.dust>.05||state.arrayDamage>.05))add("solar","Clean panels · Maintenance 2","repair",2);
+  if(key==="solar"&&(state.dust>.05||state.arrayDamage>.05))add("solar","Repair arrays · Maintenance 2 + 1 kit","repair",2);
   if(key==="life"){
     if(state.filterClog>.05)add("filter","Service filter · Life support 6","life",6);
     if(state.pressureLeak>.05)add("leak","Patch seal · Maintenance 2","repair",2);
@@ -1143,8 +1143,10 @@ function advance(){
   // deliver enough power to the right system, and spend one of only three repair kits.
   if(state.dustStormSols>0)state.dust=clamp(state.dust+.01,0,.85);
   if(state.repairTarget==="solar"){
-    state.dust=clamp(state.dust-actualRepair*.03,0,.85);
-    state.arrayDamage=clamp(state.arrayDamage-actualRepair*.1,0,5);
+    if(beginRepair("solar",actualRepair,1.6)){
+      state.dust=clamp(state.dust-actualRepair*.03,0,.85);
+      state.arrayDamage=clamp(state.arrayDamage-actualRepair*.1,0,5);
+    }
   }else if(state.repairTarget==="filter"&&state.filterClog>0){
     if(beginRepair("filter",actualLife,5))state.filterClog=clamp(state.filterClog-.3,0,2);
   }else if(state.repairTarget==="blight"){

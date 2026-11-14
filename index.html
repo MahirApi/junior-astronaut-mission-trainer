@@ -273,7 +273,7 @@
   </div>
 
   <section class="stats" aria-label="Outpost resource levels">
-    <div class="stat"><div class="stat-top"><span class="stat-label">POWER</span><span class="stat-icon">ϟ</span></div><div class="stat-value"><span id="v-power">2</span><span class="stat-unit" id="power-capacity-unit"> / 800 kWh</span></div><div class="meter"><i id="m-power"></i></div><div class="stat-note" id="n-power">Solar generation: 1,200 kWh / Sol</div></div>
+    <div class="stat"><div class="stat-top"><span class="stat-label">POWER</span><span class="stat-icon">ϟ</span></div><div class="stat-value"><span id="v-power">2</span><span class="stat-unit" id="power-capacity-unit"> / 800 kWh</span></div><div class="meter"><i id="m-power"></i></div><div class="stat-note" id="n-power">Fission primary 1,000 + solar support 300 kWh / Sol</div></div>
     <div class="stat"><div class="stat-top"><span class="stat-label">OXYGEN</span><span class="stat-icon">◌</span></div><div class="stat-value"><span id="v-oxygen">78</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-oxygen"></i></div><div class="stat-note">Crew breathing reserve</div></div>
     <div class="stat"><div class="stat-top"><span class="stat-label">WATER</span><span class="stat-icon">♒</span></div><div class="stat-value"><span id="v-water">74</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-water"></i></div><div class="stat-note">Storage + recycled water</div></div>
     <div class="stat"><div class="stat-top"><span class="stat-label">FOOD</span><span class="stat-icon">✿</span></div><div class="stat-value"><span id="v-food">68</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-food"></i></div><div class="stat-note" id="n-food">Greenhouse crop cycle: 0%</div></div>
@@ -1702,7 +1702,7 @@ function applyEventForSol(sol){
   let event=null,incidentId=null;
   if(sol===3&&!state.dustSeen){
     state.dustSeen=true;state.dust=clamp(state.dust+.18,0,.85);
-    event={kicker:"CRISIS 1 • ENVIRONMENTAL",title:"Dust is choking the solar arrays",copy:"A moving dust front has dimmed the sky and coated the panels. Solar generation is falling. The dust will stay until the crew spends power on maintenance.",note:"Try to keep the life-support loop running while assigning Maintenance to clear the arrays. You may need to pause greenhouse growth for a few Sols."};
+    event={kicker:"CRISIS 1 • ENVIRONMENTAL",title:"Dust is choking the solar arrays",copy:"A moving dust front has dimmed the sky and coated the panels. Supplemental solar power is falling, but the primary fission supply remains steady. The dust will stay until the crew spends power on maintenance.",note:"Try to keep the life-support loop running while assigning Maintenance to clear the arrays. You may need to pause greenhouse growth for a few Sols."};
     log("Sol 3 • Dust front reduced solar generation");beep(260,.22);
   }else if(sol===5){
     incidentId="dust-devil";

@@ -482,6 +482,12 @@ function startAssessment(){
  showOnlyStage("preflight-view");
  renderAssessmentSummary();
 }
+function renderAssessmentSummary(){
+ const content=$("preflight-content");
+ content.innerHTML='<div class="preflight-question"><div class="task-kicker">CHOOSE LANDING REGION</div><h2>Where should we build?</h2><p class="tiny muted">Each region changes your starting supplies a little. These are game scenarios, not real landing recommendations.</p><div class="site-picks">'+Object.entries(SITES).map(([key,site])=>'<button class="site-pick '+(state.siteKey===key?"selected":"")+'" data-site="'+key+'"><b>'+site.name+'</b><span>'+site.tag+'<br>'+site.desc+'</span></button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="begin-landing">Start landing arcade →</button></div></div>';
+ content.querySelectorAll("[data-site]").forEach(button=>button.addEventListener("click",()=>{state.siteKey=button.dataset.site;renderAssessmentSummary();}));
+ $("begin-landing").addEventListener("click",beginLanding);
+}
 updateCadetHeader();
 updateCadetHeader();
 

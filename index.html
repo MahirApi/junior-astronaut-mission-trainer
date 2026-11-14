@@ -129,8 +129,8 @@
 .base-campus{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
 .base-campus-heading,.cosmetic-bay{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .base-campus-heading h3,.cosmetic-bay h3{margin:3px 0 0;font-size:15px}
-.base-campus-art{margin:13px 0;padding:16px 12px;min-height:210px;border:1px solid #40535c;border-radius:14px;background:radial-gradient(ellipse at 50% 80%,#9a6148 0,#52362f 38%,#17252c 39%,#111c23 100%);display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;align-items:center}
-.base-core{grid-column:2;grid-row:1/3;min-height:130px;border:2px solid #8eb7be;border-radius:56px 56px 18px 18px;background:linear-gradient(145deg,#88afb7aa,#435d6baa);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 0 25px #7ec8d355}
+.base-campus-art{margin:13px 0;padding:16px 12px;min-height:290px;border:1px solid #40535c;border-radius:14px;background:radial-gradient(ellipse at 50% 80%,#9a6148 0,#52362f 38%,#17252c 39%,#111c23 100%);display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:repeat(3,minmax(76px,1fr));gap:10px;align-items:center}
+.base-core{grid-column:2;grid-row:1/4;min-height:130px;border:2px solid #8eb7be;border-radius:56px 56px 18px 18px;background:linear-gradient(145deg,#88afb7aa,#435d6baa);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 0 25px #7ec8d355}
 .base-core span{font-size:36px}.base-core b{font-size:10px;letter-spacing:.09em}.base-core small{font-size:8px;color:#b6d4d1}
 .base-module-slot{min-height:76px;padding:8px;border:1px dashed #657985;border-radius:11px;background:#101c25cc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center}
 .base-module-slot span{font-size:25px;color:var(--blue)}.base-module-slot b{font-size:9px;letter-spacing:.07em}.base-module-slot small{font-size:8px;color:var(--muted)}
@@ -327,6 +327,8 @@
           <div class="base-module-slot" data-module-slot="laboratory"><span>＋</span><b>LABORATORY</b><small>NOT BUILT</small></div>
           <div class="base-module-slot" data-module-slot="hangar"><span>＋</span><b>ROVER HANGAR</b><small>NOT BUILT</small></div>
           <div class="base-module-slot" data-module-slot="quarters"><span>＋</span><b>CREW QUARTERS</b><small>NOT BUILT</small></div>
+          <div class="base-module-slot" data-module-slot="solarWing"><span>＋</span><b>SOLAR ARRAY WING</b><small>NOT BUILT</small></div>
+          <div class="base-module-slot" data-module-slot="batteryBank"><span>＋</span><b>BATTERY BANK</b><small>NOT BUILT</small></div>
         </div>
         <div class="material-inventory" id="material-inventory"></div>
         <div class="base-build-grid" id="base-build-grid"></div>
@@ -336,7 +338,7 @@
     </div>
   </section>
 <section class="panel field-ops-panel" id="field-ops-panel">
-    <div class="panel-head"><div><div class="eyebrow">CREW FIELDWORK • SCIENCE & MAINTENANCE</div><h2>FIELD OPERATIONS</h2></div><span class="tag" id="ops-slots">2 FIELD OPS / SOL</span></div>
+    <div class="panel-head"><div><div class="eyebrow">CREW FIELDWORK • SCIENCE & MAINTENANCE</div><h2>FIELD OPERATIONS</h2></div><span class="tag" id="ops-slots">3 OPERATIONS / SOL</span></div>
     <p class="tiny muted">Choose up to three field operations each Sol. Clean the arrays, maintain life support, explore Mars, recover crew, prospect local resources, repair communications and study returned samples. Each operation costs electrical energy and EVA time.</p>
     <div class="field-task-grid" id="field-task-grid"></div>
     <div class="field-ops-footer"><span class="tiny muted" id="field-ops-note">Choose field jobs carefully. Each one uses one operation slot.</span><span class="tiny muted" id="field-ops-progress">0 operations completed</span></div>
@@ -553,7 +555,15 @@ updateCadetHeader();
 function values(){return {life:+sliders.life.value,green:+sliders.green.value,shelter:+sliders.shelter.value,repair:+sliders.repair.value};}
 function upgrades(){return new Set(state.upgrades);}
 function batteryCapacity(){return state.powerCapacity+(upgrades().has("battery")?8:0)+(state.baseModules?.batteryBank?8:0);}
-function solarOutput(){return Math.max(2,Math.round((10+(upgrades().has("panels")?3:0)+(state.baseModules?.solarWing?3:0)-state.arrayDamage)*(1-state.dust)*(state.dustStormSols>0?.82:1)));}
+function surfacePowerBreakdown(){
+  // Game scale: 1 unit = 100 kWh. Model a steady 10-unit fission baseload
+  // plus optional solar support. Dust and array damage affect only the solar part.
+  const fission=10;
+  const solarInstalled=(upgrades().has("panels")?3:0)+(state.baseModules?.solarWing?3:0);
+  const solar=Math.round(Math.max(0,solarInstalled-state.arrayDamage)*(1-state.dust)*(state.dustStormSols>0?.82:1));
+  return {fission,solar,total:fission+solar};
+}
+function surfacePowerOutput(){return surfacePowerBreakdown().total;}
 function energyToKWh(units){return Math.round(units*100);}
 function canSpendStoredEnergy(units){return state.battery>=units;}
 function basePowerDemand(){return 4+state.heaterFault;}
@@ -564,7 +574,7 @@ function allocationRatio(v,available){
   const requested=requestedAllocations(v);
   return requested>0?Math.min(1,budget/requested):1;
 }
-function availablePower(){return solarOutput()+state.battery;}
+function availablePower(){return surfacePowerOutput()+state.battery;}
 function forecast(){
   const v=values(),base=basePowerDemand(),demand=totalDemand(v),available=availablePower();
   const baseRatio=Math.min(1,available/base),ratio=allocationRatio(v,available);
@@ -611,7 +621,8 @@ function render(){
   meter("power",state.battery/batteryCapacity()*100);meter("oxygen",state.oxygen);meter("water",state.water);meter("food",state.food);meter("safety",state.safety);meter("spares",state.spareParts/3*100);meter("science",state.science||0);
   if($("n-science"))$("n-science").textContent="Samples studied: "+(state.fieldOps?.studied||0);
   $("n-spares").textContent=state.spareParts===0?"No repair kits remain":state.spareParts+" repair kits available";
-  $("n-power").textContent="Solar generation: "+energyToKWh(solarOutput())+" kWh / Sol";
+  const powerMix=surfacePowerBreakdown();
+  $("n-power").textContent="Fission primary "+energyToKWh(powerMix.fission)+" + solar support "+energyToKWh(powerMix.solar)+" kWh / Sol";
   $("n-food").textContent="Greenhouse crop cycle: "+Math.round(state.crop/20*100)+"%";
   $("n-safety").textContent=state.safety<50?"Crew needs attention":"Shelter procedures available";
   $("outpost-panel").classList.toggle("dusty",state.dust>.12);
@@ -1590,7 +1601,7 @@ function consumeStoredEnergy(units){
  state.battery=clamp(state.battery-units,0,batteryCapacity());return true;
 }
 const componentInfo={
-solar:{title:"Solar array network",system:"POWER GENERATION",copy:"The solar wings collect energy for every outpost system. Dust and deployment damage reduce available generation.",slider:"repair",failed:()=>state.arrayDamage>0||state.dust>0.05,issue:()=>(state.arrayDamage>0?"Array bus damage: "+state.arrayDamage.toFixed(1)+" modeled units. ":"Dust is reducing solar generation. ")+"Increase Maintenance in the Command Console to clear dust and repair the bus over multiple Sols.",normal:"Arrays are tracking the Sun. Generation is within expected training range.",action:"Set maintenance to 2"},
+solar:{title:"Solar auxiliary array",system:"SUPPLEMENTAL POWER",copy:"A modeled fission generator supplies the steady primary load. Solar wings add supplementary electricity; dust and array damage affect this solar contribution, not the fission baseload.",slider:"repair",failed:()=>state.arrayDamage>0||state.dust>0.05,issue:()=>(state.arrayDamage>0?"Solar-wing damage: "+state.arrayDamage.toFixed(1)+" modeled units. ":"Dust is reducing the solar contribution. ")+"Increase Maintenance in the Command Console to clear dust and repair the array over multiple Sols.",normal:"The fission baseload is steady. Solar wings are tracking the Sun and adding power.",action:"Set maintenance to 2"},
 life:{title:"Habitat • life support",system:"OXYGEN, WATER & TEMPERATURE",copy:"The habitat contains the air and water recycling equipment and thermal controls that keep the crew supplied.",slider:"life",failed:()=>state.recyclerDamage>0||state.filterClog>0.08||state.pressureLeak>0.08||state.heaterFault>0||state.water<35||state.oxygen<35,issue:()=>[(state.recyclerDamage>0?"Recycler fault: recovery remains degraded. ":""),(state.filterClog>0.08?"Filter clog: "+state.filterClog.toFixed(1)+" modeled units remain. ":""),(state.pressureLeak>0.08?"Pressure leak: "+state.pressureLeak.toFixed(1)+" oxygen-loss units per Sol. ":""),(state.heaterFault>0?"Thermal controller fault: +"+state.heaterFault.toFixed(1)+" power demand. ":""),(state.water<35||state.oxygen<35?"Habitat reserves are running low. ":"")].join("")+"Increase Life Support to clear the water filter; use Maintenance to close leaks and repair the heater.",normal:"Air, water and temperature controls are operating. Watch the reserves.",action:"Set life support to 6"},
 green:{title:"Hydroponic greenhouse",system:"FOOD PRODUCTION",copy:"The greenhouse converts power, water and time into future harvests. Plants cannot replace all life-support equipment.",slider:"green",failed:()=>state.cropEfficiency<1||state.cropBlight>0.08,issue:()=>"Crop output is reduced by setup damage or blight. "+Math.round((1-state.cropBlight)*100)+"% of the normal growth rate remains before other penalties. Sustained Greenhouse allocation helps recovery.",normal:"Grow beds are stable. Keep water and lighting available for the next harvest.",action:"Set greenhouse to 4"},
 shelter:{title:"Storm shelter",system:"RADIATION PROTECTION",copy:"The shelter gives the crew a protected place during the mission's simulated space-weather drill.",slider:"shelter",failed:()=>state.shieldLoss>0||state.shelterDrillPending,issue:()=>(state.shieldLoss>0?"Shield seam fault: modeled protection is reduced by "+Math.round(state.shieldLoss)+" points. ":"Solar-weather shelter drill is active. ")+"Increase Shelter allocation during the drill.",normal:"Shelter seals are intact. Keep some power available for a storm response.",action:"Set shelter to 3"}
@@ -1729,7 +1740,7 @@ function startMission(){
   state.sol=1;state.battery=clamp(state.battery,0,8);state.harvests=0;state.crop=state.crop||0;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];
   state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
   state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
-  state.fieldOps.slots=2;state.fieldOps.doneToday={};state.fieldOps.completed=0;state.fieldOps.successful=0;
+  state.fieldOps.slots=3;state.fieldOps.doneToday={};state.fieldOps.completed=0;state.fieldOps.successful=0;
   showOnlyStage("game-view");$("reset-btn").classList.remove("hidden");
   sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
   log("Landing complete at "+(state.siteName||"Gale Crater")+" • crew assignments locked • Sol 1 begins");
@@ -1747,7 +1758,7 @@ function beginRepair(key,actual,threshold){
   return true;
 }
 function advance(){
-  const v=values(),solar=solarOutput(),available=availablePower(),base=basePowerDemand(),demand=totalDemand(v);
+  const v=values(),surfaceGeneration=surfacePowerOutput(),available=availablePower(),base=basePowerDemand(),demand=totalDemand(v);
   const requested=requestedAllocations(v),baseRatio=Math.min(1,available/base),ratio=allocationRatio(v,available);
   const actualLife=v.life*ratio,actualGreen=v.green*ratio,actualShelter=v.shelter*ratio,actualRepair=v.repair*ratio;
   const delivered=requested*ratio,used=Math.min(available,base*baseRatio+delivered);
@@ -1817,7 +1828,7 @@ function advance(){
   if(state.heaterFault>0&&ratio<.95)state.safety=clamp(state.safety-2,0,100);
   if(baseRatio<.999)log("Habitat base load shortfall • life-support essentials are underpowered");
   if(ratio<.999)log("Power rationing • allocations received "+Math.round(ratio*100)+"% of requests");
-  log("Sol "+state.sol+" complete • solar "+solar+" / requested "+demand);
+  log("Sol "+state.sol+" complete • surface generation "+surfaceGeneration+" / requested "+demand);
   beep(440,.09);
 
   if(state.oxygen<=0||state.water<=0||state.food<=0||state.safety<=0){endMission(false);return;}
@@ -2101,8 +2112,12 @@ updateLoadouts();renderIssues();render();
 console.assert(clamp(-1,0,100)===0 && clamp(101,0,100)===100,"clamp bounds");
 console.assert(totalDemand({life:4,green:2,shelter:1,repair:1})===12,"baseline power demand");
 console.assert(Math.min(1,5/10)===.5,"power-shortfall ratio");
-const normalSolar=solarOutput();state.dustStormSols=1;const stormSolar=solarOutput();state.dustStormSols=0;
-console.assert(stormSolar<=normalSolar,"dust storm reduces solar generation");
+const savedDust=state.dust,savedArrayDamage=state.arrayDamage,savedDustStorm=state.dustStormSols;
+const clearPower=surfacePowerBreakdown();state.dust=.8;state.dustStormSols=1;const dustyPower=surfacePowerBreakdown();
+state.dust=savedDust;state.arrayDamage=savedArrayDamage;state.dustStormSols=savedDustStorm;
+console.assert(clearPower.fission===10,"Primary fission generation remains a steady baseload.");
+console.assert(dustyPower.fission===clearPower.fission,"Dust storms must not reduce modeled fission power.");
+console.assert(dustyPower.solar<=clearPower.solar&&dustyPower.total<=clearPower.total,"Dust storms reduce only the solar contribution.");
 state.heaterFault=2;
 console.assert(totalDemand({life:4,green:2,shelter:1,repair:1})===14,"heater crisis increases demand");
 state.heaterFault=0;

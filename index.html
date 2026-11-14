@@ -906,6 +906,63 @@ function consumeStoredEnergy(units){
  if(state.battery<units){brief("POWER RESERVE","Not enough stored electricity","This operation needs "+energyToKWh(units)+" kWh, but the reserve is only "+energyToKWh(state.battery)+" kWh.","Protect the habitat first or wait for the next energy surplus.");return false;}
  state.battery=clamp(state.battery-units,0,batteryCapacity());return true;
 }
+function launchCaveTask(){
+ const width=900,height=500,exit={x:78,y:250},player={x:exit.x,y:exit.y};
+ const minerals=[{x:290,y:105,found:false},{x:575,y:365,found:false},{x:785,y:175,found:false}];
+ const rocks=[{x:200,y:190,r:42},{x:420,y:305,r:38},{x:500,y:115,r:36},{x:710,y:320,r:45},{x:340,y:420,r:27}];
+ let oxygen=75,last=performance.now(),finished=false;
+ const caveKeys={up:false,down:false,left:false,right:false};
+ const markup='<p class="tiny muted">Explore a sheltered Martian subsurface formation. Collect three geological samples and return to the entrance before your suit oxygen runs low.</p><canvas id="cave-canvas" width="900" height="500" class="rover-map" tabindex="0" aria-label="Cave survey. Use WASD or arrow keys to explore, Space to collect a nearby mineral."></canvas><div class="rover-readouts"><div><span>SUIT OXYGEN</span><b id="cave-oxygen">75 s</b></div><div><span>SAMPLES</span><b id="cave-samples">0 / 3</b></div><div><span>EXIT DISTANCE</span><b id="cave-distance">0 m</b></div><div><span>HEADLAMP</span><b>ACTIVE</b></div></div><p class="tiny muted" id="cave-hint">Use WASD or arrows. Press Space beside a glowing mineral to collect it.</p><button class="secondary-btn" id="cave-abort">Call off the survey</button>';
+ openOpsModal("Cave exploration • geological survey",markup);
+ const canvas=$("cave-canvas"),ctx=canvas.getContext("2d");
+ function collides(x,y){return x<34||x>866||y<34||y>466||rocks.some(r=>Math.hypot(x-r.x,y-r.y)<r.r+14);}
+ function draw(){
+  ctx.fillStyle="#17242b";ctx.fillRect(0,0,width,height);
+  ctx.beginPath();ctx.moveTo(35,250);ctx.bezierCurveTo(115,45,240,40,315,185);ctx.bezierCurveTo(400,365,490,440,590,270);ctx.bezierCurveTo(690,70,790,55,865,245);
+  ctx.lineWidth=275;ctx.strokeStyle="#5e493e";ctx.stroke();
+  ctx.beginPath();ctx.moveTo(35,250);ctx.bezierCurveTo(115,45,240,40,315,185);ctx.bezierCurveTo(400,365,490,440,590,270);ctx.bezierCurveTo(690,70,790,55,865,245);
+  ctx.lineWidth=238;ctx.strokeStyle="#28292d";ctx.stroke();
+  for(let i=0;i<36;i++){const x=(i*197)%width,y=(i*89+43)%height;ctx.beginPath();ctx.ellipse(x,y,12+i%4*4,5+i%3*4,i*.3,0,Math.PI*2);ctx.fillStyle=i%2?"#493a37":"#7d5e4c";ctx.fill();}
+  rocks.forEach(r=>{ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,Math.PI*2);ctx.fillStyle="#58463d";ctx.fill();ctx.strokeStyle="#a17a5d";ctx.lineWidth=3;ctx.stroke();});
+  minerals.forEach((p,i)=>{if(p.found)return;ctx.beginPath();ctx.arc(p.x,p.y,13,0,Math.PI*2);ctx.fillStyle="#65e4da";ctx.fill();ctx.strokeStyle="#d3fffb";ctx.lineWidth=3;ctx.stroke();ctx.fillStyle="#eafffc";ctx.font="10px system-ui";ctx.textAlign="center";ctx.fillText("SAMPLE "+(i+1),p.x,p.y-23);});
+  ctx.beginPath();ctx.arc(exit.x,exit.y,20,0,Math.PI*2);ctx.fillStyle="#7bd5a3";ctx.fill();ctx.fillStyle="#142027";ctx.font="bold 10px system-ui";ctx.textAlign="center";ctx.fillText("EXIT",exit.x,exit.y+4);
+  ctx.beginPath();ctx.arc(player.x,player.y,12,0,Math.PI*2);ctx.fillStyle="#e8d4b9";ctx.fill();ctx.beginPath();ctx.arc(player.x+5,player.y-4,26,0,Math.PI*2);ctx.fillStyle="rgba(184,246,236,.18)";ctx.fill();
+ }
+ function finish(success,message){
+  if(finished)return;finished=true;
+  document.removeEventListener("keydown",keyDown);document.removeEventListener("keyup",keyUp);activeOpsCleanup=null;
+  finishFieldTask("cave",success,message);
+ }
+ function keyDown(e){
+  const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};
+  if(map[k]){caveKeys[map[k]]=true;e.preventDefault();}
+  if(k===" "){
+   const target=minerals.find(p=>!p.found&&Math.hypot(player.x-p.x,player.y-p.y)<48);
+   if(target){target.found=true;$("cave-samples").textContent=minerals.filter(p=>p.found).length+" / 3";$("cave-hint").textContent="Mineral sample secured. Keep exploring.";}
+   else $("cave-hint").textContent="Move closer to a glowing mineral marker first.";
+   e.preventDefault();
+  }
+ }
+ function keyUp(e){const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};if(map[k])caveKeys[map[k]]=false;}
+ document.addEventListener("keydown",keyDown);document.addEventListener("keyup",keyUp);
+ activeOpsCleanup=()=>{document.removeEventListener("keydown",keyDown);document.removeEventListener("keyup",keyUp);activeOpsCleanup=null;};
+ $("cave-abort").onclick=()=>finish(false,"The cave survey was called off. No sample set was returned.");
+ function frame(now){
+  if(finished)return;
+  const dt=Math.min(.05,(now-last)/1000);last=now;oxygen=Math.max(0,oxygen-dt);
+  const dx=(caveKeys.right?1:0)-(caveKeys.left?1:0),dy=(caveKeys.down?1:0)-(caveKeys.up?1:0),len=Math.hypot(dx,dy)||1;
+  const nx=player.x+dx/len*145*dt,ny=player.y+dy/len*145*dt;if(!collides(nx,ny)){player.x=nx;player.y=ny;}
+  const count=minerals.filter(p=>p.found).length;
+  $("cave-oxygen").textContent=oxygen.toFixed(0)+" s";$("cave-distance").textContent=Math.round(Math.hypot(player.x-exit.x,player.y-exit.y))+" m";
+  draw();
+  if(oxygen<=0){finish(false,"Suit oxygen ran low before the cave team returned. The survey was aborted.");return;}
+  if(count===3&&Math.hypot(player.x-exit.x,player.y-exit.y)<35){finish(true,"All three geological samples were collected and the team returned to the entrance.");return;}
+  if(count===3)$("cave-hint").textContent="Three samples secured. Return to the green entrance marker.";
+  requestAnimationFrame(frame);
+ }
+ draw();canvas.focus();requestAnimationFrame(frame);
+}
+
 function startFieldTask(id){
  if(state.fieldOps.slots<=0)return;
  const costs={clean:.03,relay:.08,lab:.02,signal:.06,cave:.08,rescue:.07,prospect:.12,emergency:.06,

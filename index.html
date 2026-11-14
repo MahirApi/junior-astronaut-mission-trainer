@@ -534,14 +534,61 @@ function showOnlyStage(id){
   });
 }
 function beginLanding(){
-  state.sol=1;state.battery=2;state.oxygen=82;state.water=82;state.food=82;state.safety=100;state.crop=0;state.harvests=0;state.dust=0;
-  state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];state.taskResults={};state.taskIndex=0;
+  const site=SITES[state.siteKey]||SITES.gale;
+  state.sol=1;state.battery=site.battery;state.oxygen=82;state.water=site.water;state.food=82;state.safety=100;state.crop=0;state.harvests=0;state.dust=site.dust;
+  state.science=site.science;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];state.taskResults={};state.taskIndex=0;
   state.arrayDamage=0;state.recyclerDamage=0;state.cropEfficiency=1;state.shieldLoss=0;state.shieldBonus=0;
   state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
   state.filterClogSeen=false;state.cropBlightSeen=false;state.pressureLeakSeen=false;state.heaterFaultSeen=false;
   state.spareParts=3;state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
+  state.incidentLog=[];
+  state.fieldOps={slots:2,completed:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0};
   state.assignments={solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"};
-  showOnlyStage("landing-view");$("reset-btn").classList.remove("hidden");
+  state.landingSuccess=null;state.siteName=site.name;
+  $("chosen-site-name").textContent=site.name;
+  $("landing-report").textContent='Captain\'s log: "Site survey complete. We begin with the equipment we managed to land safely."';
+  $("reset-btn").classList.remove("hidden");
+  startLandingChallenge();
+}
+function startLandingChallenge(){
+  const tier=skillTier("pilot");
+  const cfg=[null,{maxSpeed:8,maxOffset:10,wind:0.55,label:"PRACTICE"},{maxSpeed:5.5,maxOffset:7,wind:0.85,label:"STANDARD"},{maxSpeed:3.5,maxOffset:4.5,wind:1.15,label:"ADVANCED"}][tier];
+  state.landing={turn:0,turns:6,altitude:1200,speed:17,offset:0,fuel:100,wind:(Math.random()-.5)*cfg.wind*2,steer:0,tier,...cfg,done:false};
+  showOnlyStage("landing-minigame-view");
+  renderLandingChallenge();
+}
+function renderLandingChallenge(){
+  const l=state.landing;
+  const content=$("landing-minigame-content");
+  if(l.done){
+    const ok=state.landingSuccess;
+    content.innerHTML='<div class="preflight-feedback" style="border-color:'+(ok?"#466a59":"#874a45")+'"><strong>'+(ok?"✓ SAFE TOUCHDOWN":"⚠ HARD LANDING")+'</strong><br>'+(ok?"The crew and cargo are intact. Your precise descent earns a small reserve bonus.":"The lander touched down outside the safe envelope. The array frame is damaged and one spare repair kit was lost protecting the crew.")+'</div><div class="landing-status"><div class="landing-readout"><span>TOUCHDOWN SPEED</span><strong>'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>PAD OFFSET</span><strong>'+Math.abs(l.offset).toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL LEFT</span><strong>'+Math.round(l.fuel)+'%</strong></div><div class="landing-readout"><span>PILOTING</span><strong>'+l.label+'</strong></div></div><div class="puzzle-actions"><button class="primary-btn" id="landing-continue">Continue to site survey →</button></div>';
+    $("landing-continue").addEventListener("click",()=>showOnlyStage("landing-view"));
+    return;
+  }
+  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong id="landing-altitude">'+Math.round(l.altitude)+' m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong id="landing-speed">'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>LANDING PAD OFFSET</span><strong id="landing-offset">'+l.offset.toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL</span><strong id="landing-fuel">'+Math.round(l.fuel)+'%</strong></div></div><div class="landing-meter"><i id="landing-altitude-bar" style="width:100%"></i></div><div class="landing-controls"><div class="landing-control"><label for="landing-throttle">MAIN ENGINE THRUST <output id="landing-throttle-value">90%</output></label><input id="landing-throttle" type="range" min="45" max="100" step="5" value="90"><p class="tiny muted">More thrust slows your descent, but uses more fuel.</p></div><div class="landing-control"><label>STEER INTO THE CROSSWIND</label><div class="steering-buttons"><button class="secondary-btn" data-steer="-1">← LEFT</button><button class="secondary-btn selected" data-steer="0">CENTER</button><button class="secondary-btn" data-steer="1">RIGHT →</button></div><p class="tiny muted" id="landing-wind-note">Crosswind: '+(l.wind>0?"pushing right":"pushing left")+'. Choose a correction.</p></div></div><div class="power-summary"><span>DESCENT BURN <strong>'+(l.turn+1)+' / '+l.turns+'</strong></span><span>TRAINING <strong>'+l.label+'</strong></span></div><div class="puzzle-actions"><button class="primary-btn" id="landing-burn">Apply thrust & descend →</button></div>';
+  $("landing-throttle").addEventListener("input",()=>{$("landing-throttle-value").textContent=$("landing-throttle").value+"%";});
+  $("landing-burn").addEventListener("click",applyLandingBurn);
+  content.querySelectorAll("[data-steer]").forEach(btn=>btn.addEventListener("click",()=>{
+    l.steer=+btn.dataset.steer;content.querySelectorAll("[data-steer]").forEach(b=>b.classList.toggle("selected",b===btn));
+  }));
+}
+function applyLandingBurn(){
+  const l=state.landing;if(!l||l.done)return;
+  const throttle=+$("landing-throttle").value;
+  l.fuel=Math.max(0,l.fuel-(2+throttle*.065));
+  l.speed=clamp(l.speed+1.8-throttle*.048,.5,30);
+  l.offset=clamp(l.offset+l.wind+l.steer*1.8,-30,30);
+  l.altitude=Math.max(0,l.altitude-200);l.turn++;
+  l.wind=(Math.random()-.5)*({1:.55,2:.85,3:1.15}[l.tier])*2;
+  if(l.turn>=l.turns||l.fuel<=0){
+    l.done=true;
+    state.landingSuccess=l.speed<=l.maxSpeed&&Math.abs(l.offset)<=l.maxOffset&&l.fuel>10;
+    if(state.landingSuccess){state.battery=clamp(state.battery+2,0,8);awardCadetXP(12,"pilot",2);log("Landing simulation passed • +2 starting battery reserve");}
+    else{state.arrayDamage=1.5;state.spareParts=Math.max(1,state.spareParts-1);state.battery=Math.max(0,state.battery-2);state.safety=92;awardCadetXP(4,"pilot",0);log("Hard touchdown • solar frame damaged and one spare kit lost");}
+    renderLandingChallenge();return;
+  }
+  renderLandingChallenge();
 }
 function renderAssignments(){
   $("assignment-grid").innerHTML=taskDefinitions.map(task=>{

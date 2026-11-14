@@ -19,6 +19,8 @@ This document separates source observations from the educational model used by O
 ## Supporting NASA references
 - NASA Life Support Baseline Values and Assumptions Document (BVAD): https://ntrs.nasa.gov/citations/20210024855
 - NASA, Mars Surface Power Generation Challenges and Considerations: https://www.nasa.gov/wp-content/uploads/2024/01/mars-surface-power-generation-challenges-and-considerations.pdf
+- NASA, 2024 Moon to Mars Architecture Concept Review — Mars Surface Power Technology Decision (fission selected as primary for initial crewed Mars missions): https://www.nasa.gov/wp-content/uploads/2024/12/acr24-mars-surface-power-decision.pdf
+- NASA Fission Surface Power program (40-kilowatt-class development target; planned lunar demonstration before Mars use): https://www.nasa.gov/exploration-systems-development-mission-directorate/fission-surface-power/
 - NASA Humans to Mars overview: https://www.nasa.gov/humans-in-space/humans-to-mars/
 - NASA/JPL, Martian Dust Devil Whirls Into Opportunity's View: https://www.jpl.nasa.gov/news/martian-dust-devil-whirls-into-opportunitys-view/
 - NASA, Growing Plants in Space (Veggie): https://www.nasa.gov/exploration-research-and-technology/growing-plants-in-space/
@@ -33,7 +35,7 @@ This document separates source observations from the educational model used by O
 - The mission lasts 30 game Sols and tracks a fictional five-person crew.
 - Cadet skill tracks start in Practice and become more demanding through XP earned by playing the minigames. There is no knowledge quiz or scored preflight assessment; XP is a game progression system, not a measure of student knowledge.
 - Habitat essentials draw a fixed four game power units per Sol before the player allocations are served. The remaining supply is a shared pool divided proportionally among requested life-support, greenhouse, shelter and maintenance allocations. Over-budget allocations receive only a fraction of the requested power.
-- A successful solar commissioning minigame adds starting battery reserve; solar generation, battery capacity and dust penalties are simplified deterministic rules. NASA's Mars surface power studies consider architectures beyond the solar-only system shown in this game.
+- The power architecture is a game-scale fission-primary / solar-auxiliary model. One internal energy unit is 100 kWh; the modeled primary fission baseload is 10 units (1,000 kWh per Sol, roughly 40 kW average over a Martian Sol), and a selected solar payload contributes up to 3 more units. A constructed solar wing can add up to another 3 units. Dust storms and array damage reduce only the solar contribution, while the fission baseload remains available. This mapping is inspired by NASA's 2024 decision to baseline fission as the primary power technology for initial crewed Mars missions and its 40-kW-class development target; it is not a design specification, prediction of deployed hardware or operational reactor model. The solar commissioning minigame affects supplemental array condition and starting reserve.
 - The player carries three abstract spare repair kits. Servicing a major filter, greenhouse, seal or heater fault consumes one kit when a repair successfully begins. This scarcity is a game mechanic, not a NASA supply estimate.
 - Major repairs require a selected component target, enough delivered power to meet its start threshold, and sustained allocation across multiple Sols. Allocating power to the wrong system does not repair the fault.
 - Life-support allocation affects the oxygen balance and water recovery. A scripted filter clog increases water loss until the player prioritizes Life Support.
@@ -44,7 +46,7 @@ This document separates source observations from the educational model used by O
 - Selectable site presets adjust fictional starting resources. They are not landing recommendations or real local-resource assessments for Gale, Jezero or Utopia.
 - Field science cards use NASA facts as context. For example, wind-cleaning events increased Opportunity solar-array output; NASA's Veggie system balances water, nutrients and airflow; Phoenix found water ice and perchlorate; NASA documents meteoroid impact risks; ISS life support has demonstrated 98% water recovery; and MOXIE produced oxygen on Mars. None of these NASA outcomes are calculated or reproduced by the game's simplified resource model.
 - Food and water are consumed over time. Crew safety can decline if reserves become critically low. The all-maximum allocation strategy is intentionally insufficient: power rationing lowers the actual power delivered to every requested system, prevents some repairs from starting, and allows reserves to run down. The player must change priorities and accept that some systems will temporarily receive less.
-- The exact power budget, battery reserve, repair thresholds, spare-kit count, EVA capacity, rover battery, landing tolerance, site bonuses, XP rewards and resource rates are invented training values. They are not scaled spacecraft engineering specifications or an operational Mars habitat design.
+- The exact power budget, 100-kWh internal energy unit, battery reserve, repair thresholds, spare-kit count, three-operation daily capacity, rover battery, landing tolerance, site bonuses, XP rewards and resource rates are invented training values. The 10-unit fission baseload is a deliberately simplified game mapping to a 40-kW-class average across a Martian Sol; it is not an engineering specification or an operational Mars habitat design. NASA's 40-kW-class Fission Surface Power effort is a development target, with lunar demonstration planned before future Mars use.
 - The visual landing arcade uses an intentionally simplified speed/crosswind model. It is not a physics-accurate Mars descent simulation and must not be presented as piloting instruction.
 - The solar-cable routing, recycler pressure balancing, grow-bed tuning, shelter seam sealant, relay repair, drag-to-scan sample activity and rover science actions are simplified educational interactions, not operational spacecraft, repair, laboratory or rover-command procedures.
 
@@ -81,3 +83,16 @@ A map tile is not a fixed real-world distance. The generated routes, terrain ele
 
 ## Commissioning minigame boundaries
 The solar-cable routing, water pressure/flow balancing, greenhouse grow-bed controls and shelter seam-sealant activity are simplified tactile learning interactions. Their pressure bands, plant-growth response, sealant supply and commissioning outcomes are invented game mechanics; they are not operational procedures for real spacecraft systems.
+
+
+## Outpost power and resource economy
+NASA's 2024 Moon to Mars Architecture Concept Review selected nuclear fission as the primary surface-power technology for initial human Mars missions, citing round-the-clock generation and resilience to surface conditions such as dust storms. NASA's Fission Surface Power program describes a 40-kilowatt-class system under development, with a lunar demonstration planned before Mars use. These documents describe an architecture decision and technology-development target—not an already deployed Mars reactor.
+
+OUTPOST ZERO translates this into a simplified learning model:
+- **Primary supply:** 10 internal energy units per Sol (1,000 kWh/Sol), constant through night and dust storms.
+- **Solar support:** up to 3 additional units from the selected payload; a constructed solar wing can add up to 3 more. Dust and array damage reduce only this part of the supply.
+- **Storage:** one internal unit is 100 kWh; the reserve has a finite capacity and can be spent on construction or fieldwork.
+- **Construction:** module upgrades consume stored kWh, metal/regolith/polymer/electronics inventory and one daily operation slot.
+- **Cosmetics:** badge-earned style tokens unlock appearances only. They cannot buy engineering upgrades, energy, repairs, or survival resources.
+
+This is an educational scenario, not a scaled design. The internal kWh mapping, load profile, solar supplement, battery capacity and build costs are authored game values and should not be used to size any real power system.

@@ -48,6 +48,25 @@
 .mission-tools,.command-console{margin:14px 0;border:1px solid var(--line);border-radius:14px;background:#121c22;overflow:hidden}.mission-tools summary,.command-console summary{list-style:none;cursor:pointer;padding:14px 17px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:850;letter-spacing:.08em}.mission-tools summary::-webkit-details-marker,.command-console summary::-webkit-details-marker{display:none}.mission-tools summary:after,.command-console summary:after{content:"＋";font-size:17px;color:var(--orange)}.mission-tools[open] summary:after,.command-console[open] summary:after{content:"−"}.mission-tools-content{padding:0 15px 15px;display:grid;grid-template-columns:1.2fr 1fr;gap:12px}.mission-tools-content .brief-panel{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mission-tools-content .event-card{grid-row:span 2}.command-console .controls{margin:0;padding:0 15px 15px}.command-console .panel{background:#17232b}#issue-panel .issue-item.failed{box-shadow:inset 3px 0 #f27f75}
 @media(max-width:760px){.outpost-panel{padding:13px 10px 42px}.outpost-svg{min-height:250px}.component-inspector{grid-template-columns:1fr}.inspector-action{justify-content:flex-start}.mission-tools-content,.mission-tools-content .brief-panel{grid-template-columns:1fr}.mission-tools-content .event-card{grid-row:auto}}
 
+
+.cadet-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #6a523e;background:#241e1a;border-radius:999px;padding:9px 12px;color:#e9b98c;font-size:10px;font-weight:850;letter-spacing:.08em;white-space:nowrap}
+.cadet-pill b{color:#fff}.preflight-question{margin-top:20px;padding:20px;border:1px solid var(--line);border-radius:15px;background:#10191f}
+.preflight-question h2{font-size:19px;line-height:1.35;margin:8px 0 16px}.preflight-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.preflight-options button{text-align:left;min-height:54px}.preflight-feedback{padding:13px;border-radius:10px;background:#1b3029;border:1px solid #466a59;margin-top:14px;font-size:12px;line-height:1.55}
+.skill-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:16px 0}.skill-chip{padding:12px 8px;background:#10191f;border:1px solid var(--line);border-radius:11px;text-align:center}.skill-chip b{display:block;font-size:17px;color:var(--orange)}.skill-chip span{display:block;font-size:9px;color:var(--muted);margin-top:4px}
+.site-picks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.site-pick{padding:14px;border:1px solid var(--line);background:#10191f;border-radius:12px;text-align:left;color:var(--text)}.site-pick.selected{border-color:var(--orange);background:#382a24}.site-pick b{display:block;margin-bottom:6px}.site-pick span{font-size:10px;color:var(--muted);line-height:1.5}
+.landing-status{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:18px 0}.landing-readout{background:#10191f;border:1px solid var(--line);border-radius:11px;padding:12px}.landing-readout span{display:block;color:var(--muted);font-size:9px;letter-spacing:.1em}.landing-readout strong{font-size:19px;display:block;margin-top:5px}
+.landing-meter{height:9px;background:#29373e;border-radius:10px;overflow:hidden;margin:8px 0 16px}.landing-meter i{display:block;height:100%;width:100%;background:var(--orange);transition:width .25s}
+.landing-controls{display:grid;grid-template-columns:1fr 1fr;gap:15px}.landing-control{padding:15px;border:1px solid var(--line);border-radius:12px;background:#10191f}.landing-control label{display:flex;justify-content:space-between;font-size:11px;font-weight:800;margin-bottom:9px}.landing-control input{width:100%;accent-color:var(--orange)}
+.steering-buttons{display:flex;gap:8px}.steering-buttons button{flex:1}.steering-buttons button.selected{border-color:var(--orange);background:#392a25}
+.field-ops-panel{margin:14px 0}.field-task-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.field-task{border:1px solid var(--line);border-radius:12px;background:#10191f;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:145px}.field-task .task-icon{font-size:22px}.field-task b{font-size:12px}.field-task p{font-size:10px;color:var(--muted);line-height:1.45;margin:0;flex:1}.field-task button{width:100%}.field-task button:disabled{opacity:.4;cursor:not-allowed}.field-ops-footer{display:flex;justify-content:space-between;gap:10px;margin-top:12px}
+.ops-modal{max-width:700px}.ops-modal canvas{display:block;max-width:100%;margin:12px auto;border:1px solid #53636c;border-radius:10px;touch-action:none;background:#10191f}
+.mini-progress{height:7px;border-radius:10px;background:#29373e;overflow:hidden;margin:12px 0}.mini-progress i{display:block;height:100%;width:0;background:var(--green);transition:width .2s}
+.rover-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;max-width:350px;margin:14px auto}.rover-cell{aspect-ratio:1;border:1px solid #485a60;background:#1c2b30;border-radius:8px;color:#d9e4df;font-size:18px}.rover-cell.obstacle{background:#4a312a;color:#dfa37b}.rover-cell.visited{background:#244438}.rover-cell.current{outline:3px solid var(--orange)}
+.incident-modal h2{font-size:23px;margin:10px 0}.incident-modal>p{font-size:12px;line-height:1.6;color:#c4cdca}.incident-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.incident-choice{border:1px solid var(--line);border-radius:12px;background:#10191f;padding:14px;text-align:left;color:var(--text)}.incident-choice:hover{border-color:var(--orange)}.incident-choice b{display:block;font-size:12px;margin-bottom:6px}.incident-choice span{display:block;font-size:10px;color:var(--muted);line-height:1.45}
+@media(max-width:950px){.field-task-grid{grid-template-columns:repeat(2,1fr)}.skill-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.preflight-options,.landing-controls,.incident-choices{grid-template-columns:1fr}.site-picks{grid-template-columns:1fr}.landing-status{grid-template-columns:repeat(2,1fr)}.field-task-grid{grid-template-columns:1fr}.field-ops-footer{flex-direction:column}.cadet-pill{display:none}}
+
 </style>
 </head>
 <body>
@@ -55,6 +74,7 @@
 <header class="topbar">
   <div class="brand"><div class="brand-mark">⌁</div><div><div class="brand-name">OUTPOST ZERO</div><div class="brand-sub">JUNIOR ASTRONAUT MISSION TRAINER</div></div></div>
   <div class="top-actions">
+    <span class="cadet-pill">CADET <b id="cadet-level">LV 1</b> · <span id="cadet-xp">0 XP</span></span>
     <button class="quiet-btn" id="science-open">⌁ Science & data</button>
     <button class="quiet-btn" id="sound-toggle" aria-pressed="false">♫ Sound off</button>
     <button class="quiet-btn hidden" id="reset-btn">↻ Restart</button>
@@ -119,17 +139,33 @@
 </section>
 
 
+<section class="story-stage" id="preflight-view">
+  <div class="story-card">
+    <div class="eyebrow">CADET ACADEMY • SKILL CHECK</div>
+    <h1>Show us what you know.</h1>
+    <p>Five quick questions help Mission Control tune the training challenges to your current knowledge. Getting a question wrong is completely fine: you will receive a hint, and the matching minigame will include more guidance.</p>
+    <div id="preflight-content"></div>
+  </div>
+</section>
+<section class="story-stage" id="landing-minigame-view">
+  <div class="story-card landing-card">
+    <div class="eyebrow">MISSION DAY 0 • MANUAL DESCENT SIMULATOR</div>
+    <h1>Bring it down safely.</h1>
+    <p>Control the lander's main engine and side thrusters. Slow your descent and correct the crosswind before the landing zone reaches you. Your piloting skill changes how demanding the simulator is.</p>
+    <div id="landing-minigame-content"></div>
+  </div>
+</section>
 <section class="story-stage" id="landing-view">
   <div class="story-card">
     <div class="eyebrow">MISSION DAY 0 • ARRIVAL SEQUENCE</div>
     <h1>Touchdown, Mars.</h1>
-    <p>The landing engines flare, then fall quiet. Your crew has reached Gale Crater. After a cautious drive across the landing zone, the rover scouts identify stable ground near the planned work area. You are the captain. Before the first Sol begins, the crew must make the outpost safe and operational.</p>
+    <p>The landing engines flare, then fall quiet. Your crew has reached <span id="chosen-site-name">Gale Crater</span>. The rover scouts identify stable ground near the planned work area. You are the captain. Before the first Sol begins, the crew must make the outpost safe and operational.</p>
     <div class="arrival-grid">
       <div class="arrival-item"><span>01 • LANDING</span><strong>All five crew accounted for</strong><span>Habitat and cargo released safely.</span></div>
       <div class="arrival-item"><span>02 • SITE SURVEY</span><strong>Stable ground located</strong><span>Outpost footprint marked near Gale Crater.</span></div>
       <div class="arrival-item"><span>03 • NEXT PRIORITY</span><strong>Commission four systems</strong><span>Each specialist has one critical setup task.</span></div>
     </div>
-    <div class="story-actions"><span class="tiny muted">Captain's log: "We made it. Now we make this place work."</span><button class="primary-btn" id="touchdown-btn">Confirm site & brief the crew →</button></div>
+    <div class="story-actions"><span class="tiny muted" id="landing-report">Captain's log: "We made it. Now we make this place work."</span><button class="primary-btn" id="touchdown-btn">Confirm site & brief the crew →</button></div>
   </div>
 </section>
 <section class="story-stage" id="assignment-view">
@@ -162,6 +198,7 @@
     <div class="stat"><div class="stat-top"><span class="stat-label">FOOD</span><span class="stat-icon">✿</span></div><div class="stat-value"><span id="v-food">68</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-food"></i></div><div class="stat-note" id="n-food">Greenhouse crop cycle: 0%</div></div>
     <div class="stat"><div class="stat-top"><span class="stat-label">CREW SAFETY</span><span class="stat-icon">⌂</span></div><div class="stat-value"><span id="v-safety">100</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-safety"></i></div><div class="stat-note" id="n-safety">Shelter systems ready</div></div>
     <div class="stat"><div class="stat-top"><span class="stat-label">SPARE PARTS</span><span class="stat-icon">⚙</span></div><div class="stat-value"><span id="v-spares">3</span><span class="stat-unit"> / 3 kits</span></div><div class="meter"><i id="m-spares"></i></div><div class="stat-note" id="n-spares">Limited repair inventory</div></div>
+    <div class="stat"><div class="stat-top"><span class="stat-label">SCIENCE DATA</span><span class="stat-icon">✦</span></div><div class="stat-value"><span id="v-science">0</span><span class="stat-unit"> pts</span></div><div class="meter"><i id="m-science"></i></div><div class="stat-note" id="n-science">Samples studied: 0</div></div>
   </section>
 
   <section class="main-grid">
@@ -202,6 +239,12 @@
       <div class="component-inspector" id="component-inspector"><div><div class="inspector-kicker" id="inspector-kicker">SYSTEM INSPECTOR • SELECT A MODULE</div><h3 id="inspector-title">Your outpost is online</h3><p id="inspector-copy">Move your cursor over a highlighted module, or select it, to inspect its condition and available actions. Faults will pulse red.</p></div><div class="inspector-action" id="inspector-action"><span class="tiny muted">4 interactive systems</span></div></div>
       <div class="scene-hint">HOVER OR SELECT A MODULE TO INSPECT IT • RED PULSE = ACTIVE FAULT</div>
     </div>
+  </section>
+<section class="panel field-ops-panel" id="field-ops-panel">
+    <div class="panel-head"><div><div class="eyebrow">CREW FIELDWORK • SCIENCE & MAINTENANCE</div><h2>FIELD OPERATIONS</h2></div><span class="tag" id="ops-slots">2 EVA / SOL</span></div>
+    <p class="tiny muted">Your crew has two field-operation slots per Sol. Clean panels, repair the communications relay, collect rover samples or study samples in the lab. Successful jobs earn science and cadet XP.</p>
+    <div class="field-task-grid" id="field-task-grid"></div>
+    <div class="field-ops-footer"><span class="tiny muted" id="field-ops-note">Choose field jobs carefully. Each one uses one operation slot.</span><span class="tiny muted" id="field-ops-progress">0 operations completed</span></div>
   </section>
   <details class="mission-tools"><summary><span>MISSION INTEL & ALERTS</span><span class="tiny muted">Events • NASA data • crew notes</span></summary><div class="mission-tools-content">    <div class="panel brief-panel">
       <div class="panel-head"><h2>FLIGHT DIRECTOR'S BRIEF</h2><span class="tag" id="brief-tag">SOL 01</span></div>
@@ -273,6 +316,21 @@
 </section>
 </div>
 
+<div class="modal-backdrop" id="ops-modal" role="dialog" aria-modal="true" aria-labelledby="ops-modal-title">
+  <div class="modal ops-modal">
+    <div class="modal-head"><h2 id="ops-modal-title">Field operation</h2><button class="quiet-btn" id="ops-modal-close" aria-label="Close">✕</button></div>
+    <div id="ops-modal-content"></div>
+  </div>
+</div>
+<div class="modal-backdrop incident-backdrop" id="incident-modal" role="dialog" aria-modal="true" aria-labelledby="incident-title">
+  <div class="modal incident-modal">
+    <div class="eyebrow" id="incident-kicker">MISSION INCIDENT</div>
+    <h2 id="incident-title">A new situation needs your decision.</h2>
+    <p id="incident-copy"></p>
+    <div class="incident-choices" id="incident-choices"></div>
+    <p class="tiny muted" id="incident-fact"></p>
+  </div>
+</div>
 <div class="modal-backdrop" id="science-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
     <div class="modal-head"><h2 id="modal-title">Science & data traceability</h2><button class="quiet-btn" id="science-close" aria-label="Close">✕</button></div>

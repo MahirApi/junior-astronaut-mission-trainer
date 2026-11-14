@@ -518,6 +518,55 @@ function meter(name,value){const el=$("m-"+name);el.style.width=clamp(value,0,10
 function log(message){state.history.unshift(message);state.history=state.history.slice(0,5);$("log-list").innerHTML=state.history.map(x=>'<span class="log-chip">'+escapeHtml(x)+'</span>').join("");}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function brief(kicker,title,copy,note){$("event-kicker").textContent=kicker;$("event-title").textContent=title;$("event-copy").textContent=copy;$("commander-note").textContent=note;}
+const INCIDENTS={
+  "dust-devil":{kicker:"FIELD REPORT • SOL 5",title:"A dust devil is crossing the array field",copy:"A fast-moving whirlwind is approaching the solar panels. The crew can study its wind patterns or use the brief lull to secure the exposed equipment.",fact:"NASA rover observations have documented Martian dust devils and wind-driven changes to dusty surfaces. This particular event is fictional.",choices:[{id:"devil-study",title:"Record the wind data",desc:"+8 Science Data, but the outdoor study costs 4 Crew Safety."},{id:"devil-secure",title:"Secure the array cables",desc:"Spend 2 battery units to reduce panel dust by 0.10."}]},
+  "greenhouse-mold":{kicker:"CREW REPORT • SOL 9",title:"A patch of greenhouse mold is spreading",copy:"A damp corner of the grow beds shows signs of contamination. The team can remove affected plants or run a longer drying cycle. Either option costs supplies.",fact:"NASA's Veggie plant-growth work on the International Space Station has documented how airflow and moisture affect plant health. This is a fictional Mars training incident.",choices:[{id:"mold-quarantine",title:"Quarantine affected plants",desc:"Lose 7 Food, but reduce the simulated blight level by 0.08."},{id:"mold-fans",title:"Run extra drying fans",desc:"Spend 6 Water and 2 Battery to reduce blight by 0.18."}]},
+  "battery-heat":{kicker:"POWER ALERT • SOL 13",title:"The battery bay is running hot",copy:"A temperature sensor reports that the battery compartment is warmer than expected. Choose between losing stored energy now or diverting water and power to cooling.",fact:"Spacecraft battery systems need thermal management. The values in this incident are simplified game mechanics, not real battery operating limits.",choices:[{id:"battery-isolate",title:"Isolate the warm battery bank",desc:"Lose 4 Battery units now, but prevent a larger simulated power fault."},{id:"battery-cool",title:"Cool it with habitat fans",desc:"Lose 5 Water and 2 Battery, but keep the reserve bank connected."}]},
+  "ice-find":{kicker:"ROVER DISCOVERY • SOL 17",title:"The rover finds a buried ice signal",copy:"A subsurface scan suggests an ice-rich patch nearby. You can spend power to drill a small sample or map the deposit for a future expedition.",fact:"NASA has studied water ice at Mars and lunar sites. This discovery and its exact yield are fictional game content.",choices:[{id:"ice-drill",title:"Drill a small sample",desc:"Spend 3 Battery to gain 12 Water and 4 Science Data."},{id:"ice-map",title:"Map the deposit first",desc:"Gain 7 Science Data, but no new water this Sol."}]},
+  "relay-damage":{kicker:"COMMUNICATIONS ALERT • SOL 21",title:"A micrometeorite has damaged the radio relay",copy:"The outpost's long-range relay is offline. A replacement module can restore early warnings immediately, or the field crew can attempt a repair later.",fact:"Micrometeoroid impacts are a real spacecraft hazard. This relay damage is a fictional training event.",choices:[{id:"relay-spare",title:"Install the spare radio module",desc:"Use 1 Spare Parts kit and restore the early-warning link now.",needsPart:true},{id:"relay-field",title:"Schedule an EVA repair",desc:"Keep your spare kit, but the relay remains offline until a Field Operations repair succeeds."}]},
+  "soil-warning":{kicker:"GREENHOUSE SCIENCE • SOL 25",title:"The soil sample contains perchlorate salts",copy:"The new soil sample is not ready for the grow beds. The crew can use water to rinse a test batch or spend power on a sealed hydroponic setup.",fact:"NASA's Phoenix Mars Lander detected perchlorate in Martian soil. The choices and penalties here are simplified game decisions.",choices:[{id:"soil-rinse",title:"Rinse a small soil batch",desc:"Spend 10 Water and reduce crop blight by 0.15."},{id:"soil-hydro",title:"Use sealed hydroponics",desc:"Spend 3 Battery and 5 Food to reduce crop blight by 0.28."}]},
+  "impact-leak":{kicker:"HABITAT ALERT • SOL 29",title:"A small impact damages an exterior seal",copy:"A new pressure warning appears near the service hatch. The crew can use the last suitable spare kit for a patch, or isolate the affected compartment and accept a resource loss.",fact:"Micrometeoroids and orbital debris can damage spacecraft surfaces. This outpost incident is fictional; the resource penalties are teaching-game values.",choices:[{id:"impact-patch",title:"Patch the seal with a spare kit",desc:"Use 1 Spare Parts kit to stop the new leak.",needsPart:true},{id:"impact-isolate",title:"Isolate the service compartment",desc:"Lose 8 Oxygen and reduce the leak, but the habitat stays weakened."}]}
+};
+function showIncident(id){
+ const incident=INCIDENTS[id];if(!incident)return;
+ $("incident-kicker").textContent=incident.kicker;
+ $("incident-title").textContent=incident.title;
+ $("incident-copy").textContent=incident.copy;
+ $("incident-fact").textContent=incident.fact;
+ $("incident-choices").innerHTML=incident.choices.map(choice=>{
+  const disabled=choice.needsPart&&state.spareParts<=0;
+  return '<button class="incident-choice" data-incident-choice="'+choice.id+'" '+(disabled?"disabled":"")+'><b>'+choice.title+(choice.needsPart?' · 1 SPARE KIT':'')+'</b><span>'+(disabled?"No spare repair kits remain. "+choice.desc:choice.desc)+'</span></button>';
+ }).join("");
+ $("incident-choices").querySelectorAll("[data-incident-choice]").forEach(button=>button.addEventListener("click",()=>resolveIncident(button.dataset.incidentChoice)));
+ $("incident-modal").classList.add("open");
+}
+function resolveIncident(id){
+ const f=state.fieldOps;
+ const outcomes={
+  "devil-study":()=>{addScience(8);state.safety=clamp(state.safety-4,0,100);state.dust=clamp(state.dust-.03,0,.85);return "The crew recorded useful wind data, but the outdoor study cost 4 Crew Safety.";},
+  "devil-secure":()=>{state.battery=Math.max(0,state.battery-2);state.dust=clamp(state.dust-.1,0,.85);return "The crew secured the cables and cleared some dust. The battery reserve fell by 2.";},
+  "mold-quarantine":()=>{state.food=Math.max(0,state.food-7);state.cropBlight=Math.max(0,state.cropBlight-.08);return "The crew removed affected plants. Food stores fell, but the blight was reduced.";},
+  "mold-fans":()=>{state.water=Math.max(0,state.water-6);state.battery=Math.max(0,state.battery-2);state.cropBlight=Math.max(0,state.cropBlight-.18);return "The drying cycle used water and battery power, but contained more of the blight.";},
+  "battery-isolate":()=>{state.battery=Math.max(0,state.battery-4);return "The warm battery bank was isolated. Four units of stored energy are no longer available.";},
+  "battery-cool":()=>{state.water=Math.max(0,state.water-5);state.battery=Math.max(0,state.battery-2);return "Habitat fans cooled the battery bay, using water and stored energy.";},
+  "ice-drill":()=>{state.battery=Math.max(0,state.battery-3);state.water=clamp(state.water+12,0,100);addScience(4);return "A small ice sample was processed. Water rose by 12, but the drill used 3 Battery.";},
+  "ice-map":()=>{addScience(7);return "The deposit was mapped for a future expedition. The crew earned Science Data but collected no water.";},
+  "relay-spare":()=>{if(state.spareParts<=0)return "No spare module was available. The relay remains offline.";state.spareParts--;f.relayOnline=true;return "A spare radio module restored the long-range warning link. One repair kit was used.";},
+  "relay-field":()=>{f.relayOnline=false;return "The relay remains offline. A crew member can attempt a repair during a later Field Operations slot.";},
+  "soil-rinse":()=>{state.water=Math.max(0,state.water-10);state.cropBlight=Math.max(0,state.cropBlight-.15);return "A small test batch was rinsed. Water reserves fell by 10 and the greenhouse recovered slightly.";},
+  "soil-hydro":()=>{state.battery=Math.max(0,state.battery-3);state.food=Math.max(0,state.food-5);state.cropBlight=Math.max(0,state.cropBlight-.28);return "The sealed hydroponic tray avoided the soil sample. Battery and food reserves were used, but most of the blight was contained.";},
+  "impact-patch":()=>{if(state.spareParts<=0)return "No spare repair kit was available. The crew could not patch the seal.";state.spareParts--;state.pressureLeak=Math.max(0,state.pressureLeak-.8);return "The crew used a repair kit to patch the damaged seal. One spare kit was consumed.";},
+  "impact-isolate":()=>{state.oxygen=Math.max(0,state.oxygen-8);state.pressureLeak=Math.max(0,state.pressureLeak-.4);return "The service compartment was isolated. Oxygen reserves fell by 8 and a smaller leak remains.";}
+ };
+ const apply=outcomes[id];if(!apply)return;
+ const message=apply();
+ state.incidentLog.push({sol:state.sol,id,message});
+ log("Sol "+state.sol+" decision • "+message);
+ $("incident-modal").classList.remove("open");
+ brief("CAPTAIN'S DECISION",INCIDENTS[id]?.title||"Incident resolved",message,"Your choice has changed the mission state. Check your reserves and revise the command plan if needed.");
+ render();renderFieldOps();
+ beep(520,.12);
+}
 function beep(freq,duration){if(!soundOn)return;try{audioContext=audioContext||new (window.AudioContext||window.webkitAudioContext)();const osc=audioContext.createOscillator(),gain=audioContext.createGain();osc.frequency.value=freq;gain.gain.setValueAtTime(.045,audioContext.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);osc.connect(gain);gain.connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+duration);}catch(e){}}
 
 

@@ -471,7 +471,7 @@ const state = {
   materials:{metal:12,regolith:18,polymer:8,electronics:5,ice:0},
   baseModules:{greenhouse:false,laboratory:false,hangar:false,quarters:false,solarWing:false,batteryBank:false},
   coopMode:false,
-  fieldOps:{slots:3,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraTiles:0,lastRoverSol:-10,relayAttempts:0},
+  fieldOps:{slots:3,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraDistance:0,lastRoverSol:-10,relayAttempts:0},
   missionOps:{caveDone:false,rescueDone:false,prospectingDone:false,signalDone:false,evacuationDone:false},
   finalEvacuation:{phase:0,gridRestored:0,crewRescued:0,launchFuel:100,altitude:0,offset:0,done:false}
 };
@@ -730,7 +730,7 @@ function renderFieldOps(){
   return '<article class="field-task"><div class="task-icon">'+t.icon+'</div><b>'+t.name+'</b><p>'+t.desc+'</p><button class="secondary-btn" data-field-task="'+t.id+'" '+(disabled?"disabled":"")+'>'+(disabled?reason:"Start operation →")+'</button></article>';
  }).join("");
  $("field-task-grid").querySelectorAll("[data-field-task]").forEach(b=>b.addEventListener("click",()=>startFieldTask(b.dataset.fieldTask)));
- $("field-ops-note").textContent=f.slots===0?"All three daily operations slots have been used. More return next Sol.":(f.roverExtraTiles?"The last rover experiment failed. The next traverse is "+f.roverExtraTiles*100+" metres longer. ":"")+"Use the remaining time for repairs, exploration and outpost construction.";
+ $("field-ops-note").textContent=f.slots===0?"All three daily operations slots have been used. More return next Sol.":(f.roverExtraDistance?"The last rover experiment failed. The next traverse is "+f.roverExtraDistance*100+" metres longer. ":"")+"Use the remaining time for repairs, exploration and outpost construction.";
  $("field-ops-progress").textContent=f.completed+" operations · "+(f.successful||0)+" successful · "+(f.failedRuns||0)+" rover failures · "+f.samples+" samples";
 }
 function spendFieldSlot(key){
@@ -749,11 +749,11 @@ function finishFieldTask(key,success,message){
  if(key==="rover"&&success){
   f.samples+=3;f.lastRoverSol=state.sol;f.sampleType=f.activeExpedition?.sampleType||"Mars rock sample";
   f.lastRoverReport={...f.activeExpedition,navFrames:f.navFrames||0,wheelMoves:f.wheelMoves||0,medaReadings:f.medaReadings||0};
-  f.roverExtraTiles=0;if(f.sampleType.includes("ice")){state.water=clamp(state.water+4,0,100);state.materials.ice+=3;}
+  f.roverExtraDistance=0;if(f.sampleType.includes("ice")){state.water=clamp(state.water+4,0,100);state.materials.ice+=3;}
   awardCadetXP(12,"science",1);addScience(8);log("Rover returned with three samples • "+f.activeExpedition.title);
  }
  if(key==="rover"&&!success){
-  f.lastRoverSol=state.sol;f.failedRuns=(f.failedRuns||0)+1;f.roverExtraTiles=4;f.roverBattery=0;
+  f.lastRoverSol=state.sol;f.failedRuns=(f.failedRuns||0)+1;f.roverExtraDistance=400;f.roverBattery=0;
   f.lastRoverReport={...f.activeExpedition,failed:true,navFrames:f.navFrames||0,wheelMoves:f.wheelMoves||0,medaReadings:f.medaReadings||0};
   log("ROVER EXPERIMENT FAILED • crew recovered the vehicle on foot; next traverse is longer");
  }
@@ -822,7 +822,7 @@ function launchRelayTask(){
   draw();
 }
 function launchRoverTask(){
- const f=state.fieldOps,world={w:3200+Math.min(800,(f.roverExtraTiles||0)*100),h:2200},view={w:960,h:520};
+ const f=state.fieldOps,world={w:3200+Math.min(800,(f.roverExtraDistance||0)),h:2200},view={w:960,h:520};
  const base={x:220,y:1880},target={x:world.w-240,y:260};
  let seed=(state.sol*10007+(state.siteKey.charCodeAt(0)||0)*97+(f.failedRuns||0)*701)>>>0;
  const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
@@ -1327,7 +1327,7 @@ function beginLanding(){
   state.filterClogSeen=false;state.cropBlightSeen=false;state.pressureLeakSeen=false;state.heaterFaultSeen=false;
   state.spareParts=3;state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
   state.incidentLog=[];
-  state.fieldOps={slots:3,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraTiles:0,lastRoverSol:-10,relayAttempts:0,doneToday:{}};
+  state.fieldOps={slots:3,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraDistance:0,lastRoverSol:-10,relayAttempts:0,doneToday:{}};
   state.materials={metal:12,regolith:18,polymer:8,electronics:5,ice:0};
   state.baseModules={greenhouse:false,laboratory:false,hangar:false,quarters:false,solarWing:false,batteryBank:false};
   state.missionOps={caveDone:false,rescueDone:false,prospectingDone:false,signalDone:false,evacuationDone:false};
@@ -1893,7 +1893,7 @@ function endMission(completed){
   (state.incidentLog||[]).forEach(item=>causes.push("Sol "+item.sol+" decision: "+item.message));
   if(state.fieldOps?.relayOnline===false)causes.push("The communications relay remained offline. The Sol 23 shelter alert carried an additional late-warning penalty.");
   if((state.fieldOps?.samples||0)>(state.fieldOps?.studied||0))causes.push((state.fieldOps.samples-state.fieldOps.studied)+" sample(s) were collected but not analyzed before the mission ended.");
-  if(state.fieldOps?.lastRoverReport?.failed)causes.push("Sol "+state.fieldOps.lastRoverReport.sol+" rover experiment failed: "+state.fieldOps.lastRoverReport.title+". The crew walked the rover home; a four-tile longer follow-up traverse was queued for the next Sol.");
+  if(state.fieldOps?.lastRoverReport?.failed)causes.push("Sol "+state.fieldOps.lastRoverReport.sol+" rover experiment failed: "+state.fieldOps.lastRoverReport.title+". The crew walked the rover home; a 400-metre longer follow-up traverse was queued for the next Sol.");
   else if(state.fieldOps?.lastRoverReport)causes.push("Last rover expedition: "+state.fieldOps.lastRoverReport.title+"; "+state.fieldOps.lastRoverReport.navFrames+" simulated Navcam frames, "+state.fieldOps.lastRoverReport.wheelMoves+" wheel-odometry steps and "+state.fieldOps.lastRoverReport.medaReadings+" MEDA-style environmental data sets were logged.");
   if(state.fieldOps?.completed)causes.push("The crew attempted "+state.fieldOps.completed+" field operation(s), using scarce EVA time on panel cleaning, rover exploration, laboratory analysis or communications repair.");
   taskDefinitions.forEach(task=>{

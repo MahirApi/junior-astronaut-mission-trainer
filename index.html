@@ -834,7 +834,7 @@ function launchRoverTask(){
  const list=missionSets[state.siteKey]||missionSets.gale,mission=list[(state.sol-1+(f.failedRuns||0))%list.length];
  const route=t=>({x:base.x+(target.x-base.x)*t+Math.sin(t*Math.PI*2)*145,y:base.y+(target.y-base.y)*t+Math.sin(t*Math.PI*3)*95});
  const safeWaypoints=Array.from({length:45},(_,i)=>route(i/44));
- const samples=[.24,.49,.75].map((t,i)=>{const p=route(t);return{x:p.x+(rnd()-.5)*55,y:p.y+(rnd()-.5)*55,id:i+1,found:false};});
+ const samples=[.28,.60,.92].map((t,i)=>{const p=route(t);return{x:p.x+(rnd()-.5)*55,y:p.y+(rnd()-.5)*55,id:i+1,found:false};});
  const rocks=[],boulders=[],craters=[],dunes=[];
  for(let i=0;i<165;i++){
   const x=240+rnd()*(world.w-480),y=160+rnd()*(world.h-320);

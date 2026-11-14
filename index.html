@@ -71,6 +71,35 @@
 @media(max-width:1100px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:650px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .badge-collection{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 20px}.cadet-badge{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #6b563a;border-radius:999px;background:#2b251d;color:#f1d7a5;font-size:10px;font-weight:800}.cadet-badge .badge-icon{font-size:16px}.cadet-badge.locked{border-color:var(--line);background:#10191f;color:#708086;filter:saturate(.3)}
+
+/* Hands-on landing, rover and sample-analysis controls */
+.landing-arcade{border:1px solid #3b4b53;border-radius:15px;background:#111d23;overflow:hidden;margin:14px 0}
+.landing-flightline{display:flex;justify-content:space-between;padding:11px 14px;font-size:10px;letter-spacing:.12em;color:var(--muted)}.landing-flightline b{color:var(--orange)}
+.landing-sky{height:220px;position:relative;overflow:hidden;background:linear-gradient(180deg,#192d3d,#7b675c 78%,#9a5d42)}
+.landing-cloud{position:absolute;width:110px;height:26px;border-radius:30px;background:#d7d2c7;opacity:.12}.cloud-a{top:42px;left:13%}.cloud-b{top:92px;right:17%;transform:scale(.7)}
+.landing-ground{position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(90deg,#634238,#9d5c42,#634238)}
+.landing-pad{position:absolute;bottom:25px;left:50%;transform:translateX(-50%);width:24%;height:12px;border:2px solid #d7d1c6;border-bottom:0;background:#d7d1c622}
+.landing-pad span{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:.15em;color:#f3e6d5;white-space:nowrap}
+.landing-craft{position:absolute;transform:translate(-50%,-50%);transition:left .35s,top .35s;font-size:30px;filter:drop-shadow(0 4px 4px #0a1016)}
+.landing-craft i{position:absolute;left:50%;top:29px;width:5px;height:20px;transform:translateX(-50%);background:linear-gradient(#ffd27d,#ef7549,transparent);border-radius:50%}
+.landing-windflag{position:absolute;top:15px;color:#e8d5c3;font-size:9px;font-weight:800;letter-spacing:.12em}
+.landing-guidance{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;font-size:10px;color:var(--muted)}.landing-guidance b{color:var(--text)}
+.landing-arcade-controls{margin-top:12px}.landing-thrust-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.landing-thrust-buttons button{min-height:54px}.landing-thrust-buttons b{font-size:15px;color:var(--orange)}.landing-thrust-buttons button.selected{border-color:var(--orange);background:#392a25}
+.rover-map{width:100%;height:auto;image-rendering:pixelated;outline:none}.rover-map:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.rover-hud{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:9px;letter-spacing:.1em;color:var(--muted)}.rover-hud b{color:var(--orange)}
+.rover-readouts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}.rover-readouts div{background:#10191f;border:1px solid var(--line);border-radius:9px;padding:9px}
+.rover-readouts span{display:block;font-size:8px;color:var(--muted);letter-spacing:.1em}.rover-readouts b{font-size:15px}
+.rover-legend{display:flex;gap:9px;flex-wrap:wrap;font-size:9px;color:var(--muted);margin:8px 0}
+.rover-controls{display:flex;justify-content:center;margin:12px 0}.rover-controls>div{display:grid;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,38px);gap:5px}
+.rover-controls button{min-width:42px}.rover-controls button:first-child{grid-column:2;grid-row:1}.rover-controls button:nth-child(2){grid-column:1;grid-row:2}.rover-controls button:nth-child(3){grid-column:2;grid-row:2}.rover-controls button:nth-child(4){grid-column:3;grid-row:2}
+.science-tool-list{display:grid;gap:8px;margin:14px 0}.science-tool{padding:13px;border:1px solid var(--line);border-radius:11px;background:#10191f;color:var(--text);text-align:left}
+.science-tool b,.science-tool span{display:block}.science-tool b{font-size:11px}.science-tool span{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.4}
+.science-tool:disabled{border-color:#466a59;color:var(--green);opacity:.8}.scan-readouts{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}
+.scan-chip{border:1px solid var(--line);border-radius:20px;padding:7px 9px;font-size:9px;color:var(--muted)}.scan-chip.found{border-color:#466a59;color:var(--green);background:#1b3029}
+#sample-scan{width:100%;height:auto;touch-action:none;cursor:crosshair}
+@media(max-width:650px){.rover-readouts{grid-template-columns:repeat(2,1fr)}.landing-guidance{flex-direction:column;gap:4px}.landing-sky{height:190px}}
+
 </style>
 </head>
 <body>
@@ -145,17 +174,17 @@
 
 <section class="story-stage" id="preflight-view">
   <div class="story-card">
-    <div class="eyebrow">CADET ACADEMY • SKILL CHECK</div>
-    <h1>Show us what you know.</h1>
-    <p>Five quick questions help Mission Control tune the training challenges to your current knowledge. Getting a question wrong is completely fine: you will receive a hint, and the matching minigame will include more guidance.</p>
+    <div class="eyebrow">CADET ACADEMY • TRAINING BAY</div>
+    <h1>Learn by doing.</h1>
+    <p>Your field experience shapes each challenge. There are no quizzes here: pilot the lander, help the crew bring systems online, and explore Mars. Your Cadet skills grow through play.</p>
     <div id="preflight-content"></div>
   </div>
 </section>
 <section class="story-stage" id="landing-minigame-view">
   <div class="story-card landing-card">
-    <div class="eyebrow">MISSION DAY 0 • MANUAL DESCENT SIMULATOR</div>
+    <div class="eyebrow">MISSION DAY 0 • LANDER ARCADE</div>
     <h1>Bring it down safely.</h1>
-    <p>Control the lander's main engine and side thrusters. Slow your descent and correct the crosswind before the landing zone reaches you. Your piloting skill changes how demanding the simulator is.</p>
+    <p>Steer the lander through six changing wind gusts. Choose engine thrust, counter the crosswind, and watch the craft move toward the landing zone.</p>
     <div id="landing-minigame-content"></div>
   </div>
 </section>
@@ -365,7 +394,7 @@ const state = {
   filterClog:0,cropBlight:0,pressureLeak:0,heaterFault:0,dustStormSols:0,shelterDrillPending:false,
   filterClogSeen:false,cropBlightSeen:false,pressureLeakSeen:false,heaterFaultSeen:false,
   spareParts:3,repairTarget:null,repairStarted:{},repairNoPartsNotified:{},
-  science:0,skillAssessment:{},siteKey:"gale",landing:null,incidentLog:[],
+  science:0,siteKey:"gale",landing:null,incidentLog:[],
   fieldOps:{slots:2,completed:0,successful:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0}
 };
 const sliders = {life:$("life-slider"),green:$("green-slider"),shelter:$("shelter-slider"),repair:$("repair-slider")};
@@ -396,13 +425,6 @@ try{
   const saved=JSON.parse(localStorage.getItem("outpost-zero-cadet-v1")||"null");
   if(saved)cadetProgress={...cadetProgress,...saved,skills:{...cadetProgress.skills,...(saved.skills||{})},badges:Array.isArray(saved.badges)?saved.badges:[]};
 }catch(e){}
-const PRELIGHT_QUESTIONS=[
- {skill:"pilot",label:"PILOTING",question:"Your lander is descending too quickly. What should you do first?",options:["Increase engine thrust to slow down","Turn off every engine","Aim for the steepest slope"],answer:0,explain:"Thrust can reduce your downward speed. A controlled landing protects the crew and equipment."},
- {skill:"engineering",label:"ENGINEERING",question:"Dust is covering the solar panels. What happens to the outpost?",options:["It makes more power","It makes less power","It stores more energy"],answer:1,explain:"Dust blocks some sunlight, so the panels produce less electricity."},
- {skill:"life",label:"LIFE SUPPORT",question:"Why does a habitat recycle water?",options:["Water can be reused instead of always needing new supplies","It makes the habitat heavier","It replaces the need for oxygen"],answer:0,explain:"A closed-loop life-support system cleans and reuses water, helping the crew conserve supplies."},
- {skill:"botany",label:"PLANT SCIENCE",question:"What do hydroponic plants need to grow?",options:["Only dry dust","Water, light and nutrients","Metal fragments"],answer:1,explain:"Hydroponic plants grow without soil, but still need water, light and dissolved nutrients."},
- {skill:"science",label:"SPACE WEATHER",question:"During a radiation alert, what helps protect a shelter?",options:["Thin glass windows","Water-rich supplies and shielding mass","Turning off the radio"],answer:1,explain:"Hydrogen-rich materials such as water can help shield against some space radiation. The game uses an abstract protection score."}
-];
 const SITES={
  gale:{name:"Gale Crater",tag:"BALANCED START",desc:"A balanced training location with no starting bonus or penalty.",water:82,battery:2,dust:0,science:0},
  jezero:{name:"Jezero Crater",tag:"SCIENCE ROUTE",desc:"A research-focused game route: start with +8 Science Data, but one less battery unit.",water:82,battery:1,dust:0,science:8},
@@ -432,34 +454,15 @@ function addScience(points){
  if($("n-science"))$("n-science").textContent="Samples studied: "+(state.fieldOps?.studied||0);
 }
 function skillTier(skill){
- const test=state.skillAssessment[skill]||0;
  const learned=Math.floor((cadetProgress.skills[skill]||0)/4);
- return clamp(1+test+learned,1,3);
+ return clamp(1+learned,1,3);
 }
 function startAssessment(){
- state.skillAssessment={};state.assessmentIndex=0;state.siteKey="gale";
- showOnlyStage("preflight-view");renderAssessmentQuestion();
+ state.siteKey="gale";
+ showOnlyStage("preflight-view");
+ renderAssessmentSummary();
 }
-function renderAssessmentQuestion(){
- const q=PRELIGHT_QUESTIONS[state.assessmentIndex],content=$("preflight-content");
- if(!q){renderAssessmentSummary();return;}
- content.innerHTML='<div class="task-progress"><i style="width:'+((state.assessmentIndex)/PRELIGHT_QUESTIONS.length*100)+'%"></i></div><div class="preflight-question"><div class="task-kicker">QUESTION '+(state.assessmentIndex+1)+' / '+PRELIGHT_QUESTIONS.length+' • '+q.label+'</div><h2>'+q.question+'</h2><div class="preflight-options">'+q.options.map((o,i)=>'<button class="secondary-btn" data-answer="'+i+'">'+o+'</button>').join("")+'</div><div id="preflight-result"></div></div>';
- content.querySelectorAll("[data-answer]").forEach(btn=>btn.addEventListener("click",()=>{
-  const correct=+btn.dataset.answer===q.answer;
-  state.skillAssessment[q.skill]=correct?1:0;
-  if(correct){awardCadetXP(5,q.skill,1);beep(620,.12);}
-  else beep(220,.16);
-  content.querySelectorAll("[data-answer]").forEach(b=>b.disabled=true);
-  $("preflight-result").innerHTML='<div class="preflight-feedback"><strong>'+(correct?"✓ Correct — +5 Cadet XP":"Training hint")+'</strong><br>'+q.explain+'</div><div class="puzzle-actions"><button class="primary-btn" id="preflight-next">'+(state.assessmentIndex===PRELIGHT_QUESTIONS.length-1?"Review your cadet profile →":"Next question →")+'</button></div>';
-  $("preflight-next").addEventListener("click",()=>{state.assessmentIndex++;renderAssessmentQuestion();});
- }));
-}
-function renderAssessmentSummary(){
- const cards=[["pilot","Piloting"],["engineering","Engineering"],["life","Life support"],["botany","Plant science"],["science","Space science"]];
- $("preflight-content").innerHTML='<div class="preflight-question"><div class="task-kicker">TRAINING PROFILE READY</div><h2>Mission Control has tuned your training.</h2><p class="tiny muted">Your answers set the starting difficulty for matching tasks. As you complete missions and learn, your persistent Cadet skills can unlock more advanced versions.</p><div class="skill-grid">'+cards.map(([k,n])=>'<div class="skill-chip"><b>'+(skillTier(k)===1?"PRACTICE":skillTier(k)===2?"STANDARD":"ADVANCED")+'</b><span>'+n+'</span></div>').join("")+'</div><h3 style="font-size:13px">Choose your landing region</h3><div class="site-picks">'+Object.entries(SITES).map(([k,s])=>'<button class="site-pick '+(state.siteKey===k?"selected":"")+'" data-site="'+k+'"><b>'+s.name+'</b><span>'+s.tag+'<br>'+s.desc+'</span></button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="preflight-launch">Start descent simulation →</button></div></div>';
- $("preflight-content").querySelectorAll("[data-site]").forEach(btn=>btn.addEventListener("click",()=>{state.siteKey=btn.dataset.site;renderAssessmentSummary();}));
- $("preflight-launch").addEventListener("click",beginLanding);
-}
+updateCadetHeader();
 updateCadetHeader();
 
 function values(){return {life:+sliders.life.value,green:+sliders.green.value,shelter:+sliders.shelter.value,repair:+sliders.repair.value};}
@@ -803,43 +806,38 @@ function beginLanding(){
 function startLandingChallenge(){
   const tier=skillTier("pilot");
   const cfg=[null,{maxSpeed:8,maxOffset:10,wind:0.55,label:"PRACTICE"},{maxSpeed:5.5,maxOffset:7,wind:0.85,label:"STANDARD"},{maxSpeed:3.5,maxOffset:4.5,wind:1.15,label:"ADVANCED"}][tier];
-  state.landing={turn:0,turns:6,altitude:1200,speed:12,offset:0,fuel:90,steer:0,steerStrength:cfg.wind,tier,...cfg,wind:(Math.random()-.5)*cfg.wind*2,done:false};
-  showOnlyStage("landing-minigame-view");
-  renderLandingChallenge();
+  state.landing={turn:0,turns:6,altitude:1200,speed:12,offset:0,fuel:90,steer:0,thrust:[null,75,85,90][tier],steerStrength:cfg.wind,tier,...cfg,wind:(Math.random()-.5)*cfg.wind*2,done:false};
+  showOnlyStage("landing-minigame-view");renderLandingChallenge();
 }
 function renderLandingChallenge(){
-  const l=state.landing;
-  const content=$("landing-minigame-content");
+  const l=state.landing,content=$("landing-minigame-content");
   if(l.done){
     const ok=state.landingSuccess;
-    content.innerHTML='<div class="preflight-feedback" style="border-color:'+(ok?"#466a59":"#874a45")+'"><strong>'+(ok?"✓ SAFE TOUCHDOWN":"⚠ HARD LANDING")+'</strong><br>'+(ok?"The crew and cargo are intact. Your precise descent earns a small reserve bonus.":"The lander touched down outside the safe envelope. The array frame is damaged and one spare repair kit was lost protecting the crew.")+'</div><div class="landing-status"><div class="landing-readout"><span>TOUCHDOWN SPEED</span><strong>'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>PAD OFFSET</span><strong>'+Math.abs(l.offset).toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL LEFT</span><strong>'+Math.round(l.fuel)+'%</strong></div><div class="landing-readout"><span>PILOTING</span><strong>'+l.label+'</strong></div></div><div class="puzzle-actions"><button class="primary-btn" id="landing-continue">Continue to site survey →</button></div>';
-    $("landing-continue").addEventListener("click",()=>showOnlyStage("landing-view"));
-    return;
+    content.innerHTML='<div class="preflight-feedback" style="border-color:'+(ok?"#466a59":"#874a45")+'"><strong>'+(ok?"✓ SOFT TOUCHDOWN":"⚠ ROUGH TOUCHDOWN")+'</strong><br>'+(ok?"The lander settles inside the safe zone. The crew and cargo are ready to deploy.":"The lander made it down, but the rough landing damaged the array frame and used one spare repair kit. Your crew is safe and can continue.")+'</div><div class="landing-status"><div class="landing-readout"><span>TOUCHDOWN SPEED</span><strong>'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>PAD OFFSET</span><strong>'+Math.abs(l.offset).toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL LEFT</span><strong>'+Math.round(l.fuel)+'%</strong></div><div class="landing-readout"><span>FLIGHT STYLE</span><strong>'+l.label+'</strong></div></div><div class="puzzle-actions"><button class="primary-btn" id="landing-continue">Continue to site survey →</button></div>';
+    $("landing-continue").addEventListener("click",()=>showOnlyStage("landing-view"));return;
   }
-  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong id="landing-altitude">'+Math.round(l.altitude)+' m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong id="landing-speed">'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>LANDING PAD OFFSET</span><strong id="landing-offset">'+l.offset.toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL</span><strong id="landing-fuel">'+Math.round(l.fuel)+'%</strong></div></div><div class="landing-meter"><i id="landing-altitude-bar" style="width:'+Math.round(l.altitude/1200*100)+'%"></i></div><div class="landing-controls"><div class="landing-control"><label for="landing-throttle">MAIN ENGINE THRUST <output id="landing-throttle-value">90%</output></label><input id="landing-throttle" type="range" min="45" max="100" step="5" value="90"><p class="tiny muted">More thrust slows your descent, but uses more fuel. Keep a reserve for touchdown: holding 100% thrust for every burn can leave too little propellant.</p></div><div class="landing-control"><label>STEER INTO THE CROSSWIND</label><div class="steering-buttons"><button class="secondary-btn" data-steer="-1">← LEFT</button><button class="secondary-btn selected" data-steer="0">CENTER</button><button class="secondary-btn" data-steer="1">RIGHT →</button></div><p class="tiny muted" id="landing-wind-note">Crosswind: '+Math.abs(l.wind).toFixed(1)+' m/s, pushing '+(l.wind>0?"right":"left")+'. Choose a correction.</p></div></div><div class="power-summary"><span>DESCENT BURN <strong>'+(l.turn+1)+' / '+l.turns+'</strong></span><span>TRAINING <strong>'+l.label+'</strong></span></div><div class="puzzle-actions"><button class="primary-btn" id="landing-burn">Apply thrust & descend →</button></div>';
-  $("landing-throttle").addEventListener("input",()=>{$("landing-throttle-value").textContent=$("landing-throttle").value+"%";});
+  const craftLeft=clamp(50+l.offset*1.45,7,93),craftTop=clamp(8+(1-l.altitude/1200)*72,8,82);
+  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong>'+Math.round(l.altitude)+' m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong>'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>PAD OFFSET</span><strong>'+l.offset.toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL</span><strong>'+Math.round(l.fuel)+'%</strong></div></div><div class="landing-arcade"><div class="landing-flightline"><span>ORBITAL APPROACH</span><b>FLIGHT '+(l.turn+1)+' / '+l.turns+'</b></div><div class="landing-sky"><div class="landing-cloud cloud-a"></div><div class="landing-cloud cloud-b"></div><div class="landing-ground"></div><div class="landing-pad"><span>LANDING ZONE</span></div><div class="landing-craft" style="left:'+craftLeft+'%;top:'+craftTop+'%"><span>🚀</span><i></i></div><div class="landing-windflag" style="left:'+(l.wind>0?72:18)+'%">'+(l.wind>0?"WIND →":"← WIND")+'</div></div><div class="landing-guidance"><span>Crosswind <b>'+(l.wind>0?"pushing right":"pushing left")+'</b></span><span>Safe zone <b>centre of the pad</b></span></div></div><div class="landing-controls landing-arcade-controls"><div class="landing-control"><label>ENGINE THRUST</label><div class="landing-thrust-buttons"><button class="secondary-btn '+(l.thrust===75?"selected":"")+'" data-thrust="75">GENTLE<br><b>75%</b></button><button class="secondary-btn '+(l.thrust===85?"selected":"")+'" data-thrust="85">STEADY<br><b>85%</b></button><button class="secondary-btn '+(l.thrust===90?"selected":"")+'" data-thrust="90">STRONG<br><b>90%</b></button></div><p class="tiny muted">More thrust slows the fall but spends more fuel. Save enough for the last burn.</p></div><div class="landing-control"><label>STEER AGAINST THE WIND</label><div class="steering-buttons"><button class="secondary-btn '+(l.steer===-1?"selected":"")+'" data-steer="-1">← LEFT</button><button class="secondary-btn '+(l.steer===0?"selected":"")+'" data-steer="0">CENTER</button><button class="secondary-btn '+(l.steer===1?"selected":"")+'" data-steer="1">RIGHT →</button></div><p class="tiny muted">Watch the lander move over the pad after each burn. Counter the gust instead of fighting it too hard.</p></div></div><div class="puzzle-actions"><button class="primary-btn" id="landing-burn">🔥 Apply burn & descend</button></div>';
+  content.querySelectorAll("[data-thrust]").forEach(btn=>btn.addEventListener("click",()=>{l.thrust=+btn.dataset.thrust;renderLandingChallenge();}));
+  content.querySelectorAll("[data-steer]").forEach(btn=>btn.addEventListener("click",()=>{l.steer=+btn.dataset.steer;renderLandingChallenge();}));
   $("landing-burn").addEventListener("click",applyLandingBurn);
-  content.querySelectorAll("[data-steer]").forEach(btn=>btn.addEventListener("click",()=>{
-    l.steer=+btn.dataset.steer;content.querySelectorAll("[data-steer]").forEach(b=>b.classList.toggle("selected",b===btn));
-  }));
 }
 function applyLandingBurn(){
   const l=state.landing;if(!l||l.done)return;
-  const throttle=+$("landing-throttle").value;
+  const throttle=l.thrust||75;
   l.fuel=Math.max(0,l.fuel-(2+throttle*.12));
   l.speed=clamp(l.speed+1.8-throttle*.036,.5,30);
   l.offset=clamp(l.offset+l.wind+l.steer*l.steerStrength,-30,30);
   l.altitude=Math.max(0,l.altitude-200);l.turn++;
   l.wind=(Math.random()-.5)*({1:.55,2:.85,3:1.15}[l.tier])*2;
   if(l.turn>=l.turns||l.fuel<=0){
-    l.done=true;
-    state.landingSuccess=l.speed<=l.maxSpeed&&Math.abs(l.offset)<=l.maxOffset&&l.fuel>10;
-    if(state.landingSuccess){state.battery=clamp(state.battery+2,0,8);awardCadetXP(12,"pilot",2);addCadetBadge("soft-landing");log("Landing simulation passed • +2 starting battery reserve");}
-    else{state.arrayDamage=1.5;state.spareParts=Math.max(0,state.spareParts-1);state.battery=Math.max(0,state.battery-2);state.safety=92;awardCadetXP(4,"pilot",0);log("Hard touchdown • solar frame damaged and one spare kit lost");}
-    renderLandingChallenge();return;
+    l.done=true;state.landingSuccess=l.speed<=l.maxSpeed&&Math.abs(l.offset)<=l.maxOffset&&l.fuel>10;
+    if(state.landingSuccess){state.battery=clamp(state.battery+2,0,8);awardCadetXP(12,"pilot",2);addCadetBadge("soft-landing");log("Soft touchdown • +2 starting battery reserve");}
+    else{state.arrayDamage=1.5;state.spareParts=Math.max(0,state.spareParts-1);state.battery=Math.max(0,state.battery-2);state.safety=92;awardCadetXP(4,"pilot",0);log("Rough touchdown • solar frame damaged and one spare kit used");}
   }
   renderLandingChallenge();
 }
+
 function renderAssignments(){
   $("assignment-grid").innerHTML=taskDefinitions.map(task=>{
     const options=crewRoster.map(person=>'<option value="'+person.id+'" '+(state.assignments[task.id]===person.id?"selected":"")+'>'+person.name+' — '+person.role+'</option>').join("");

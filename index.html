@@ -1836,6 +1836,57 @@ function renderFinalEvacuation(){
  if(f.phase===3){renderFinalTakeoff();return;}
 }
 
+function renderFinalRoverRescue(){
+ const f=state.finalEvacuation,w=1000,h=540,base={x:135,y:390};
+ const crew=[{x:390,y:115,rescued:false},{x:650,y:415,rescued:false},{x:875,y:170,rescued:false}];
+ const rover={x:base.x,y:base.y,vx:0,vy:0,angle:0,battery:100};
+ const keys={up:false,down:false,left:false,right:false};let last=performance.now(),finished=false;
+ $("finale-content").innerHTML='<p class="tiny muted">Three team members are waiting at surface stations. Drive alongside each one and press Space to bring them aboard, then return the rover to the ascent vehicle.</p><canvas id="final-rescue-canvas" width="'+w+'" height="'+h+'" style="width:100%;height:auto" tabindex="0" class="rover-map" aria-label="Drive a rover through open Martian terrain to rescue three team members."></canvas><div class="rover-readouts"><div><span>ROVER BATTERY</span><b id="final-rover-battery">100%</b></div><div><span>CREW RECOVERED</span><b id="final-crew-count">0 / 3</b></div><div><span>RETURN DISTANCE</span><b id="final-return-distance">0 m</b></div><div><span>LAUNCH BUS</span><b>ONLINE</b></div></div><p class="tiny muted" id="final-rescue-hint">WASD or arrows to drive. Press Space near a crew member to board them.</p>';
+ const cv=$("final-rescue-canvas"),ctx=cv.getContext("2d");
+ function draw(){
+  ctx.fillStyle="#9a6248";ctx.fillRect(0,0,w,h);
+  for(let i=0;i<75;i++){const x=(i*137)%w,y=(i*83)%h;ctx.beginPath();ctx.ellipse(x,y,15+i%5*8,8+i%3*4,i*.3,0,Math.PI*2);ctx.fillStyle=i%2?"rgba(55,39,37,.3)":"rgba(220,157,109,.18)";ctx.fill();}
+  for(let i=0;i<10;i++){const x=(i*241+80)%w,y=(i*151+60)%h;ctx.beginPath();ctx.ellipse(x,y,22+i%3*9,12+i%3*4,.3,0,Math.PI*2);ctx.fillStyle="#62463d";ctx.fill();}
+  ctx.beginPath();ctx.arc(base.x,base.y,45,0,Math.PI*2);ctx.fillStyle="#5c9185";ctx.fill();ctx.fillStyle="#14262b";ctx.font="bold 11px system-ui";ctx.textAlign="center";ctx.fillText("ASCENT BASE",base.x,base.y+4);
+  crew.forEach((p,i)=>{if(p.rescued)return;ctx.beginPath();ctx.arc(p.x,p.y,16,0,Math.PI*2);ctx.fillStyle="#f1c08a";ctx.fill();ctx.fillStyle="#21343a";ctx.fillRect(p.x-18,p.y-20,36,8);ctx.fillStyle="#fff4d8";ctx.font="bold 11px system-ui";ctx.fillText("CREW "+(i+1),p.x,p.y-28);});
+  ctx.save();ctx.translate(rover.x,rover.y);ctx.rotate(rover.angle);ctx.fillStyle="#202a30";ctx.fillRect(-24,-17,48,34);ctx.fillStyle="#d8a06b";ctx.fillRect(-15,-12,30,24);ctx.fillStyle="#426c7b";ctx.fillRect(-7,-8,16,16);ctx.restore();
+ }
+ function cleanup(){document.removeEventListener("keydown",down);document.removeEventListener("keyup",up);}
+ function fail(){if(finished)return;finished=true;cleanup();endMission(false);}
+ function down(e){
+  const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};
+  if(state.coopMode&&["arrowup","arrowdown","arrowleft","arrowright"].includes(k))return;
+  if(map[k]){keys[map[k]]=true;e.preventDefault();}
+  if(k===" "|| (state.coopMode&&k==="enter")){
+   const near=crew.find(p=>!p.rescued&&Math.hypot(p.x-rover.x,p.y-rover.y)<52);
+   if(near){near.rescued=true;f.crewRescued++;$("final-crew-count").textContent=f.crewRescued+" / 3";$("final-rescue-hint").textContent=f.crewRescued===3?"All crew aboard. Drive back to the ascent base.":"Crew member aboard. Continue to the next pickup beacon.";}
+   else $("final-rescue-hint").textContent="Approach a crew beacon before loading the team member.";
+   e.preventDefault();
+  }
+ }
+ function up(e){const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};if(map[k])keys[map[k]]=false;}
+ document.addEventListener("keydown",down);document.addEventListener("keyup",up);
+ const pad=$("finale-content");
+ pad.querySelectorAll("[data-final-drive]").forEach(button=>button.addEventListener("pointerdown",()=>keys[button.dataset.finalDrive]=true));
+ ["pointerup","pointercancel","pointerleave"].forEach(type=>pad.querySelectorAll("[data-final-drive]").forEach(button=>button.addEventListener(type,()=>keys[button.dataset.finalDrive]=false)));
+ function frame(now){
+  if(finished)return;
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  const dx=(keys.right?1:0)-(keys.left?1:0),dy=(keys.down?1:0)-(keys.up?1:0),len=Math.hypot(dx,dy)||1;
+  rover.vx+=dx/len*260*dt;rover.vy+=dy/len*260*dt;rover.vx*=Math.pow(.86,dt*24);rover.vy*=Math.pow(.86,dt*24);
+  const speed=Math.hypot(rover.vx,rover.vy);if(speed>180){rover.vx=rover.vx/speed*180;rover.vy=rover.vy/speed*180;}
+  rover.x=clamp(rover.x+rover.vx*dt,35,w-35);rover.y=clamp(rover.y+rover.vy*dt,35,h-35);if(speed>5)rover.angle=Math.atan2(rover.vy,rover.vx);
+  rover.battery=Math.max(0,rover.battery-dt*(.45+speed*.002));
+  const dist=Math.hypot(rover.x-base.x,rover.y-base.y);
+  $("final-rover-battery").textContent=Math.round(rover.battery)+"%";$("final-return-distance").textContent=Math.round(dist)+" m";
+  draw();
+  if(rover.battery<=0){fail();return;}
+  if(f.crewRescued===3&&dist<55){finished=true;cleanup();f.phase=3;renderFinalEvacuation();return;}
+  requestAnimationFrame(frame);
+ }
+ cv.focus();draw();requestAnimationFrame(frame);
+}
+
 async function loadNasa(){
   const btn=$("load-nasa");btn.disabled=true;btn.textContent="Loading…";$("nasa-state").textContent="Connecting to NASA";
   try{

@@ -2,7 +2,7 @@
 
 A browser-playable Mars outpost management game for the 2026 NASA Space Apps Challenge.
 
-**Status:** Early playable prototype. The landing and crew-assignment sequence, four one-shot commissioning minigames, 30-Sol command campaign, seven escalating crisis events, shared power budget, persistent system faults, three-kit repair inventory, live outpost inspection, debrief, and optional NASA DONKI SEP lookup are implemented in `index.html`.
+**Status:** Expanded playable prototype. The game now includes a knowledge preflight, adaptive manual landing challenge, three selectable Mars training sites, four adaptive one-shot commissioning minigames, a 30-Sol campaign, seven major crises plus seven captain-decision incidents, a shared power budget, three repair kits, two field-operation slots per Sol, hands-on panel cleaning, rover navigation, relay wiring, sample analysis, cadet XP/levels/badges, and an optional NASA DONKI SEP lookup in `index.html`.
 
 ## Run locally
 Open `index.html` in a modern browser. No build step, package install, or server is required. The game works offline; the optional NASA DONKI lookup requires an internet connection.
@@ -31,13 +31,14 @@ Add all six team members and their roles before submission.
 ## License
 No license has been selected yet. Until one is added, do not assume others have permission to reuse the code.
 
-## Mission flow and one-shot setup tasks
-1. The five-person crew lands at Gale Crater and surveys the outpost site.
-2. The captain assigns four specialists to power, life support, food production, and radiation-protection setup.
-3. Each setup task has a distinct minigame and one attempt. A failed result is locked for that mission; there is no task retry.
-4. Failed setup leaves a persistent system problem. During the 30-Sol campaign, the captain compensates by reallocating power among maintenance, life support, greenhouse production, and shelter protection.
-5. Seven crisis beats arrive on Sols 3, 7, 11, 15, 19, 23 and 27: a dust front, clogged water filter, greenhouse blight, regional dust storm, habitat seal leak, shelter drill, and heater-control failure.
-6. Power is a shared pool: habitat essentials draw power first, then the remaining supply is divided across life support, greenhouse, shelter and maintenance requests. Over-requesting power rations every selected system; unused supply charges the battery.
-7. Daily allocations persist until the captain changes them. A repair must be explicitly targeted from the relevant outpost component, receive enough delivered power for several Sols, and consume one spare kit when it begins.
-8. Only three spare kits are carried for four major repairable crises. The captain must choose which faults deserve a full repair and manage the others through resource priorities.
-9. A full new mission resets task results, crisis damage and repair inventory and starts a fresh run.
+## Mission flow
+1. A five-question knowledge check establishes a practice, standard or advanced starting tier for piloting, engineering, life support, botany and science. It is a game difficulty setting, not a formal assessment of a child's ability.
+2. Choose Gale Crater, Jezero Crater or Utopia Planitia. Each route has a small, clearly described gameplay modifier; these are scenario presets, not claims that a real mission should land at a particular place.
+3. Complete a six-turn landing simulator. Engine thrust affects descent speed; steering offsets crosswind. A hard landing causes persistent equipment damage and consumes a spare kit.
+4. Assign four specialists to the power, life-support, food-production and radiation-protection setup tasks. Each has one adaptive minigame attempt. Failed outcomes remain in the run.
+5. Manage 30 Sols through a shared power budget, persistent allocations and three spare repair kits.
+6. Major crisis beats arrive on Sols 3, 7, 11, 15, 19, 23 and 27. Additional captain-decision incidents on Sols 5, 9, 13, 17, 21, 25 and 29 ask the player to trade water, battery, food, crew safety, science time or spare parts for different outcomes.
+7. The field-operations board gives the crew two EVA slots per Sol. Players can scrub dusty panels, navigate the rover to collect samples, analyze samples in the lab, or repair an offline communications relay. Failed attempts still use a slot; rover battery recharges slowly.
+8. The communications relay affects the Sol 23 warning. Leaving it offline causes an additional simulated late-warning penalty.
+9. Cadet XP, levels, skill progress and badges persist locally between runs. The debrief records resources, field jobs and the decisions that shaped the mission.
+10. Restarting begins a new run and resets mission resources and one-shot task results; persistent cadet progress remains.

@@ -703,7 +703,7 @@ function renderFieldOps(){
   {id:"commission-greenhouse",icon:"🌱",name:"Calibrate the grow beds",desc:"Tune water, light and nutrients while the seedling responds.",ready:!done("greenhouse"),reason:"Already commissioned"},
   {id:"commission-shield",icon:"🛡",name:"Seal the radiation shelter",desc:"Brush sealant over exposed seams using the limited patch supply.",ready:!done("shield"),reason:"Already commissioned"},
   {id:"clean",icon:"☀",name:"Scrub solar panels",desc:"Drag the brush across the array to remove accumulated dust and restore generation.",ready:state.dust>.025&&!used.clean,reason:used.clean?"Completed this Sol":"Panels are clean"},
-  {id:"rover",icon:"🚙",name:"Open-world rover expedition",desc:"Drive across generated Martian terrain, collect three geological samples and return to base.",ready:f.roverBattery>=55&&state.sol-f.lastRoverSol>=1&&!used.rover,reason:used.rover?"Rover outing used today":f.roverBattery<55?"Rover batteries need charging":"Rover operation ready"},
+  {id:"rover",icon:"🚙",name:"Open-world rover expedition",desc:"Drive across generated Martian terrain, collect three geological samples and return to base.",ready:f.roverBattery>=85&&state.sol-f.lastRoverSol>=1&&!used.rover,reason:used.rover?"Rover outing used today":f.roverBattery<85?"Rover batteries need charging":"Rover operation ready"},
   {id:"lab",icon:"🔬",name:"Analyze returned samples",desc:"Sweep the laboratory scanner over the specimen to reveal mineral signals.",ready:f.samples>f.studied&&!used.lab,reason:used.lab?"Lab slot used today":f.samples<=f.studied?"No unstudied samples":"Sample waiting"},
   {id:"relay",icon:"📡",name:"Repair the radio relay",desc:"Reconnect a damaged communications link with a wire-routing activity.",ready:!f.relayOnline&&!used.relay,reason:used.relay?"Relay repair attempted today":"Relay online"},
   {id:"signal",icon:"📻",name:"Find the lost signal",desc:"Aim the antenna and tune the carrier to recover an orbital message.",ready:state.sol>=6&&!state.missionOps.signalDone&&!used.signal,reason:state.sol<6?"Available from Sol 06":state.missionOps.signalDone?"Signal recovered":"Signal recovery ready"},
@@ -811,96 +811,153 @@ function launchRelayTask(){
   draw();
 }
 function launchRoverTask(){
- const f=state.fieldOps,extra=Math.min(4,f.roverExtraTiles||0),width=19+extra,height=13,start={x:1,y:11},goal={x:width-2,y:1};
+ const f=state.fieldOps,world={w:3200+Math.min(800,(f.roverExtraTiles||0)*100),h:2200},view={w:960,h:520};
+ const base={x:220,y:1880},target={x:world.w-240,y:260};
  let seed=(state.sol*10007+(state.siteKey.charCodeAt(0)||0)*97+(f.failedRuns||0)*701)>>>0;
- const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
- const missions={
-  gale:[
-   {title:"Layered lake-bed outcrop",target:"layered sediment ridge",sample:"layered sedimentary core",brief:"Reach a banded rock exposure, image its layers and bring back a sealed core."},
-   {title:"Crater wall survey",target:"crater-wall overlook",sample:"crater-ejecta rock",brief:"Map exposed wall layers from a safe overlook and collect a small ejecta sample."},
-   {title:"Clay-bearing ridge",target:"clay-rich ridge",sample:"clay-bearing rock",brief:"Compare mineral signatures at a ridge where ancient water may have altered the rock."},
-   {title:"Rock overhang survey",target:"overhang entrance",sample:"silica-rich rock",brief:"Study a sheltered rock overhang from its entrance. The rover stays outside an unverified cavity."}
-  ],
-  jezero:[
-   {title:"Delta-front sandstone",target:"delta-front outcrop",sample:"delta sandstone core",brief:"Reach a layered delta-front exposure and collect a core that can help reconstruct ancient sediment transport."},
-   {title:"Crater-floor panorama",target:"crater-floor overlook",sample:"crater-floor regolith",brief:"Survey the crater floor from a safe overlook and collect a nearby regolith sample."},
-   {title:"Altered bedrock ridge",target:"altered bedrock ridge",sample:"altered bedrock core",brief:"Use remote chemistry and close-up imaging to compare minerals in ancient-water-altered rock."},
-   {title:"Overhang entrance survey",target:"rock alcove entrance",sample:"silica-rich rock",brief:"Image a sheltered alcove from outside and compare the surrounding rock. No cave entry is attempted."}
-  ],
-  utopia:[
-   {title:"Ice-rich regolith patch",target:"bright regolith patch",sample:"ice-rich regolith",brief:"Investigate a bright soil patch for ice-related clues and return a protected sample."},
-   {title:"Impact-ejecta field",target:"small impact crater",sample:"impact-ejecta soil",brief:"Map an impact feature and compare the fragments scattered around its rim."},
-   {title:"Polygon-ground survey",target:"polygonal ground",sample:"polygon-ground soil",brief:"Survey patterned ground and collect soil to compare its grains and layers."},
-   {title:"Sheltered rock alcove",target:"overhang entrance",sample:"silica-rich rock",brief:"Inspect a rock alcove from outside, capturing its shape and a nearby rock fragment."}
-  ]
+ const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+ const missionSets={
+  gale:[["Layered lake-bed outcrop","layered sediment core","banded sediment exposure","Reach a layered sediment ridge and collect a sealed core."],["Crater-wall overlook","crater ejecta","crater rim outcrop","Study rock fragments around a safe crater overlook."],["Clay-bearing ridge","altered clay-bearing rock","altered bedrock rise","Compare minerals at a ridge that may preserve evidence of ancient water."],["Rock overhang survey","silica-rich rock","sheltered overhang","Inspect an overhang from outside; do not enter an unverified cavity."]],
+  jezero:[["Delta-front sandstone","delta sandstone core","delta-front exposure","Investigate a layered delta-front outcrop and collect a core."],["Crater-floor traverse","crater-floor regolith","basin floor outcrop","Map the crater floor and examine rock fragments."],["Altered bedrock ridge","altered bedrock core","altered bedrock ridge","Survey minerals that may preserve ancient lake chemistry."],["Overhang entrance survey","silica-rich rock","rock alcove entrance","Image a sheltered alcove from outside and study nearby rock."]],
+  utopia:[["Ice-rich regolith prospect","ice-rich regolith","bright soil deposit","Investigate a bright soil patch for near-surface ice clues."],["Impact-ejecta field","impact-ejecta soil","small impact crater","Map an impact feature and compare rim fragments."],["Polygon-ground survey","polygon-ground soil","patterned ground","Survey patterned ground and compare soil grains."],["Sheltered rock alcove","silica-rich rock","overhang entrance","Inspect an overhang from outside and collect nearby rock."]]
  };
- const options=missions[state.siteKey]||missions.gale,mission=options[(state.sol-1+(f.failedRuns||0))%options.length];
- const path=[{x:start.x,y:start.y}],visited=new Set([start.x+","+start.y]);let px=start.x,py=start.y,east=goal.x-start.x,north=start.y-goal.y,elevation=0;
- while(east+north>0){if(east>0&&(north===0||random()<east/(east+north))){px++;east--;}else{py--;north--;}path.push({x:px,y:py});}
- const map=Array.from({length:height},(_,y)=>Array.from({length:width},(_,x)=>{if(x===0||y===0||x===width-1||y===height-1)return {type:"boulder",elevation:0};const r=random();return {type:r<.10?"boulder":r<.16?"crater":r<.29?"sand":r<.43?"rubble":"flat",elevation:Math.floor(random()*3)};}));
- path.forEach((p,i)=>{const roll=random(),surface=i===0||i===path.length-1?"flat":roll<.17?"sand":roll<.30?"rubble":"flat",slope=random();elevation=clamp(elevation+(slope<.24?1:slope<.43?-1:0),0,3);map[p.y][p.x]={type:surface,elevation};});
- map[start.y][start.x]={type:"flat",elevation:0};map[goal.y][goal.x]={type:"flat",elevation:0};
- const moveCost=(from,to)=>{const rise=to.elevation-from.elevation;return Math.max(.35,.68+Math.max(0,rise)*.35-Math.max(0,-rise)*.15+(to.type==="sand"?.18:to.type==="rubble"?.12:0));};
- function plannedRoundTrip(){let cost=8.2;for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];cost+=moveCost(map[a.y][a.x],map[b.y][b.x])+moveCost(map[b.y][b.x],map[a.y][a.x]);}return cost;}
- while(plannedRoundTrip()>62){const candidates=path.slice(1,-1).map(p=>({p,cell:map[p.y][p.x]})).sort((a,b)=>(b.cell.type==="sand"?2:b.cell.type==="rubble"?1:0)-(a.cell.type==="sand"?2:a.cell.type==="rubble"?1:0));const c=candidates[0];if(!c)break;c.cell.type="flat";c.cell.elevation=0;}
- const safeEnergy=plannedRoundTrip();
- console.assert(path.length-1>=26,"Rover traverse should be a long expedition.");
- console.assert(safeEnergy<=62,"Generated safe route and all science tools fit 70% charge with reserve.");
- const flat={type:"flat",elevation:1},uphill={type:"flat",elevation:2},downhill={type:"flat",elevation:0};
- console.assert(moveCost(flat,uphill)>moveCost(flat,flat),"Uphill consumes more than level terrain.");
- console.assert(moveCost(flat,downhill)<moveCost(flat,flat),"Downhill consumes less than level terrain.");
- console.assert(path[0].x===start.x&&path[path.length-1].x===goal.x,"Generated route joins base and target.");
- let x=start.x,y=start.y,phase="outbound",battery=f.roverBattery,damage=f.roverDamage||0,moves=0,navFrames=0,medaReadings=0;
- const toolList=[{id:"panorama",title:"Mastcam-Z stereo panorama",desc:"Capture a wide colour and depth view of the target outcrop.",cost:1.2},{id:"chemistry",title:"SuperCam remote chemistry",desc:"Record a remote elemental and mineral signature.",cost:1.8},{id:"core",title:"Drill, seal & cache a sample",desc:"Collect a small rock or soil core in a sealed sample tube.",cost:2.6},{id:"meda",title:"MEDA weather station snapshot",desc:"Record wind, air and ground temperature, humidity and dust conditions.",cost:1.6}],toolsDone=new Set();
- f.activeExpedition={title:mission.title,target:mission.target,sampleType:mission.sample,sol:state.sol};
- const atBase=()=>x===start.x&&y===start.y;
- function renderMap(hint){
-  const label=phase==="outbound"?"OUTBOUND TRAVERSE":phase==="return"?"RETURN TO OUTPOST":"EVA RECOVERY WALK";
-  const markup='<p class="tiny muted"><strong>'+mission.title+'</strong> · '+mission.brief+'</p><div class="rover-hud"><span>MISSION <b>'+label+'</b></span><span>ROUTE <b>'+(path.length-1)+' tiles each way</b></span></div><canvas id="rover-map" class="rover-map" width="'+(width*26)+'" height="'+(height*26)+'" tabindex="0" role="img" aria-label="Procedurally generated Mars terrain map. Use arrow keys or WASD to drive the rover."></canvas><div class="rover-readouts"><div><span>ROVER BATTERY</span><b>'+battery.toFixed(0)+'%</b></div><div><span>ROVER WEAR</span><b>'+Math.round(damage)+'%</b></div><div><span>NAVCAM FRAMES</span><b>'+navFrames+'</b></div><div><span>MEDA SETS</span><b>'+medaReadings+'</b></div><div><span>WHEEL MOVES</span><b>'+moves+'</b></div></div><div class="rover-legend"><span>· flat</span><span>▲ uphill</span><span>▼ downhill</span><span>≈ sand</span><span>✦ rubble</span><span>◆ boulder</span><span>◉ crater</span></div><div class="rover-controls"><div><button class="secondary-btn" data-drive="up" aria-label="Drive north">↑</button><button class="secondary-btn" data-drive="left" aria-label="Drive west">←</button><button class="secondary-btn" data-drive="down" aria-label="Drive south">↓</button><button class="secondary-btn" data-drive="right" aria-label="Drive east">→</button></div></div><p class="tiny muted">'+(hint||"Use arrow keys or W A S D. Green outlines show visited terrain.")+'</p>'+(phase==="recovery"?"":'<div class="puzzle-actions"><button class="secondary-btn" id="rover-cancel">Abort outing & recover on foot</button></div>');
-  $("ops-modal-content").innerHTML=markup;const canvas=$("rover-map"),ctx=canvas.getContext("2d"),cell=26,colors={flat:"#424d4c",sand:"#8a6748",rubble:"#62564b",boulder:"#6c4436",crater:"#392f3d"};
-  for(let yy=0;yy<height;yy++)for(let xx=0;xx<width;xx++){const d=map[yy][xx],key=xx+","+yy,left=xx*cell,top=yy*cell;ctx.fillStyle=colors[d.type]||colors.flat;ctx.fillRect(left+1,top+1,cell-2,cell-2);if(visited.has(key)){ctx.strokeStyle="#79d6a0";ctx.lineWidth=2;ctx.strokeRect(left+3,top+3,cell-6,cell-6);}ctx.fillStyle="#e7e0d4";ctx.font="15px system-ui";ctx.textAlign="center";ctx.textBaseline="middle";let glyph=d.type==="boulder"?"◆":d.type==="crater"?"◉":d.type==="sand"?"≈":d.type==="rubble"?"✦":d.elevation>1?"▲":d.elevation===0?"·":"▼";if(xx===start.x&&yy===start.y)glyph="B";if(xx===goal.x&&yy===goal.y)glyph="◎";ctx.fillText(glyph,left+cell/2,top+cell/2);}
-  ctx.fillStyle="#f28b58";ctx.beginPath();ctx.arc(x*cell+cell/2,y*cell+cell/2,cell*.36,0,Math.PI*2);ctx.fill();ctx.fillStyle="#10171d";ctx.font="bold 15px system-ui";ctx.fillText(phase==="recovery"?"A":"R",x*cell+cell/2,y*cell+cell/2);
-  canvas.addEventListener("pointerdown",()=>canvas.focus());canvas.focus();
-  $("ops-modal-content").querySelectorAll("[data-drive]").forEach(btn=>btn.addEventListener("click",()=>{const dirs={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]},d=dirs[btn.dataset.drive];move(d[0],d[1]);}));
-  if($("rover-cancel"))$("rover-cancel").onclick=()=>beginRecovery("The captain has called off this traverse. Follow the green trail and walk the rover back to base.");
+ const list=missionSets[state.siteKey]||missionSets.gale,mission=list[(state.sol-1+(f.failedRuns||0))%list.length];
+ const route=t=>({x:base.x+(target.x-base.x)*t+Math.sin(t*Math.PI*2)*145,y:base.y+(target.y-base.y)*t+Math.sin(t*Math.PI*3)*95});
+ const samples=[.24,.49,.75].map((t,i)=>{const p=route(t);return{x:p.x+(rnd()-.5)*55,y:p.y+(rnd()-.5)*55,id:i+1,found:false};});
+ const rocks=[],boulders=[],craters=[],dunes=[];
+ for(let i=0;i<165;i++){
+  const x=240+rnd()*(world.w-480),y=160+rnd()*(world.h-320);
+  if(Math.hypot(x-base.x,y-base.y)<180||Math.hypot(x-target.x,y-target.y)<170)continue;
+  if([.12,.25,.4,.55,.7,.85].some(t=>{const p=route(t);return Math.hypot(x-p.x,y-p.y)<135;}))continue;
+  const q=rnd(),o={x,y,r:16+rnd()*28,a:rnd()*Math.PI*2};
+  if(q<.11)craters.push({...o,r:45+rnd()*48});else if(q<.34)boulders.push(o);else if(q<.58)dunes.push({...o,rx:65+rnd()*95,ry:22+rnd()*32});else rocks.push(o);
  }
- function renderScienceStation(){
+ const heightAt=(x,y)=>Math.sin(x*.0027)*.34+Math.cos(y*.0034)*.28+Math.sin((x+y)*.0017)*.22+Math.cos((x-y)*.004)*.12;
+ function terrainAt(x,y){
+  const n=Math.sin(x*.011)*Math.cos(y*.015)+Math.sin((x-y)*.008)*.4;
+  const type=n>.75?"loose sand":n<-.72?"rocky gravel":"firm regolith";
+  return {height:heightAt(x,y),type,resistance:type==="loose sand"?.27:type==="rocky gravel"?.21:.08};
+ }
+ const tools=[{id:"panorama",name:"Mastcam-Z stereo panorama",description:"Capture a wide colour panorama and stereo terrain view.",cost:1.2},{id:"chemistry",name:"SuperCam remote chemistry",description:"Record remote elemental and mineral clues.",cost:1.8},{id:"core",name:"Drill, seal & cache a sample",description:"Collect a small core in a sealed sample tube.",cost:2.6},{id:"meda",name:"MEDA weather snapshot",description:"Record wind, temperatures, pressure, humidity and dust.",cost:1.6}];
+ const instrumentCost=tools.reduce((n,t)=>n+t.cost,0),idealRoundTrip=2*Math.hypot(target.x-base.x,target.y-base.y);
+ console.assert(idealRoundTrip*.0058*1.4+instrumentCost+1.8<75,"Safe round trip and science package should fit the rover battery reserve.");
+ let rover={x:base.x,y:base.y,angle:Math.atan2(target.y-base.y,target.x-base.x),speed:0,battery:f.roverBattery,wear:f.roverDamage||0,distance:0,frames:0,meda:0};
+ let phase="outbound",sampleCount=0,done=false,panorama=false,chemistry=false,core=false,meda=false,last=performance.now();
+ const drive={up:false,down:false,left:false,right:false},scan={x:view.w/2,y:view.h/2};
+ f.activeExpedition={title:mission[0],target:mission[2],sampleType:mission[1],sol:state.sol};
+ function nearestSample(){let point=null,distance=Infinity;samples.forEach(p=>{if(p.found)return;const d=Math.hypot(rover.x-p.x,rover.y-p.y);if(d<distance){distance=d;point=p;}});return {point,distance};}
+ function drawTerrain(ctx,cx,cy){
+  const g=ctx.createLinearGradient(0,0,view.w,view.h);g.addColorStop(0,"#bb8059");g.addColorStop(.5,"#945c43");g.addColorStop(1,"#69453a");ctx.fillStyle=g;ctx.fillRect(0,0,view.w,view.h);
+  for(let i=0;i<105;i++){
+   const wx=(i*239+Math.floor(cx/540)*109)%world.w,wy=(i*151+Math.floor(cy/430)*73)%world.h,x=wx-cx+view.w/2,y=wy-cy+view.h/2;
+   if(x<-90||x>view.w+90||y<-90||y>view.h+90)continue;
+   const r=30+Math.abs(heightAt(wx,wy))*55;
+   ctx.beginPath();ctx.ellipse(x,y,r*1.65,r*.48,Math.sin(i*.4)*.12,0,Math.PI*2);ctx.fillStyle="rgba(47,35,32,.11)";ctx.fill();
+   ctx.beginPath();ctx.ellipse(x-4,y-5,r*1.35,r*.37,Math.sin(i*.4)*.12,Math.PI,Math.PI*2);ctx.strokeStyle="rgba(241,194,146,.14)";ctx.lineWidth=2;ctx.stroke();
+  }
+  dunes.forEach(d=>{const x=d.x-cx+view.w/2,y=d.y-cy+view.h/2;if(x<-d.rx||x>view.w+d.rx||y<-d.ry||y>view.h+d.ry)return;ctx.beginPath();ctx.ellipse(x,y,d.rx,d.ry,d.a,0,Math.PI*2);ctx.fillStyle="#bb8258";ctx.fill();ctx.beginPath();ctx.ellipse(x-9,y-7,d.rx*.84,d.ry*.68,d.a,Math.PI,Math.PI*2);ctx.strokeStyle="#e3ad7c";ctx.lineWidth=4;ctx.stroke();});
+  craters.forEach(c=>{const x=c.x-cx+view.w/2,y=c.y-cy+view.h/2;if(x<-c.r-10||x>view.w+c.r+10||y<-c.r-10||y>view.h+c.r+10)return;ctx.beginPath();ctx.ellipse(x,y,c.r,c.r*.68,.12,0,Math.PI*2);ctx.fillStyle="#503938";ctx.fill();ctx.beginPath();ctx.ellipse(x-4,y-8,c.r*.82,c.r*.53,.12,Math.PI,Math.PI*2);ctx.strokeStyle="#d09a70";ctx.lineWidth=7;ctx.stroke();ctx.beginPath();ctx.ellipse(x,y,c.r*.53,c.r*.38,.12,0,Math.PI*2);ctx.fillStyle="#30282a";ctx.fill();});
+  [...rocks,...boulders].forEach(r=>{const x=r.x-cx+view.w/2,y=r.y-cy+view.h/2;if(x<-60||x>view.w+60||y<-60||y>view.h+60)return;ctx.save();ctx.translate(x,y);ctx.rotate(r.a);ctx.beginPath();ctx.moveTo(-r.r,-r.r*.3);ctx.lineTo(-r.r*.35,-r.r);ctx.lineTo(r.r*.8,-r.r*.7);ctx.lineTo(r.r,r.r*.15);ctx.lineTo(r.r*.15,r.r*.8);ctx.lineTo(-r.r*.8,r.r*.55);ctx.closePath();ctx.fillStyle=boulders.includes(r)?"#51403a":"#67483b";ctx.fill();ctx.strokeStyle="#d29b74";ctx.lineWidth=2;ctx.stroke();ctx.restore();});
+  samples.forEach(p=>{if(p.found)return;const x=p.x-cx+view.w/2,y=p.y-cy+view.h/2;if(x<-40||x>view.w+40||y<-40||y>view.h+40)return;const pulse=2+Math.sin(performance.now()*.004+p.id)*2;ctx.beginPath();ctx.arc(x,y,16+pulse,0,Math.PI*2);ctx.strokeStyle="#f7dc9b";ctx.lineWidth=3;ctx.stroke();ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fillStyle="#73e0d6";ctx.fill();ctx.fillStyle="#fff2d4";ctx.font="bold 10px system-ui";ctx.textAlign="center";ctx.fillText("SAMPLE "+p.id,x,y-26);});
+ }
+ function drawRover(ctx){
+  ctx.save();ctx.translate(view.w/2,view.h/2);ctx.rotate(rover.angle);
+  ctx.fillStyle="#202a30";for(const side of [-1,1]){ctx.beginPath();ctx.roundRect(-22,side*16-6,46,12,5);ctx.fill();}
+  ctx.fillStyle="#d4a071";ctx.beginPath();ctx.roundRect(-20,-13,41,26,8);ctx.fill();ctx.fillStyle="#416b78";ctx.fillRect(-10,-9,22,18);
+  ctx.strokeStyle="#e6d1b0";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(5,-2);ctx.lineTo(13,-24);ctx.lineTo(25,-26);ctx.stroke();ctx.fillStyle="#b4d5dc";ctx.beginPath();ctx.arc(25,-26,5,0,Math.PI*2);ctx.fill();ctx.restore();
+ }
+ function cleanup(){document.removeEventListener("keydown",keyDown);document.removeEventListener("keyup",keyUp);activeOpsCleanup=null;}
+ function finish(success,message){
+  if(done)return;done=true;cleanup();f.recoverActiveRover=null;
+  f.navFrames=rover.frames;f.wheelMoves=Math.round(rover.distance/10);f.medaReadings=rover.meda;f.roverBattery=Math.max(0,rover.battery);f.roverDamage=rover.wear;
+  f.activeExpedition={...f.activeExpedition,failed:!success};finishFieldTask("rover",success,message);
+ }
+ function showRecovery(message){
+  if(phase==="recovery"||done)return;
+  if(Math.hypot(rover.x-base.x,rover.y-base.y)<60){finish(false,"The rover was abandoned at base. This experiment is logged as failed.");return;}
+  phase="recovery";rover.speed=0;
+  $("ops-modal-content").innerHTML='<p class="tiny muted"><strong>ROVER DRIVE STOPPED</strong> · Walk the astronaut back to the habitat and recover the experiment log. Suit oxygen is limited.</p><canvas id="rover-world" width="'+view.w+'" height="'+view.h+'" class="rover-map" tabindex="0" aria-label="Walk the astronaut to base using WASD or arrow keys."></canvas><div class="rover-readouts"><div><span>SUIT OXYGEN</span><b id="rover-recovery-oxygen">90%</b></div><div><span>RECOVERY DISTANCE</span><b id="rover-recovery-distance">—</b></div><div><span>EXPERIMENT</span><b>FAILED</b></div><div><span>SAMPLES HELD</span><b>'+sampleCount+' / 3</b></div></div><p class="tiny muted">'+message+'</p><div class="rover-controls"><div><button class="secondary-btn" data-recovery="up">↑</button><button class="secondary-btn" data-recovery="left">←</button><button class="secondary-btn" data-recovery="down">↓</button><button class="secondary-btn" data-recovery="right">→</button></div></div>';
+  const canvas=$("rover-world"),ctx=canvas.getContext("2d"),walker={x:rover.x,y:rover.y,oxygen:90};let lastRecovery=performance.now(),walk={up:false,down:false,left:false,right:false};
+  const down=e=>{const k=e.key.toLowerCase(),m={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};if(m[k]){walk[m[k]]=true;e.preventDefault();}};
+  const up=e=>{const k=e.key.toLowerCase(),m={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};if(m[k])walk[m[k]]=false;};
+  document.addEventListener("keydown",down);document.addEventListener("keyup",up);activeOpsCleanup=()=>{document.removeEventListener("keydown",down);document.removeEventListener("keyup",up);activeOpsCleanup=null;};
+  $("ops-modal-content").querySelectorAll("[data-recovery]").forEach(btn=>{const k=btn.dataset.recovery;btn.addEventListener("pointerdown",()=>walk[k]=true);["pointerup","pointercancel","pointerleave"].forEach(type=>btn.addEventListener(type,()=>walk[k]=false));});
+  function walkFrame(now){
+   if(done||phase!=="recovery")return;const dt=Math.min(.05,(now-lastRecovery)/1000);lastRecovery=now;
+   const dx=(walk.right?1:0)-(walk.left?1:0),dy=(walk.down?1:0)-(walk.up?1:0),len=Math.hypot(dx,dy)||1;
+   walker.x=clamp(walker.x+dx/len*118*dt,40,world.w-40);walker.y=clamp(walker.y+dy/len*118*dt,40,world.h-40);walker.oxygen=Math.max(0,walker.oxygen-dt*.45);
+   drawTerrain(ctx,walker.x,walker.y);const bx=base.x-walker.x+view.w/2,by=base.y-walker.y+view.h/2;
+   ctx.beginPath();ctx.arc(bx,by,28,0,Math.PI*2);ctx.fillStyle="#6bc39a";ctx.fill();ctx.fillStyle="#17252b";ctx.font="bold 10px system-ui";ctx.textAlign="center";ctx.fillText("BASE",bx,by+4);
+   const rx=rover.x-walker.x+view.w/2,ry=rover.y-walker.y+view.h/2;ctx.beginPath();ctx.arc(rx,ry,15,0,Math.PI*2);ctx.fillStyle="#d4a071";ctx.fill();
+   ctx.beginPath();ctx.arc(view.w/2,view.h/2,10,0,Math.PI*2);ctx.fillStyle="#f5dfc3";ctx.fill();
+   $("rover-recovery-oxygen").textContent=Math.round(walker.oxygen)+"%";$("rover-recovery-distance").textContent=Math.round(Math.hypot(walker.x-base.x,walker.y-base.y))+" m";
+   if(Math.hypot(walker.x-base.x,walker.y-base.y)<70){activeOpsCleanup?.();finish(false,"The astronaut walked back and recovered the failed experiment log. The next Sol's traverse will be longer.");return;}
+   if(walker.oxygen<=0){activeOpsCleanup?.();finish(false,"The crew reached an emergency shelter, but the rover experiment was lost. A longer traverse is scheduled next Sol.");return;}
+   requestAnimationFrame(walkFrame);
+  }
+  canvas.focus();requestAnimationFrame(walkFrame);
+ }
+ function openScienceStop(){
   phase="science";
-  $("ops-modal-content").innerHTML='<p class="tiny muted"><strong>'+mission.title+'</strong> · You reached the '+mission.target+'. Gather the observations, then drive all the way back to base.</p><div class="rover-readouts"><div><span>ROVER BATTERY</span><b>'+battery.toFixed(0)+'%</b></div><div><span>NAVCAM FRAMES</span><b>'+navFrames+'</b></div><div><span>WHEEL MOVES</span><b>'+moves+'</b></div><div><span>SAMPLE</span><b>READY</b></div></div><div class="science-tool-list">'+toolList.map(t=>'<button class="science-tool" data-tool="'+t.id+'" '+(toolsDone.has(t.id)?"disabled":"")+'><b>'+(toolsDone.has(t.id)?"✓ ":"")+t.title+'</b><span>'+t.desc+' · '+t.cost+' battery</span></button>').join("")+'</div><p class="tiny muted">Four science actions. They collect observations; there are no questions to answer.</p><button class="secondary-btn" id="rover-cancel-science">Abort science & recover on foot</button>';
-  $("ops-modal-content").querySelectorAll("[data-tool]").forEach(btn=>btn.addEventListener("click",()=>{const tool=toolList.find(t=>t.id===btn.dataset.tool);if(!tool||toolsDone.has(tool.id))return;if(battery<tool.cost){beginRecovery("The reserve is too low to finish the science package. An EVA crew member must recover the rover.");return;}battery-=tool.cost;f.roverBattery=battery;toolsDone.add(tool.id);if(tool.id==="meda")medaReadings+=2;else navFrames+=tool.id==="panorama"?4:tool.id==="chemistry"?2:1;if(toolsDone.size===toolList.length){phase="return";renderMap("All observations are secured. Retrace the green trail to Outpost Zero; the sample only counts when the rover returns.");}else renderScienceStation();}));
-  $("rover-cancel-science").onclick=()=>beginRecovery("The captain has called off the science package. Follow the green trail and walk the rover back to base.");
+  $("ops-modal-content").innerHTML='<p class="tiny muted"><strong>'+mission[0]+'</strong> · Three samples collected. Complete the science observations, then drive back to the habitat.</p><div class="rover-readouts"><div><span>ROVER BATTERY</span><b>'+Math.round(rover.battery)+'%</b></div><div><span>DRIVE DISTANCE</span><b>'+Math.round(rover.distance)+' m</b></div><div><span>NAVCAM</span><b>'+rover.frames+'</b></div><div><span>MEDA SETS</span><b>'+rover.meda+'</b></div></div><div class="science-tool-list">'+tools.map(t=>'<button class="science-tool" data-tool="'+t.id+'" '+(t.done?"disabled":"")+'><b>'+(t.done?"✓ ":"")+t.name+'</b><span>'+t.description+' · '+t.cost+' battery</span></button>').join("")+'</div><button class="secondary-btn" id="rover-abort-science">Abort science and recover on foot</button>';
+  $("ops-modal-content").querySelectorAll("[data-tool]").forEach(btn=>btn.addEventListener("click",()=>{
+   const tool=tools.find(t=>t.id===btn.dataset.tool);if(!tool||tool.done)return;
+   if(rover.battery<tool.cost){showRecovery("There is not enough rover battery to finish the science package. Recover on foot.");return;}
+   rover.battery-=tool.cost;f.roverBattery=rover.battery;tool.done=true;
+   if(tool.id==="panorama")rover.frames+=4;if(tool.id==="chemistry")rover.frames+=2;if(tool.id==="meda")rover.meda+=2;
+   if(tools.every(t=>t.done)){phase="return";openMap("Science observations secured. Retrace the terrain to the habitat; the samples only count when the rover returns.");}
+   else openScienceStop();
+  }));
+  $("rover-abort-science").onclick=()=>showRecovery("The captain ended the science stop. Walk the rover back to base.");
  }
- function buildRecoveryPath(){
-  const queue=[[x,y]],seen=new Set([x+","+y]),prev=new Map();
-  while(queue.length){const [cx,cy]=queue.shift();if(cx===start.x&&cy===start.y)break;for(const [dx,dy] of [[0,-1],[0,1],[-1,0],[1,0]]){const nx=cx+dx,ny=cy+dy,key=nx+","+ny;if(nx<0||ny<0||nx>=width||ny>=height||seen.has(key)||!visited.has(key))continue;seen.add(key);prev.set(key,cx+","+cy);queue.push([nx,ny]);}}
-  const target=start.x+","+start.y;if(!seen.has(target))return [];const result=[];let key=target;while(key!==x+","+y){const [cx,cy]=key.split(",").map(Number);result.push({x:cx,y:cy});key=prev.get(key);}return result.reverse();
+ function openMap(hint){
+  const label=phase==="outbound"?"OUTBOUND EXPEDITION":"RETURN TO HABITAT";
+  $("ops-modal-content").innerHTML='<p class="tiny muted"><strong>'+mission[0]+'</strong> · '+mission[3]+'</p><div class="rover-hud"><span>MISSION <b>'+label+'</b></span><span>DESTINATION <b>'+mission[2]+'</b></span></div><canvas id="rover-world" width="'+view.w+'" height="'+view.h+'" class="rover-map" tabindex="0" aria-label="Open Martian terrain. Drive with WASD or arrow keys."></canvas><div class="rover-readouts"><div><span>ROVER BATTERY</span><b id="rover-battery-readout">'+Math.round(rover.battery)+'%</b></div><div><span>ROVER WEAR</span><b id="rover-damage-readout">'+Math.round(rover.wear)+'%</b></div><div><span>DRIVE DISTANCE</span><b id="rover-distance">'+Math.round(rover.distance)+' m</b></div><div><span>SAMPLES</span><b id="rover-samples">'+sampleCount+' / 3</b></div><div><span>NAVCAM</span><b id="rover-frames">'+rover.frames+'</b></div><div><span>MEDA SETS</span><b id="rover-meda">'+rover.meda+'</b></div></div><div class="rover-legend"><span>◉ sample beacon</span><span>◌ crater</span><span>◆ boulder</span><span>≈ dune</span><span>▲ ridge</span></div><div class="rover-controls"><div><button class="secondary-btn" data-drive="up">↑</button><button class="secondary-btn" data-drive="left">←</button><button class="secondary-btn" data-drive="down">↓</button><button class="secondary-btn" data-drive="right">→</button></div><button class="secondary-btn" id="rover-sample-button">Space · collect nearby sample</button></div><p class="tiny muted" id="rover-hint">'+(hint||"Accelerate with ↑/W, reverse with ↓/S, steer with ← → / A D. Slow down near hazards and sample beacons.")+'</p><p class="tiny muted">'+(state.coopMode?"PLAYER 1 • WASD DRIVE | PLAYER 2 • ARROWS AIM SCANNER / ENTER COLLECT":"SOLO • WASD OR ARROWS DRIVE / SPACE COLLECT")+'</p><button class="secondary-btn" id="rover-abort">Abort outing & recover on foot</button>';
+  $("ops-modal-content").querySelectorAll("[data-drive]").forEach(btn=>{const key=btn.dataset.drive;btn.addEventListener("pointerdown",e=>{drive[key]=true;btn.setPointerCapture?.(e.pointerId);});["pointerup","pointercancel","pointerleave","lostpointercapture"].forEach(type=>btn.addEventListener(type,()=>drive[key]=false));});
+  $("rover-world").focus();$("rover-sample-button").onclick=collectSample;$("rover-abort").onclick=()=>showRecovery("The captain ended the traverse. Walk the rover back to the habitat and log the experiment as failed.");
  }
- let rescueRoute=[],rescueIndex=0;
- function beginRecovery(message){
+ function keyDown(e){
+  const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};
   if(phase==="recovery")return;
-  if(atBase()){f.navFrames=navFrames;f.wheelMoves=moves;f.medaReadings=medaReadings;finishFieldTask("rover",false,"The rover outing was aborted before leaving base. The field slot was used and the experiment was recorded as failed.");return;}
-  phase="recovery";rescueRoute=buildRecoveryPath();rescueIndex=0;
-  if(!rescueRoute.length)rescueRoute=[{x:start.x,y:start.y}];
-  renderMap(message||"The rover can no longer drive. An EVA crew member is towing it home on foot. Follow the green trail with the arrow keys or WASD.");
-}
-f.recoverActiveRover=beginRecovery;
- function move(dx,dy){
-  if(phase==="science")return;const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=width||ny>=height){renderMap("The mapped traverse ends here. Turn back toward the target or base.");return;}
-  if(phase==="recovery"){const next=rescueRoute[rescueIndex];if(!next||next.x!==nx||next.y!==ny){renderMap("During recovery, follow the green breadcrumb trail back to base.");return;}x=nx;y=ny;rescueIndex++;moves++;if(atBase()){f.roverBattery=0;f.roverDamage=clamp(damage-25,15,55);f.navFrames=navFrames;f.wheelMoves=moves;f.medaReadings=medaReadings;finishFieldTask("rover",false,"The rover ran out of power or became immobilized. The crew walked it back; today's science experiment is logged as failed. A longer follow-up traverse is queued for the next Sol.");return;}renderMap("Walking the rover back to base. Follow the next green breadcrumb.");return;}
-  const next=map[ny][nx],key=nx+","+ny,from=map[y][x];
-  if(next.type==="boulder"||next.type==="crater"){const hit=next.type==="boulder"?16:11;damage=clamp(damage+hit,0,100);battery=Math.max(0,battery-2.2);f.roverDamage=damage;f.roverBattery=battery;if(damage>=65||battery<=0){beginRecovery("Impact damage has immobilized the rover. An EVA crew member must walk it back to base.");return;}renderMap((next.type==="boulder"?"Boulder collision":"Crater-edge bump")+"! Rover wear +"+hit+"%. Find a safer line.");return;}
-  const stumbled=phase==="outbound"&&visited.has(key),cost=moveCost(from,next)+(stumbled ? .25 : 0);if(stumbled)damage=clamp(damage+3,0,100);
-  battery=Math.max(0,battery-cost);f.roverDamage=damage;f.roverBattery=battery;x=nx;y=ny;moves++;navFrames+=4;if(moves%3===0)medaReadings++;visited.add(key);
-  if(phase==="outbound"&&key===goal.x+","+goal.y){if(battery<=0){beginRecovery("The rover reached the target but has no power left for the science package or return trip.");return;}renderScienceStation();return;}
-  if(phase==="return"&&atBase()){f.navFrames=navFrames;f.wheelMoves=moves;f.medaReadings=medaReadings;finishFieldTask("rover",true,"The rover completed its long traverse and returned safely with a "+mission.sample+" sample. Navcam images, wheel odometry, MEDA weather readings, a Mastcam-Z panorama, SuperCam chemistry and a sealed core were recorded.");return;}
-  if(battery<=0||damage>=65){beginRecovery("The rover's battery or wheel system can no longer support the drive. An EVA crew member must recover it.");return;}
-  if(phase==="outbound"&&moves>=path.length+8){damage=clamp(damage+8,0,100);f.roverDamage=damage;renderMap("The rover has wandered far from its planned traverse. Retrace your route and watch the wheel wear.");return;}
-  renderMap("Terrain used "+cost.toFixed(1)+" battery. Uphill costs more; downhill costs less. Avoid boulders and repeated detours.");
+  if(state.coopMode&&["arrowup","arrowdown","arrowleft","arrowright"].includes(k)){const n=22;scan.x=clamp(scan.x+(k==="arrowright"?n:k==="arrowleft"?-n:0),0,view.w);scan.y=clamp(scan.y+(k==="arrowdown"?n:k==="arrowup"?-n:0),0,view.h);e.preventDefault();return;}
+  if(map[k]&&(!state.coopMode||["w","a","s","d"].includes(k))){drive[map[k]]=true;e.preventDefault();}
+  if(k===" "||state.coopMode&&k==="enter"){collectSample();e.preventDefault();}
  }
- const roverKeyHandler=e=>{const k=e.key.toLowerCase(),dirs={arrowup:[0,-1],w:[0,-1],arrowdown:[0,1],s:[0,1],arrowleft:[-1,0],a:[-1,0],arrowright:[1,0],d:[1,0]};if(dirs[k]&&phase!=="science"){e.preventDefault();move(dirs[k][0],dirs[k][1]);}};
-  document.addEventListener("keydown",roverKeyHandler);activeOpsCleanup=()=>document.removeEventListener("keydown",roverKeyHandler);
-  openOpsModal("Rover expedition • "+mission.title,"");renderMap("Mission target: "+mission.target+". The route is long; reserve enough energy for the return trip.");
+ function keyUp(e){const k=e.key.toLowerCase(),map={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};if(map[k])drive[map[k]]=false;}
+ function finishSuccess(){
+  f.navFrames=rover.frames;f.wheelMoves=Math.round(rover.distance/10);f.medaReadings=rover.meda;
+  finish(true,"The rover returned with three samples. Navcam images, wheel odometry, Mastcam-Z panorama, SuperCam chemistry, MEDA-style weather readings and a sealed sample core were recorded.");
+ }
+ function frame(now){
+  if(done||phase==="science"||phase==="recovery")return;
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  const throttle=(drive.up?1:0)-(drive.down?1:0),steer=(drive.right?1:0)-(drive.left?1:0),surface=terrainAt(rover.x,rover.y);
+  rover.angle+=steer*(.68+Math.abs(rover.speed)/190)*dt*(rover.speed<0?-1:1);
+  if(throttle)rover.speed+=throttle*132*dt;else rover.speed*=Math.exp(-1.8*dt);
+  rover.speed=clamp(rover.speed,-72,165);
+  const ox=rover.x,oy=rover.y,nx=clamp(ox+Math.cos(rover.angle)*rover.speed*dt,40,world.w-40),ny=clamp(oy+Math.sin(rover.angle)*rover.speed*dt,40,world.h-40),dist=Math.hypot(nx-ox,ny-oy),next=terrainAt(nx,ny),slope=next.elevation-surface.elevation;
+  rover.x=nx;rover.y=ny;rover.distance+=dist;
+  const load=Math.max(.72,1+next.resistance*1.7+Math.max(0,slope)*1.4+Math.min(0,slope)*.8);
+  rover.battery=Math.max(0,rover.battery-dist*.0058*load);rover.frames+=dist>1?1:0;
+  if(Math.floor(rover.distance/260)>Math.floor((rover.distance-dist)/260))rover.meda++;
+  const obstacle=[...rocks,...boulders].find(r=>Math.hypot(rover.x-r.x,rover.y-r.y)<r.r+18),crater=craters.find(c=>Math.hypot(rover.x-c.x,rover.y-c.y)<c.r*.68+8);
+  if((obstacle||crater)&&Math.abs(rover.speed)>45){rover.wear=clamp(rover.wear+Math.min(20,Math.abs(rover.speed)*.055),0,100);rover.battery=Math.max(0,rover.battery-2.6);rover.speed*=-.22;rover.x=ox;rover.y=oy;}
+  f.roverBattery=rover.battery;f.roverDamage=rover.wear;
+  if(phase==="return"&&Math.hypot(rover.x-base.x,rover.y-base.y)<105){if(sampleCount===3&&tools.every(t=>t.done))finishSuccess();else finish(false,"The rover returned, but the science package was incomplete.");return;}
+  if(rover.battery<=0||rover.wear>=65){showRecovery(rover.battery<=0?"Rover battery depleted. Walk back to the habitat.":"Wheel damage immobilized the rover. Recover it on foot.");return;}
+  const near=nearestSample();if(phase==="outbound"&&near.point&&near.distance<150)$("rover-hint").textContent="Sample beacon "+near.point.id+" is close. Slow down and press Space.";
+  const canvas=$("rover-world");if(!canvas)return;const ctx=canvas.getContext("2d");drawTerrain(ctx,rover.x,rover.y);drawRover(ctx);
+  if(state.coopMode){ctx.beginPath();ctx.arc(scan.x,scan.y,14,0,Math.PI*2);ctx.strokeStyle="#a5e8ff";ctx.lineWidth=3;ctx.stroke();}
+  if(phase==="return"){const bx=base.x-rover.x+view.w/2,by=base.y-rover.y+view.h/2;ctx.fillStyle="#b7efcf";ctx.font="bold 12px system-ui";ctx.textAlign="center";ctx.fillText("HABITAT",bx,by-30);}
+  $("rover-battery-readout").textContent=Math.round(rover.battery)+"%";$("rover-damage-readout").textContent=Math.round(rover.wear)+"%";$("rover-distance").textContent=Math.round(rover.distance)+" m";$("rover-frames").textContent=rover.frames;$("rover-meda").textContent=rover.meda;
+  requestAnimationFrame(frame);
+ }
+ const keyDownHandler=keyDown,keyUpHandler=keyUp;
+ document.addEventListener("keydown",keyDownHandler);document.addEventListener("keyup",keyUpHandler);
+ activeOpsCleanup=()=>{document.removeEventListener("keydown",keyDownHandler);document.removeEventListener("keyup",keyUpHandler);activeOpsCleanup=null;};
+ f.recoverActiveRover=showRecovery;
+ openOpsModal("Rover expedition • "+mission[0],"");openMap("Drive with WASD or arrows. The route and geology are procedurally generated for this Sol.");requestAnimationFrame(frame);
 }
+
 function launchLabTask(){
  const sample=state.fieldOps.sampleType||"Mars rock sample";
  const signatures=sample.includes("ice")?["Water-ice absorption band","Dust and mineral grains","Layer boundary signal"]:sample.includes("clay")||sample.includes("lake")?["Hydrated mineral trace","Silicate grain pattern","Iron-bearing layer"]:["Iron-bearing mineral patch","Silicate grain pattern","Fine sediment layer"];

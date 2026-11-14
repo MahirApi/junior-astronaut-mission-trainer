@@ -2147,9 +2147,10 @@ $("sound-toggle").addEventListener("click",()=>{soundOn=!soundOn;$("sound-toggle
 $("music-toggle").addEventListener("click",()=>SpaceMusic.toggle());
 $("settings-open-btn").addEventListener("click",()=>openSettings());
 $("coop-open-btn").addEventListener("click",()=>launchStandaloneCoop());
+SpaceMusic.setVolume(GameSettings.get().musicVolume);
 GameSettings.subscribe(next=>SpaceMusic.setVolume(next.musicVolume));
 SpaceMusic.syncControls();
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeScience();closeOpsModal();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!referenceMissionSession){closeScience();closeOpsModal();}});
 updateLoadouts();renderIssues();render();
 
 // Small self-checks for the non-trivial resource model.
@@ -3438,7 +3439,7 @@ MissionTypes.mining = function (env = {}) {
       score:success?450+Math.floor(Math.max(0,limit-m.elapsed)*5)+(m.hits===0?100:0):0,
       rewards:success?{pow:12,h2o:5}:{},
       tip:success?'Short drilling bursts and regular cooling protect the hull.':
-        'Face a fissure and stop. Hold Space to drill; release to cool before overheating. Return to the green shuttle with all three minerals.',
+        'Face a fissure and stop. Hold Space to drill; release to cool before overheating. Return to the green habitat pad with all three local-resource samples.',
       stats:{mined:mined(),damage:m.hits,seconds:m.elapsed,overheats:m.overheats}
     };
   }
@@ -3446,7 +3447,7 @@ MissionTypes.mining = function (env = {}) {
   m.action = function () {};
   m.actionLabel = function () {
     if(m.lock>0)return 'Cooling lock · '+m.lock.toFixed(1)+' s';
-    if(mined()===3)return '✓ Minerals ready · Return to green shuttle';
+    if(mined()===3)return '✓ Samples ready · Return to green habitat pad';
     return m.heat>=.72?'RELEASE · Cool the drill':'Hold Space: DRILL';
   };
   m.hud = function () {
@@ -3565,7 +3566,7 @@ MissionTypes.mining = function (env = {}) {
     ctx.strokeStyle='#f7cb8d';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(686+180*.72,42);ctx.lineTo(686+180*.72,58);ctx.stroke();
     text(ctx,'Heat '+Math.round(m.heat*100)+'% · Hull '+Math.max(0,m.hp)+'/3',865,71,10,'#bcd0df','right');
     if(m.noticeTime>0){ctx.fillStyle='#101e2df0';ctx.fillRect(170,462,700,27);text(ctx,m.notice,520,480,12,m.lock>0?'#ffbaa5':'#b6f4da','center');}
-    else text(ctx,mined()===3?'Three minerals loaded → return to the green habitat pad.':'Mine 3 minerals → Manage heat → Return to the green habitat pad',515,481,12,'#d0e2e8','center');
+    else text(ctx,mined()===3?'Three local-resource samples loaded → return to the green habitat pad.':'Mine 3 minerals → Manage heat → Return to the green habitat pad',515,481,12,'#d0e2e8','center');
     ctx.restore();
   };
   return m;
@@ -3953,7 +3954,7 @@ function startReferenceMission(id,options={}){
  function canonicalKey(code){return GameSettings.keyForSolo(code)||(String(code).startsWith("Arrow")?code:null);}
  function keydown(event){
   if(document.getElementById("settingsOverlay"))return;
-  if(event.code==="KeyP"||event.code==="Escape"){event.preventDefault();if(!event.repeat)pause();return;}
+  if(event.code==="KeyP"||event.code==="Escape"){event.preventDefault();event.stopPropagation();if(!event.repeat)pause();return;}
   if(!session.started||session.paused||session.done)return;
   const code=canonicalKey(event.code);if(!code)return;
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(code))event.preventDefault();
@@ -4085,7 +4086,7 @@ function startFinalEvacuation(){
   endMission(!!outcome.success);
  }});
 }
-function launchStandaloneCoop(){if(typeof CoopMode!=="undefined")CoopMode.open();}
+function launchStandaloneCoop(){if(referenceMissionSession||$("game-view")?.style.display==="block"||$("final-evacuation-view")?.style.display==="block")return false;if(typeof CoopMode!=="undefined")return CoopMode.open();return false;}
 function toggleMusic(){return SpaceMusic.toggle();}
 function startAmbientMusic(){return SpaceMusic.play("menu");}
 function stopAmbientMusic(){return SpaceMusic.toggle();}

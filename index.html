@@ -395,7 +395,7 @@ const state = {
   filterClogSeen:false,cropBlightSeen:false,pressureLeakSeen:false,heaterFaultSeen:false,
   spareParts:3,repairTarget:null,repairStarted:{},repairNoPartsNotified:{},
   science:0,siteKey:"gale",landing:null,incidentLog:[],
-  fieldOps:{slots:2,completed:0,successful:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0}
+  fieldOps:{slots:2,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraTiles:0,lastRoverSol:-10,relayAttempts:0}
 };
 const sliders = {life:$("life-slider"),green:$("green-slider"),shelter:$("shelter-slider"),repair:$("repair-slider")};
 const crewRoster=[
@@ -600,19 +600,17 @@ function openOpsModal(title,markup){
 }
 function closeOpsModal(){$("ops-modal").classList.remove("open");$("ops-modal-content").innerHTML="";}
 function renderFieldOps(){
-  if(!state.fieldOps||!$("field-task-grid"))return;
-  const f=state.fieldOps,used=f.doneToday||{};
-  $("ops-slots").textContent=f.slots+" FIELD OPS / SOL";
-  const tasks=[
-    {id:"clean",icon:"☀",name:"Scrub solar panels",desc:"Drag the brush across the array to remove accumulated dust.",ready:state.dust>.025&&!used.clean,reason:used.clean?"Completed this Sol":state.dust<=.025?"Panels are clean":"One EVA slot"},
-    {id:"rover",icon:"🚙",name:"Rover sample run",desc:"Navigate around crater hazards to collect a rock or ice sample.",ready:f.roverBattery>=20&&state.sol-f.lastRoverSol>=2&&!used.rover,reason:used.rover?"Rover operation already used":f.roverBattery<20?"Rover battery low":state.sol-f.lastRoverSol<2?"Rover needs to recharge":"One EVA slot"},
-    {id:"lab",icon:"🔬",name:"Analyze a sample",desc:"Identify the sample pattern in the laboratory to earn Science Data.",ready:f.samples>f.studied&&!used.lab,reason:used.lab?"Lab slot used today":f.samples<=f.studied?"No unstudied samples":"One EVA slot"},
-    {id:"relay",icon:"📡",name:"Repair radio relay",desc:"Reconnect the damaged communications link with a wire-routing puzzle.",ready:!f.relayOnline&&!used.relay,reason:used.relay?"Relay task already attempted":f.relayOnline?"Relay is online":"One EVA slot"}
-  ];
-  $("field-task-grid").innerHTML=tasks.map(t=>'<article class="field-task"><div class="task-icon">'+t.icon+'</div><b>'+t.name+'</b><p>'+t.desc+'</p><button class="secondary-btn" data-field-task="'+t.id+'" '+(!t.ready||f.slots<=0?"disabled":"")+'>'+(t.ready&&f.slots>0?"Start task →":f.slots<=0?"No slots left":t.reason)+'</button></article>').join("");
-  $("field-task-grid").querySelectorAll("[data-field-task]").forEach(b=>b.addEventListener("click",()=>startFieldTask(b.dataset.fieldTask)));
-  $("field-ops-note").textContent=f.slots===0?"The crew has used both field-operation slots. More slots return next Sol.":"Choose up to two field jobs. A failed attempt still uses time and an operation slot.";
-  $("field-ops-progress").textContent=f.completed+" attempts · "+(f.successful||0)+" successful • "+f.samples+" samples · "+f.studied+" analyzed";
+ if(!state.fieldOps||!$("field-task-grid"))return;const f=state.fieldOps,used=f.doneToday||{};$("ops-slots").textContent=f.slots+" FIELD OPS / SOL";
+ const tasks=[
+  {id:"clean",icon:"☀",name:"Scrub solar panels",desc:"Drag the brush across the array to remove accumulated dust.",ready:state.dust>.025&&!used.clean,reason:used.clean?"Completed this Sol":state.dust<=.025?"Panels are clean":"One EVA slot"},
+  {id:"rover",icon:"🚙",name:"Long-range rover expedition",desc:"Drive a long procedural route with WASD or arrow keys. Slopes, sand, rubble and boulders affect energy and rover wear.",ready:f.roverBattery>=70&&state.sol-f.lastRoverSol>=1&&!used.rover,reason:used.rover?"Rover operation already used":f.roverBattery<70?"Recharge needed for the long return route":state.sol-f.lastRoverSol<1?"Rover is still out this Sol":"One EVA slot"},
+  {id:"lab",icon:"🔬",name:"Scan a returned sample",desc:"Sweep the instrument over the sample canvas to reveal mineral signals. No quiz or multiple-choice test.",ready:f.samples>f.studied&&!used.lab,reason:used.lab?"Lab slot used today":f.samples<=f.studied?"No unstudied samples":"One EVA slot"},
+  {id:"relay",icon:"📡",name:"Repair radio relay",desc:"Reconnect the damaged communications link with a wire-routing puzzle.",ready:!f.relayOnline&&!used.relay,reason:used.relay?"Relay task already attempted":f.relayOnline?"Relay is online":"One EVA slot"}
+ ];
+ $("field-task-grid").innerHTML=tasks.map(t=>'<article class="field-task"><div class="task-icon">'+t.icon+'</div><b>'+t.name+'</b><p>'+t.desc+'</p><button class="secondary-btn" data-field-task="'+t.id+'" '+(!t.ready||f.slots<=0?"disabled":"")+'>'+(t.ready&&f.slots>0?"Start task →":f.slots<=0?"No slots left":t.reason)+'</button></article>').join("");
+ $("field-task-grid").querySelectorAll("[data-field-task]").forEach(b=>b.addEventListener("click",()=>startFieldTask(b.dataset.fieldTask)));
+ $("field-ops-note").textContent=f.slots===0?"The crew has used both field-operation slots. More slots return next Sol.":(f.roverExtraTiles?"A missed rover experiment added "+f.roverExtraTiles+" extra map tiles to the next expedition. ":"")+"Choose up to two field jobs. A failed attempt still uses time and an operation slot.";
+ $("field-ops-progress").textContent=f.completed+" attempts · "+(f.successful||0)+" successful · "+(f.failedRuns||0)+" failed rover experiments • "+f.samples+" samples · "+f.studied+" scanned";
 }
 function spendFieldSlot(key){
   const f=state.fieldOps;
@@ -622,24 +620,15 @@ function spendFieldSlot(key){
   return true;
 }
 function finishFieldTask(key,success,message){
-  if(!spendFieldSlot(key)){closeOpsModal();renderFieldOps();return;}
-  const f=state.fieldOps;
-  if(success)f.successful=(f.successful||0)+1;
-  if(key==="clean"&&success){state.dust=clamp(state.dust-.14,0,.85);awardCadetXP(8,"engineering",1);addScience(3);log("Field job complete • solar panel scrubbed");}
-  if(key==="relay"&&success){f.relayOnline=true;f.relayAttempts=0;awardCadetXP(10,"engineering",1);addScience(5);log("Radio relay restored • storm warnings are connected");}
-  if(key==="relay"&&!success){f.relayAttempts++;log("Radio relay repair failed • early warning link remains offline");}
-  if(key==="rover"&&success){
-    f.samples++;f.lastRoverSol=state.sol;f.roverBattery=Math.max(0,f.roverBattery-30);state.battery=Math.max(0,state.battery-2);
-    f.sampleType=state.siteKey==="utopia"?"ice core":state.siteKey==="jezero"?"ancient lake-bed rock":"sedimentary rock";
-    if(f.sampleType==="ice core")state.water=clamp(state.water+5,0,100);
-    awardCadetXP(8,"science",1);log("Rover returned with "+f.sampleType+" • +1 lab sample"+(f.sampleType==="ice core"?" and 5 Water":""));
-  }
-  if(key==="rover"&&!success){f.lastRoverSol=state.sol;f.roverBattery=Math.max(0,f.roverBattery-25);state.battery=Math.max(0,state.battery-1);log("Rover EVA used its slot but returned without a sample");}
-  if(key==="lab"&&success){f.studied++;addScience(12);awardCadetXP(12,"science",1);log("Sample analyzed • +12 Science Data");}
-  if(key==="lab"&&!success){f.studied++;log("Sample analysis inconclusive • no Science Data awarded");}
-  if(key==="clean"&&!success)log("Panel cleaning incomplete • dust remains");
-  closeOpsModal();render();renderFieldOps();
-  brief("FIELD OPERATION",message|| (success?"Task complete":"Task incomplete"),"The crew used one of today's two field-operation slots.","Fieldwork takes time away from other duties. Decide which jobs are worth doing before advancing the Sol.");
+ if(!spendFieldSlot(key)){closeOpsModal();renderFieldOps();return;}const f=state.fieldOps;if(success)f.successful=(f.successful||0)+1;
+ if(key==="clean"&&success){state.dust=clamp(state.dust-.14,0,.85);awardCadetXP(8,"engineering",1);addScience(3);log("Field job complete • solar panel scrubbed");}
+ if(key==="relay"&&success){f.relayOnline=true;f.relayAttempts=0;awardCadetXP(10,"engineering",1);addScience(5);log("Radio relay restored • storm warnings are connected");}
+ if(key==="relay"&&!success){f.relayAttempts++;log("Radio relay repair failed • early warning link remains offline");}
+ if(key==="rover"&&success){f.samples++;f.lastRoverSol=state.sol;f.sampleType=f.activeExpedition?.sampleType||"Mars rock sample";f.lastRoverReport={...f.activeExpedition,navFrames:f.navFrames||0,wheelMoves:f.wheelMoves||0,weatherReadings:Math.ceil((f.wheelMoves||0)/4)};f.roverExtraTiles=0;state.battery=Math.max(0,state.battery-2);if(f.sampleType.includes("ice"))state.water=clamp(state.water+5,0,100);awardCadetXP(12,"science",1);addScience(5);log("Sol "+state.sol+" rover experiment succeeded • "+f.activeExpedition.title+" returned with "+f.sampleType);}
+ if(key==="rover"&&!success){f.lastRoverSol=state.sol;f.failedRuns=(f.failedRuns||0)+1;f.roverExtraTiles=4;f.roverBattery=0;f.lastRoverReport={...f.activeExpedition,failed:true,navFrames:f.navFrames||0,wheelMoves:f.wheelMoves||0};state.battery=Math.max(0,state.battery-1);log("Sol "+state.sol+" FAILED ROVER EXPERIMENT • rover recovered on foot; next Sol's traverse is 4 tiles longer");}
+ if(key==="lab"&&success){f.studied++;addScience(12);awardCadetXP(12,"science",1);log("Sample scanner complete • +12 Science Data");}
+ if(key==="clean"&&!success)log("Panel cleaning incomplete • dust remains");
+ f.activeExpedition=null;closeOpsModal();render();renderFieldOps();brief("FIELD OPERATION",message||(success?"Task complete":"Task incomplete"),"The crew used one of today's two field-operation slots.","Fieldwork takes time away from other duties. Decide which jobs are worth doing before advancing the Sol.");
 }
 function launchScrubTask(){
   const markup='<p class="tiny muted">Drag across the dusty array. Clear at least 78% of the surface to complete the task. A wider brush makes more progress but is harder to aim accurately.</p><canvas id="scrub-canvas" width="460" height="220" aria-label="Dusty solar panel. Drag to scrub."></canvas><div class="mini-progress"><i id="scrub-progress"></i></div><div class="tiny muted" id="scrub-status">0% cleaned</div><div class="puzzle-actions"><button class="secondary-btn" id="scrub-cancel">Cancel</button></div>';
@@ -689,78 +678,94 @@ function launchRelayTask(){
   draw();
 }
 function launchRoverTask(){
-  const tier=skillTier("pilot"),size=tier===1?4:tier===2?5:6;
-  const blocks=tier===1?[[1,1],[3,1]]:tier===2?[[1,1],[3,1],[3,3]]:[[1,1],[3,1],[3,3],[5,3],[1,4]];
-  const blocked=new Set(blocks.map(([x,y])=>x+","+y));
-  const route=tier===1?[[0,0],[1,0],[2,0],[2,1],[2,2],[3,2],[3,3]]:
-    tier===2?[[0,0],[1,0],[2,0],[2,1],[2,2],[3,2],[4,2],[4,3],[4,4]]:
-    [[0,0],[1,0],[2,0],[2,1],[2,2],[3,2],[4,2],[4,3],[4,4],[5,4],[5,5]];
-  // Budget from the known safe route plus two spare moves, so every tier is solvable.
-  const maxSteps=route.length+1;
-  const routeIsValid=route[0][0]===0&&route[0][1]===0&&route[route.length-1][0]===size-1&&route[route.length-1][1]===size-1&&route.every(([rx,ry],i)=>rx>=0&&ry>=0&&rx<size&&ry<size&&!blocked.has(rx+","+ry)&&(i===0||Math.abs(rx-route[i-1][0])+Math.abs(ry-route[i-1][1])===1));
-  console.assert(routeIsValid,"Rover route must be a connected, obstacle-free path.");
-  let x=0,y=0,steps=0,bumps=0,finished=false,visited=new Set(["0,0"]);
-  let roverHint="Start at BASE and plan a safe route around the rocks.";
-  function draw(){
-    const markup='<p class="tiny muted">Guide the rover from BASE to the ice/sample marker. Move one square at a time; avoid craters. Tier '+tier+' route. You have '+maxSteps+' moves and two safe retries.</p><div class="rover-grid" id="rover-grid"></div><div class="power-summary"><span>ROVER BATTERY <strong id="rover-battery-readout">'+Math.round(state.fieldOps.roverBattery)+'%</strong></span><span>MOVES <strong id="rover-moves">'+steps+' / '+maxSteps+'</strong></span></div><div class="tiny muted" id="rover-hint">Start at BASE and plan a safe route around the rocks.</div><div class="puzzle-actions"><button class="secondary-btn" id="rover-cancel">Cancel</button></div>';
-    $("ops-modal-content").innerHTML=markup;
-    const grid=$("rover-grid");grid.style.gridTemplateColumns="repeat("+size+",1fr)";
-    for(let yy=0;yy<size;yy++)for(let xx=0;xx<size;xx++){
-      const id=xx+","+yy,button=document.createElement("button");button.className="rover-cell";
-      if(blocked.has(id)){button.classList.add("obstacle");button.textContent="◈";button.title="Crater";button.setAttribute("aria-label","Crater obstacle");}
-      else if(xx===x&&yy===y){button.classList.add("current");button.textContent="🚙";button.setAttribute("aria-label",x===0&&y===0?"BASE: rover starting position":"Rover current position");}
-      else if(xx===size-1&&yy===size-1){button.textContent="🧊";button.title="Sample site";button.setAttribute("aria-label","Sample collection site");}
-      else if(visited.has(id)){button.classList.add("visited");button.textContent="·";button.setAttribute("aria-label","Previously visited tile");}
-      else{button.textContent=" ";button.setAttribute("aria-label","Open terrain tile");}
-      button.addEventListener("click",()=>move(xx,yy));grid.appendChild(button);
-    }
-    $("rover-hint").textContent=roverHint;
-    $("rover-cancel").onclick=closeOpsModal;
-  }
-  function move(nx,ny){
-    if(finished)return;
-    if(Math.abs(nx-x)+Math.abs(ny-y)!==1){roverHint="Move to a neighbouring square.";draw();return;}
-    steps++;state.fieldOps.roverBattery=Math.max(0,state.fieldOps.roverBattery-4);
-    const id=nx+","+ny;
-    if(blocked.has(id)){bumps++;roverHint="Crater detected! The rover loses battery. Find another route ("+bumps+" / 2 safe retries used).";if(bumps>=3||steps>=maxSteps){finished=true;finishFieldTask("rover",false,"The rover used its EVA window avoiding craters and returned without a sample.");return;}}
-    else{x=nx;y=ny;visited.add(id);roverHint="Rover moved safely. "+(maxSteps-steps)+" moves remain.";}
-    if(x===size-1&&y===size-1){finished=true;finishFieldTask("rover",true,"Rover sample collected and safely returned to the outpost.");return;}
-    if(steps>=maxSteps||state.fieldOps.roverBattery<=5){finished=true;finishFieldTask("rover",false,"The rover reached its route limit before the sample site.");return;}
-    draw();
-  }
-  openOpsModal("Rover EVA • sample expedition","");
-  draw();
+ const f=state.fieldOps,extra=Math.min(4,f.roverExtraTiles||0),width=19+extra,height=13,start={x:1,y:11},goal={x:width-2,y:1};
+ let seed=(state.sol*10007+(state.siteKey.charCodeAt(0)||0)*97+(f.failedRuns||0)*701)>>>0;
+ const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+ const missions={
+  gale:[
+   {title:"Layered lake-bed outcrop",target:"layered sediment ridge",sample:"layered sedimentary core",brief:"Reach a banded rock exposure, image its layers and bring back a sealed core."},
+   {title:"Crater wall survey",target:"crater-wall overlook",sample:"crater-ejecta rock",brief:"Map exposed wall layers from a safe overlook and collect a small ejecta sample."},
+   {title:"Clay-bearing ridge",target:"clay-rich ridge",sample:"clay-bearing rock",brief:"Compare mineral signatures at a ridge where ancient water may have altered the rock."},
+   {title:"Rock overhang survey",target:"overhang entrance",sample:"silica-rich rock",brief:"Study a sheltered rock overhang from its entrance. The rover stays outside an unverified cavity."}
+  ],
+  jezero:[
+   {title:"Delta-front sandstone",target:"delta-front outcrop",sample:"delta sandstone core",brief:"Reach a layered delta-front exposure and collect a core that can help reconstruct ancient sediment transport."},
+   {title:"Crater-floor panorama",target:"crater-floor overlook",sample:"crater-floor regolith",brief:"Survey the crater floor from a safe overlook and collect a nearby regolith sample."},
+   {title:"Altered bedrock ridge",target:"altered bedrock ridge",sample:"altered bedrock core",brief:"Use remote chemistry and close-up imaging to compare minerals in ancient-water-altered rock."},
+   {title:"Overhang entrance survey",target:"rock alcove entrance",sample:"silica-rich rock",brief:"Image a sheltered alcove from outside and compare the surrounding rock. No cave entry is attempted."}
+  ],
+  utopia:[
+   {title:"Ice-rich regolith patch",target:"bright regolith patch",sample:"ice-rich regolith",brief:"Investigate a bright soil patch for ice-related clues and return a protected sample."},
+   {title:"Impact-ejecta field",target:"small impact crater",sample:"impact-ejecta soil",brief:"Map an impact feature and compare the fragments scattered around its rim."},
+   {title:"Polygon-ground survey",target:"polygonal ground",sample:"polygon-ground soil",brief:"Survey patterned ground and collect soil to compare its grains and layers."},
+   {title:"Sheltered rock alcove",target:"overhang entrance",sample:"silica-rich rock",brief:"Inspect a rock alcove from outside, capturing its shape and a nearby rock fragment."}
+  ]
+ };
+ const options=missions[state.siteKey]||missions.gale,mission=options[(state.sol-1+(f.failedRuns||0))%options.length];
+ const path=[{x:start.x,y:start.y}],visited=new Set([start.x+","+start.y]);let px=start.x,py=start.y,east=goal.x-start.x,north=start.y-goal.y,elevation=0;
+ while(east+north>0){if(east>0&&(north===0||random()<east/(east+north))){px++;east--;}else{py--;north--;}path.push({x:px,y:py});}
+ const map=Array.from({length:height},(_,y)=>Array.from({length:width},(_,x)=>{if(x===0||y===0||x===width-1||y===height-1)return {type:"boulder",elevation:0};const r=random();return {type:r<.10?"boulder":r<.16?"crater":r<.29?"sand":r<.43?"rubble":"flat",elevation:Math.floor(random()*3)};}));
+ path.forEach((p,i)=>{const roll=random(),surface=i===0||i===path.length-1?"flat":roll<.17?"sand":roll<.30?"rubble":"flat",slope=random();elevation=clamp(elevation+(slope<.24?1:slope<.43?-1:0),0,3);map[p.y][p.x]={type:surface,elevation};});
+ map[start.y][start.x]={type:"flat",elevation:0};map[goal.y][goal.x]={type:"flat",elevation:0};
+ const moveCost=(from,to)=>{const rise=to.elevation-from.elevation;return Math.max(.35,.68+Math.max(0,rise)*.35-Math.max(0,-rise)*.15+(to.type==="sand"?.18:to.type==="rubble"?.12:0));};
+ function plannedRoundTrip(){let cost=6.2;for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];cost+=moveCost(map[a.y][a.x],map[b.y][b.x])+moveCost(map[b.y][b.x],map[a.y][a.x]);}return cost;}
+ while(plannedRoundTrip()>66){const candidates=path.slice(1,-1).map(p=>({p,cell:map[p.y][p.x]})).sort((a,b)=>(b.cell.type==="sand"?2:b.cell.type==="rubble"?1:0)-(a.cell.type==="sand"?2:a.cell.type==="rubble"?1:0));const c=candidates[0];if(!c)break;c.cell.type="flat";c.cell.elevation=0;}
+ const safeEnergy=plannedRoundTrip();
+ console.assert(path.length-1>=26,"Rover traverse should be a long expedition.");
+ console.assert(safeEnergy<=66,"Generated safe route and science tools fit 70% charge reserve.");
+ console.assert(path[0].x===start.x&&path[path.length-1].x===goal.x,"Generated route joins base and target.");
+ let x=start.x,y=start.y,phase="outbound",battery=f.roverBattery,damage=f.roverDamage||0,moves=0,navFrames=0;
+ const toolList=[{id:"panorama",title:"Mastcam-Z stereo panorama",desc:"Capture a wide colour and depth view of the target outcrop.",cost:1.2},{id:"chemistry",title:"SuperCam remote chemistry",desc:"Record a remote elemental and mineral signature.",cost:1.8},{id:"core",title:"Drill, seal & cache a sample",desc:"Collect a small rock or soil core in a sealed sample tube.",cost:2.6}],toolsDone=new Set();
+ f.activeExpedition={title:mission.title,target:mission.target,sampleType:mission.sample,sol:state.sol};
+ const atBase=()=>x===start.x&&y===start.y;
+ function renderMap(hint){
+  const label=phase==="outbound"?"OUTBOUND TRAVERSE":phase==="return"?"RETURN TO OUTPOST":"EVA RECOVERY WALK";
+  const markup='<p class="tiny muted"><strong>'+mission.title+'</strong> · '+mission.brief+'</p><div class="rover-hud"><span>MISSION <b>'+label+'</b></span><span>ROUTE <b>'+(path.length-1)+' tiles each way</b></span></div><canvas id="rover-map" class="rover-map" width="'+(width*26)+'" height="'+(height*26)+'" tabindex="0" role="img" aria-label="Procedurally generated Mars terrain map. Use arrow keys or WASD to drive the rover."></canvas><div class="rover-readouts"><div><span>ROVER BATTERY</span><b>'+battery.toFixed(0)+'%</b></div><div><span>ROVER WEAR</span><b>'+Math.round(damage)+'%</b></div><div><span>NAVCAM FRAMES</span><b>'+navFrames+'</b></div><div><span>WEATHER SAMPLES</span><b>'+Math.ceil(moves/4)+'</b></div><div><span>WHEEL MOVES</span><b>'+moves+'</b></div></div><div class="rover-legend"><span>· flat</span><span>▲ uphill</span><span>▼ downhill</span><span>≈ sand</span><span>✦ rubble</span><span>◆ boulder</span><span>◉ crater</span></div><div class="rover-controls"><div><button class="secondary-btn" data-drive="up" aria-label="Drive north">↑</button><button class="secondary-btn" data-drive="left" aria-label="Drive west">←</button><button class="secondary-btn" data-drive="down" aria-label="Drive south">↓</button><button class="secondary-btn" data-drive="right" aria-label="Drive east">→</button></div></div><p class="tiny muted">'+(hint||"Use arrow keys or W A S D. Green outlines show visited terrain.")+'</p>'+(phase==="recovery"?"":'<div class="puzzle-actions"><button class="secondary-btn" id="rover-cancel">Pause outing</button></div>');
+  $("ops-modal-content").innerHTML=markup;const canvas=$("rover-map"),ctx=canvas.getContext("2d"),cell=26,colors={flat:"#424d4c",sand:"#8a6748",rubble:"#62564b",boulder:"#6c4436",crater:"#392f3d"};
+  for(let yy=0;yy<height;yy++)for(let xx=0;xx<width;xx++){const d=map[yy][xx],key=xx+","+yy,left=xx*cell,top=yy*cell;ctx.fillStyle=colors[d.type]||colors.flat;ctx.fillRect(left+1,top+1,cell-2,cell-2);if(visited.has(key)){ctx.strokeStyle="#79d6a0";ctx.lineWidth=2;ctx.strokeRect(left+3,top+3,cell-6,cell-6);}ctx.fillStyle="#e7e0d4";ctx.font="15px system-ui";ctx.textAlign="center";ctx.textBaseline="middle";let glyph=d.type==="boulder"?"◆":d.type==="crater"?"◉":d.type==="sand"?"≈":d.type==="rubble"?"✦":d.elevation>1?"▲":d.elevation===0?"·":"▼";if(xx===start.x&&yy===start.y)glyph="B";if(xx===goal.x&&yy===goal.y)glyph="◎";ctx.fillText(glyph,left+cell/2,top+cell/2);}
+  ctx.fillStyle="#f28b58";ctx.beginPath();ctx.arc(x*cell+cell/2,y*cell+cell/2,cell*.36,0,Math.PI*2);ctx.fill();ctx.fillStyle="#10171d";ctx.font="bold 15px system-ui";ctx.fillText(phase==="recovery"?"A":"R",x*cell+cell/2,y*cell+cell/2);
+  canvas.addEventListener("keydown",e=>{const k=e.key.toLowerCase(),dirs={arrowup:[0,-1],w:[0,-1],arrowdown:[0,1],s:[0,1],arrowleft:[-1,0],a:[-1,0],arrowright:[1,0],d:[1,0]};if(dirs[k]){e.preventDefault();move(dirs[k][0],dirs[k][1]);}});canvas.addEventListener("pointerdown",()=>canvas.focus());canvas.focus();
+  $("ops-modal-content").querySelectorAll("[data-drive]").forEach(btn=>btn.addEventListener("click",()=>{const dirs={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]},d=dirs[btn.dataset.drive];move(d[0],d[1]);}));
+  if($("rover-cancel"))$("rover-cancel").onclick=closeOpsModal;
+ }
+ function renderScienceStation(){
+  phase="science";
+  $("ops-modal-content").innerHTML='<p class="tiny muted"><strong>'+mission.title+'</strong> · You reached the '+mission.target+'. Gather the observations, then drive all the way back to base.</p><div class="rover-readouts"><div><span>ROVER BATTERY</span><b>'+battery.toFixed(0)+'%</b></div><div><span>NAVCAM FRAMES</span><b>'+navFrames+'</b></div><div><span>WHEEL MOVES</span><b>'+moves+'</b></div><div><span>SAMPLE</span><b>READY</b></div></div><div class="science-tool-list">'+toolList.map(t=>'<button class="science-tool" data-tool="'+t.id+'" '+(toolsDone.has(t.id)?"disabled":"")+'><b>'+(toolsDone.has(t.id)?"✓ ":"")+t.title+'</b><span>'+t.desc+' · '+t.cost+' battery</span></button>').join("")+'</div><p class="tiny muted">Three instrument operations. These collect observations; there are no questions to answer.</p><button class="secondary-btn" id="rover-cancel-science">Pause outing</button>';
+  $("ops-modal-content").querySelectorAll("[data-tool]").forEach(btn=>btn.addEventListener("click",()=>{const tool=toolList.find(t=>t.id===btn.dataset.tool);if(!tool||toolsDone.has(tool.id))return;if(battery<tool.cost){beginRecovery("The reserve is too low to finish the science package. An EVA crew member must recover the rover.");return;}battery-=tool.cost;f.roverBattery=battery;toolsDone.add(tool.id);navFrames+=tool.id==="panorama"?4:tool.id==="chemistry"?2:1;if(toolsDone.size===toolList.length){phase="return";renderMap("All observations are secured. Retrace the green trail to Outpost Zero; the sample only counts when the rover returns.");}else renderScienceStation();}));
+  $("rover-cancel-science").onclick=closeOpsModal;
+ }
+ function buildRecoveryPath(){
+  const queue=[[x,y]],seen=new Set([x+","+y]),prev=new Map();
+  while(queue.length){const [cx,cy]=queue.shift();if(cx===start.x&&cy===start.y)break;for(const [dx,dy] of [[0,-1],[0,1],[-1,0],[1,0]]){const nx=cx+dx,ny=cy+dy,key=nx+","+ny;if(nx<0||ny<0||nx>=width||ny>=height||seen.has(key)||!visited.has(key))continue;seen.add(key);prev.set(key,cx+","+cy);queue.push([nx,ny]);}}
+  const target=start.x+","+start.y;if(!seen.has(target))return [];const result=[];let key=target;while(key!==x+","+y){const [cx,cy]=key.split(",").map(Number);result.push({x:cx,y:cy});key=prev.get(key);}return result.reverse();
+ }
+ let rescueRoute=[],rescueIndex=0;
+ function beginRecovery(message){if(phase==="recovery")return;phase="recovery";rescueRoute=buildRecoveryPath();rescueIndex=0;if(!rescueRoute.length)rescueRoute=[{x:start.x,y:start.y}];renderMap(message||"The rover can no longer drive. An EVA crew member is towing it home on foot. Follow the green trail with the arrow keys or WASD.");}
+ function move(dx,dy){
+  if(phase==="science")return;const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=width||ny>=height){renderMap("The mapped traverse ends here. Turn back toward the target or base.");return;}
+  if(phase==="recovery"){const next=rescueRoute[rescueIndex];if(!next||next.x!==nx||next.y!==ny){renderMap("During recovery, follow the green breadcrumb trail back to base.");return;}x=nx;y=ny;rescueIndex++;moves++;if(atBase()){f.roverBattery=0;f.roverDamage=clamp(damage-25,15,55);f.navFrames=navFrames;f.wheelMoves=moves;finishFieldTask("rover",false,"The rover ran out of power or became immobilized. The crew walked it back; today's science experiment is logged as failed. A longer follow-up traverse is queued for the next Sol.");return;}renderMap("Walking the rover back to base. Follow the next green breadcrumb.");return;}
+  const next=map[ny][nx],key=nx+","+ny,from=map[y][x];
+  if(next.type==="boulder"||next.type==="crater"){const hit=next.type==="boulder"?16:11;damage=clamp(damage+hit,0,100);battery=Math.max(0,battery-2.2);f.roverDamage=damage;f.roverBattery=battery;if(damage>=65||battery<=0){beginRecovery("Impact damage has immobilized the rover. An EVA crew member must walk it back to base.");return;}renderMap((next.type==="boulder"?"Boulder collision":"Crater-edge bump")+"! Rover wear +"+hit+"%. Find a safer line.");return;}
+  const stumbled=phase==="outbound"&&visited.has(key),cost=moveCost(from,next)+(stumbled ? .25 : 0);if(stumbled)damage=clamp(damage+3,0,100);
+  battery=Math.max(0,battery-cost);f.roverDamage=damage;f.roverBattery=battery;x=nx;y=ny;moves++;navFrames+=2;visited.add(key);
+  if(phase==="outbound"&&key===goal.x+","+goal.y){if(battery<=0){beginRecovery("The rover reached the target but has no power left for the science package or return trip.");return;}renderScienceStation();return;}
+  if(phase==="return"&&atBase()){f.navFrames=navFrames;f.wheelMoves=moves;finishFieldTask("rover",true,"The rover completed its long traverse and returned safely with a "+mission.sample+" sample. Navcam frames, wheel-odometry, panorama, chemistry and a cached sample were logged.");return;}
+  if(battery<=0||damage>=65){beginRecovery("The rover's battery or wheel system can no longer support the drive. An EVA crew member must recover it.");return;}
+  if(phase==="outbound"&&moves>=path.length+8){damage=clamp(damage+8,0,100);f.roverDamage=damage;renderMap("The rover has wandered far from its planned traverse. Retrace your route and watch the wheel wear.");return;}
+  renderMap("Terrain used "+cost.toFixed(1)+" battery. Uphill costs more; downhill costs less. Avoid boulders and repeated detours.");
+ }
+ openOpsModal("Rover expedition • "+mission.title,"");renderMap("Mission target: "+mission.target+". The route is long; reserve enough energy for the return trip.");
 }
 function launchLabTask(){
-  const tier=skillTier("science"),sample=state.fieldOps.sampleType||"sedimentary rock";
-  const questions={
-    "ice core":[
-      {q:"What is the strongest clue that this sample contains water ice?",opts:["A spectral signal matching water ice","A shiny surface","The container feels cold"],a:0,why:"Scientists use instrument measurements and spectral signatures rather than appearance alone to identify materials."},
-      {q:"Why should an ice sample be kept carefully sealed and documented?",opts:["To limit changes and preserve where it came from","To make it brighter","To recharge the rover"],a:0,why:"Careful handling and a location record help scientists interpret the sample they collected."},
-      {q:"Why compare different layers in an ice sample?",opts:["Layers can preserve a record of changing environmental conditions","The deepest layer is always newest","Layers generate electricity"],a:0,why:"Layer patterns can preserve information about conditions when each layer formed."}
-    ],
-    "ancient lake-bed rock":[
-      {q:"Why are layered rocks interesting to a Mars science team?",opts:["Sediment can settle in layers as water moves","Layers prove plants grew there","Layers are made by solar panels"],a:0,why:"Sedimentary layers can preserve clues about environments where the material was deposited."},
-      {q:"What can the shape and arrangement of sediment layers help scientists infer?",opts:["How sediment was transported and deposited","The rock's current temperature everywhere","How much battery the rover has"],a:0,why:"Layer structures can reveal whether sediment was moved by flowing water, wind or another process."},
-      {q:"Why compare rock layers with their exact position in the crater?",opts:["Their context helps reconstruct the sequence of past environments","Position changes the mineral into water","It makes the sample easier to carry"],a:0,why:"Geologic context helps scientists understand which deposits came first and how the environment changed."}
-    ],
-    "sedimentary rock":[
-      {q:"What might rounded pebbles in a rock suggest?",opts:["The pieces were transported and worn down","The rock was grown in a greenhouse","The rock is a battery"],a:0,why:"Moving water can round fragments as they collide during transport."},
-      {q:"Why record the size and shape of grains in this sample?",opts:["They can provide clues about how the sediment was moved","They tell you the crew's oxygen level","They identify the sample's owner"],a:0,why:"Grain size and shape can help scientists reason about the energy and process that transported sediment."},
-      {q:"Why compare this rock with samples from other locations?",opts:["To test whether the deposits formed in similar environments","To make every rock identical","To change its age"],a:0,why:"Comparisons across locations help researchers test whether deposits share a geologic history."}
-    ]
-  };
-  const q=(questions[sample]||questions["sedimentary rock"])[tier-1]||questions["sedimentary rock"][0];
-  const options=q.opts.map((label,index)=>({label,correct:index===q.a}));
-  for(let i=options.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[options[i],options[j]]=[options[j],options[i]];}
-  const answerIndex=options.findIndex(option=>option.correct);
-  openOpsModal("Science lab • "+sample,'<p class="tiny muted">Sample type: <strong>'+sample+'</strong> · Training tier '+tier+'. Choose the best scientific interpretation.</p><div class="preflight-question"><h2>'+q.q+'</h2><div class="preflight-options">'+options.map((o,i)=>'<button class="secondary-btn" data-lab-answer="'+i+'">'+o.label+'</button>').join("")+'</div><div id="lab-feedback"></div></div>');
-  $("ops-modal-content").querySelectorAll("[data-lab-answer]").forEach(b=>b.addEventListener("click",()=>{
-    const ok=+b.dataset.labAnswer===answerIndex;
-    $("ops-modal-content").querySelectorAll("[data-lab-answer]").forEach(x=>x.disabled=true);
-    $("lab-feedback").innerHTML='<div class="preflight-feedback">'+(ok?"✓ Sample correctly analyzed":"Training note")+'<br>'+q.why+'</div><button class="primary-btn" id="lab-finish">'+(ok?"Record sample & earn data":"Finish analysis")+'</button>';
-    $("lab-finish").onclick=()=>finishFieldTask("lab",ok,ok?"A "+sample+" was added to the expedition science log.":"The "+sample+" was studied, but the result was inconclusive.");
-  }));
+ const sample=state.fieldOps.sampleType||"Mars rock sample";
+ const signatures=sample.includes("ice")?["Water-ice absorption band","Dust and mineral grains","Layer boundary signal"]:sample.includes("clay")||sample.includes("lake")?["Hydrated mineral trace","Silicate grain pattern","Iron-bearing layer"]:["Iron-bearing mineral patch","Silicate grain pattern","Fine sediment layer"];
+ const spots=[{x:82,y:72},{x:225,y:124},{x:366,y:78}],found=new Set(),strokes=[];
+ openOpsModal("Science lab • hands-on sample scan",'<p class="tiny muted">Sample: <strong>'+sample+'</strong>. Drag the scanner over the rock to reveal three instrument signals. There are no right or wrong answers—this is about gathering a complete observation.</p><canvas id="sample-scan" width="450" height="200" aria-label="Drag the scanner over the sample surface to find three mineral signal areas."></canvas><div class="scan-readouts">'+signatures.map((label,i)=>'<span class="scan-chip" id="scan-chip-'+i+'">○ Signal '+(i+1)+' · waiting</span>').join("")+'</div><div class="mini-progress"><i id="scan-progress" style="width:0%"></i></div><p class="tiny muted" id="scan-hint">Press and drag across the sample surface. Touch screens are supported.</p><button class="secondary-btn" id="scan-cancel">Pause analysis</button>');
+ const canvas=$("sample-scan"),ctx=canvas.getContext("2d");let dragging=false,finished=false,last=null;
+ function paint(){ctx.clearRect(0,0,450,200);ctx.fillStyle="#342d2b";ctx.fillRect(0,0,450,200);for(let i=0;i<42;i++){const xx=(i*83)%450,yy=(i*47)%200;ctx.fillStyle=i%2?"#6f5140":"#8b6a50";ctx.beginPath();ctx.ellipse(xx,yy,8+(i%7),4+(i%5),i*.17,0,Math.PI*2);ctx.fill();}strokes.forEach(line=>{ctx.beginPath();ctx.moveTo(line.a.x,line.a.y);ctx.lineTo(line.b.x,line.b.y);ctx.strokeStyle="#9fe6ff";ctx.lineWidth=8;ctx.lineCap="round";ctx.stroke();});spots.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,found.has(i)?20:12,0,Math.PI*2);ctx.fillStyle=found.has(i)?"#9be2b7":"#e8bc75";ctx.fill();ctx.strokeStyle="#fff2";ctx.lineWidth=2;ctx.stroke();});if(last){ctx.beginPath();ctx.arc(last.x,last.y,16,0,Math.PI*2);ctx.strokeStyle="#9fe6ff";ctx.lineWidth=3;ctx.stroke();}}
+ function scanAt(event){const r=canvas.getBoundingClientRect(),x=(event.clientX-r.left)*canvas.width/r.width,y=(event.clientY-r.top)*canvas.height/r.height;if(last)strokes.push({a:{x:last.x,y:last.y},b:{x:x,y:y}});last={x:x,y:y};spots.forEach((p,i)=>{if(Math.hypot(x-p.x,y-p.y)<28&&!found.has(i)){found.add(i);$("scan-chip-"+i).textContent="✓ "+signatures[i];$("scan-chip-"+i).classList.add("found");}});$("scan-progress").style.width=(found.size/3*100)+"%";paint();if(found.size===3&&!finished){finished=true;$("scan-hint").textContent="All three signals recorded. Sample scan complete.";finishFieldTask("lab",true,"The "+sample+" was scanned. Recorded signals: "+signatures.join(", ")+".");}}
+ canvas.addEventListener("pointerdown",e=>{dragging=true;last=null;canvas.setPointerCapture(e.pointerId);scanAt(e);});canvas.addEventListener("pointermove",e=>{if(dragging)scanAt(e);});["pointerup","pointercancel","lostpointercapture"].forEach(name=>canvas.addEventListener(name,()=>{dragging=false;last=null;}));
+ $("scan-cancel").onclick=closeOpsModal;paint();
 }
 function startFieldTask(id){
   if(state.fieldOps.slots<=0)return;
@@ -795,7 +800,7 @@ function beginLanding(){
   state.filterClogSeen=false;state.cropBlightSeen=false;state.pressureLeakSeen=false;state.heaterFaultSeen=false;
   state.spareParts=3;state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
   state.incidentLog=[];
-  state.fieldOps={slots:2,completed:0,successful:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,lastRoverSol:-10,relayAttempts:0};
+  state.fieldOps={slots:2,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraTiles:0,lastRoverSol:-10,relayAttempts:0};
   state.assignments={solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"};
   state.landingSuccess=null;state.siteName=site.name;
   $("chosen-site-name").textContent=site.name;
@@ -1214,7 +1219,7 @@ function advance(){
   state.sol++;
   // Daily field-operation opportunities refresh; rover recharge is slow, not instant.
   state.fieldOps.slots=2;state.fieldOps.doneToday={};
-  state.fieldOps.roverBattery=clamp(state.fieldOps.roverBattery+12,0,100);
+  state.fieldOps.roverBattery=clamp(state.fieldOps.roverBattery+70,0,100);
   // Power priorities and the selected repair target carry forward until the captain changes them.
   applyEventForSol(state.sol);render();renderFieldOps();
   $("advance-btn").textContent=state.sol===30?"Complete Sol 30 →":"Advance to Sol "+String(state.sol+1).padStart(2,"0")+" →";

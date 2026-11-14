@@ -968,6 +968,7 @@ function renderSolarPuzzle(){
     {from:"WHITE",to:"GOLD",ports:["RED","GOLD","VIOLET","CYAN"]}
   ].slice(0,tier===1?2:tier===2?3:4);
   const colors={AMBER:"#f5bd62",CYAN:"#63d5e4",MINT:"#83d6a5",VIOLET:"#b89be8",GOLD:"#ecd16f",RED:"#e47c6c",BLUE:"#77a9eb",WHITE:"#e7edf0"};
+  console.assert(stages.every(stage=>stage.ports.includes(stage.to)),"Every cable stage must have a matching connector.");
   let step=0,dragging=false,point=null,done=false;
   function resolveConnection(index){
     if(done)return;
@@ -1058,7 +1059,8 @@ function renderShieldPuzzle(){
     const section=(i*2)%count,col=section%cols,row=Math.floor(section/cols),cx=col*cellW+cellW/2,cy=28+row*88+44;
     return {points:[{x:cx-16,y:cy-17},{x:cx+4,y:cy-5},{x:cx-7,y:cy+7},{x:cx+16,y:cy+18}],sealed:false};
   });
-  let sealant=crackCount*11+12,last=null,done=false;
+  let sealant=crackCount*15+12,last=null,done=false;
+  console.assert(sealant>crackCount*14,"A clean sealant pass must fit within the starting supply.");
   const area=$("puzzle-area");
   area.innerHTML='<div class="tiny muted">DRAG THE SEALANT BRUSH OVER EACH GLOWING SHELTER SEAM. EVERY PATCH USES A LITTLE OF THE CREW SEALANT SUPPLY.</div><canvas id="shield-seal-canvas" width="460" height="200" role="img" aria-label="Shelter wall with glowing cracks. Drag the sealant brush over each glowing seam to patch it." style="width:100%;height:auto;touch-action:none"></canvas><div class="shield-readouts"><span>SEALANT REMAINING <strong id="sealant-left">'+sealant+'</strong></span><span>SEAMS PATCHED <strong id="seams-fixed">0 / '+crackCount+'</strong></span></div><div class="mini-progress"><i id="shield-progress" style="width:0%"></i></div><p class="tiny muted" id="shield-status">Follow the zig-zag seams with the brush. Keyboard: use the patch button to seal the next seam.</p><button class="secondary-btn" id="shield-patch-next">Apply sealant to next seam</button>';
   const canvas=$("shield-seal-canvas"),ctx=canvas.getContext("2d");

@@ -78,7 +78,7 @@ The long-range rover activity borrows the *types* of observations made by Mars r
 - **Science targets:** Layered sedimentary outcrops, crater walls/ejecta, altered bedrock, soil, and possible ice-related ground are educational prompts inspired by rover geology investigations. The overhang/alcove task is a fictional survey from outside an entrance; the rover does not enter a cave and the game does not claim that NASA rovers explored a Martian cave.
 
 ### Game-only rover accounting
-A map tile is not a fixed real-world distance. The generated routes, terrain elevations, battery percentages, energy cost multipliers, collision wear, simulated weather sets, image counts and EVA recovery are invented gameplay quantities. Navcam/Mastcam-Z/SuperCam/MEDA labels refer to the kinds of observations being illustrated; the counts and outputs are fictional. A successful expedition means only that the in-game rover returned to its base.
+The rover world is continuous rather than tile-based. Its displayed metres are game-scale coordinates, not surveyed real-world distances. Generated terrain heights, battery percentages, energy cost multipliers, collision wear, simulated weather sets, image counts and EVA recovery are invented gameplay quantities. Navcam/Mastcam-Z/SuperCam/MEDA labels refer to the kinds of observations being illustrated; the counts and outputs are fictional. A successful expedition means only that the in-game rover returned to its base.
 
 
 ## Commissioning minigame boundaries

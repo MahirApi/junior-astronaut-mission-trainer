@@ -260,23 +260,6 @@
     <div class="story-actions"><span class="tiny muted" id="landing-report">Captain's log: "We made it. Now we make this place work."</span><button class="primary-btn" id="touchdown-btn">Confirm site & brief the crew →</button></div>
   </div>
 </section>
-<section class="story-stage" id="assignment-view">
-  <div class="story-card">
-    <div class="eyebrow">COMMAND DECK • CREW ASSIGNMENTS</div>
-    <h1>Give everyone a job.</h1>
-    <p>Assign four specialists to the power, life-support, food-production and radiation-protection setup tasks. Matching a specialist to their field gives the crew the best chance; assigning someone outside their specialty makes a failed task more damaging. Every task is attempted once. There are no retries.</p>
-    <div class="assignment-grid" id="assignment-grid"></div>
-    <div class="assignment-warning" id="assignment-warning" role="status"></div>
-    <div class="story-actions"><span class="tiny muted">You are the captain. Your crew will report back after each task.</span><button class="primary-btn" id="assignments-confirm">Lock assignments & begin setup →</button></div>
-  </div>
-</section>
-<section class="story-stage" id="task-view">
-  <div class="story-card">
-    <div class="task-topline"><div><div class="eyebrow">PRE-SOL COMMISSIONING • CAPTAIN'S TASK BOARD</div><h1 style="margin-bottom:4px">Make the outpost ready.</h1></div><span class="tag" id="task-count">TASK 1 / 4</span></div>
-    <div class="task-progress"><i id="task-progress-fill"></i></div>
-    <div id="task-content"></div>
-  </div>
-</section>
 <main class="dashboard" id="game-view">
   <div class="mission-head">
     <div><div class="eyebrow" id="mission-site-label">GALE CRATER • HABITAT ARES-01</div><div class="mission-title">Mission Control <span class="muted" style="font-weight:500">/ Mars surface</span></div><div class="mission-meta" id="mission-meta">Crew of 5 • Systems nominal • Training mission</div></div>
@@ -919,12 +902,26 @@ function launchLabTask(){
  canvas.addEventListener("pointerdown",e=>{dragging=true;last=null;canvas.setPointerCapture(e.pointerId);scanAt(e);});canvas.addEventListener("pointermove",e=>{if(dragging)scanAt(e);});["pointerup","pointercancel","lostpointercapture"].forEach(name=>canvas.addEventListener(name,()=>{dragging=false;last=null;}));
  $("scan-cancel").onclick=closeOpsModal;paint();
 }
+function consumeStoredEnergy(units){
+ if(state.battery<units){brief("POWER RESERVE","Not enough stored electricity","This operation needs "+energyToKWh(units)+" kWh, but the reserve is only "+energyToKWh(state.battery)+" kWh.","Protect the habitat first or wait for the next energy surplus.");return false;}
+ state.battery=clamp(state.battery-units,0,batteryCapacity());return true;
+}
 function startFieldTask(id){
-  if(state.fieldOps.slots<=0)return;
-  if(id==="clean")launchScrubTask();
-  if(id==="relay")launchRelayTask();
-  if(id==="rover")launchRoverTask();
-  if(id==="lab")launchLabTask();
+ if(state.fieldOps.slots<=0)return;
+ const costs={clean:.03,relay:.08,lab:.02,signal:.06,cave:.08,rescue:.07,prospect:.12,emergency:.06,
+  "commission-solar":.05,"commission-water":.05,"commission-greenhouse":.05,"commission-shield":.05};
+ const cost=costs[id]||0;
+ if(cost&&!consumeStoredEnergy(cost))return;
+ if(id.startsWith("commission-"))startCommissioningTask(id.replace("commission-",""));
+ else if(id==="clean")launchScrubTask();
+ else if(id==="relay")launchRelayTask();
+ else if(id==="rover")launchRoverTask();
+ else if(id==="lab")launchLabTask();
+ else if(id==="signal")launchSignalTask();
+ else if(id==="cave")launchCaveTask();
+ else if(id==="rescue")launchRescueTask();
+ else if(id==="prospect")launchProspectingTask();
+ else if(id==="emergency")launchEmergencyRepairTask();
 }
 
 function updateLoadouts(){
@@ -1009,7 +1006,7 @@ function setCoopMode(mode){
 }
 
 function showOnlyStage(id){
-  ["setup-view","preflight-view","landing-minigame-view","landing-view","assignment-view","task-view","game-view","debrief-view","final-evacuation-view"].forEach(view=>{
+  ["setup-view","preflight-view","landing-minigame-view","landing-view","game-view","debrief-view","final-evacuation-view"].forEach(view=>{
     const el=$(view);if(el)el.style.display=view===id?"block":"none";
   });
 }

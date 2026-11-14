@@ -243,7 +243,7 @@
   <div class="story-card landing-card">
     <div class="eyebrow">MISSION DAY 0 • LANDER ARCADE</div>
     <h1>Bring it down safely.</h1>
-    <p>Steer the lander through six changing wind gusts. Choose engine thrust, counter the crosswind, and watch the craft move toward the landing zone.</p>
+    <p>Control the lander continuously with keyboard or touch. Manage thrust and steering while watching it react to descent speed, fuel use and changing crosswinds.</p>
     <div id="landing-minigame-content"></div>
   </div>
 </section>
@@ -619,6 +619,7 @@ function render(){
   $("mission-meta").textContent="Crew of "+state.crew+" • "+(state.safety<50?"Crew safety needs attention":"30-Sol campaign active")+" • "+state.upgrades.length+" cargo items";
   if($("mission-site-label"))$("mission-site-label").textContent=(state.siteName||"Gale Crater").toUpperCase()+" • HABITAT ARES-01";
   renderFieldOps();
+  if($("base-build-grid"))renderBaseBuilder();
   forecast();
 }
 function meter(name,value){const el=$("m-"+name);el.style.width=clamp(value,0,100)+"%";el.style.background=value<25?"var(--red)":value<50?"var(--yellow)":"var(--green)";}
@@ -1174,7 +1175,6 @@ function renderBaseBuilder(){
    const built=!!state.baseModules[key],energyOk=state.battery>=b.energy,materialsOk=canAffordMaterials(b.cost),slotOk=state.fieldOps.slots>0,disabled=built||!energyOk||!materialsOk||!slotOk;
    return '<article class="base-build-card"><span class="build-icon">'+b.icon+'</span><b>'+b.title+'</b><p>'+b.desc+'</p><div class="build-cost">'+energyToKWh(b.energy)+' kWh reserve<br>'+materialCostText(b.cost)+'</div><button class="secondary-btn" data-build-module="'+key+'" '+(disabled?"disabled":"")+'>'+(built?"Built":!slotOk?"No field slots":!energyOk?"Need more stored power":!materialsOk?"Need materials":"Construct · 1 field slot")+'</button></article>';
  }).join("");
- $("base-build-grid").querySelectorAll("[data-build-module]").forEach(button=>button.addEventListener("click",()=>buildBaseModule(button.dataset.buildModule)));
  $("style-token-readout").textContent=(cadetProgress.styleTokens||0)+" style tokens";
  $("cosmetic-grid").innerHTML=COSMETICS.map(item=>{
    const owned=(cadetProgress.cosmeticsOwned||["standard"]).includes(item.id),selected=cadetProgress.selectedCosmetic===item.id;
@@ -1695,7 +1695,7 @@ function advance(){
   const filterPenalty=state.filterClog*Math.max(.25,1-actualLife*.12);
   const waterDelta=-3.8+actualLife*.9+(upgrades().has("recycler")?1.4:0)+(state.baseModules.quarters?.35:0)-actualGreen*.55-recyclerPenalty-filterPenalty;
   state.oxygen=clamp(state.oxygen+oxygenDelta,0,100);
-  state.water=clamp(state.water+waterDelta+(state.baseModules.quarters?.4:0),0,100);
+  state.water=clamp(state.water+waterDelta,0,100);
   state.food=clamp(state.food-5.5,0,100);
 
   const cropRate=Math.min(1,state.cropEfficiency)*(1-state.cropBlight)*(upgrades().has("growlight")?1.2:1)*(state.baseModules.greenhouse?1.2:1);
@@ -1996,7 +1996,6 @@ $("touchdown-btn").addEventListener("click",()=>{
   ["setup-view","preflight-view","landing-minigame-view","landing-view","assignment-view","task-view","debrief-view","final-evacuation-view"].forEach(id=>{if($(id))$(id).style.display="none";});
   applyEventForSol(1);render();renderBaseBuilder();renderFieldOps();
 });
-$("assignments-confirm").addEventListener("click",startTaskSequence);
 $("advance-btn").addEventListener("click",advance);
 $("load-nasa").addEventListener("click",loadNasa);
 $("science-open").addEventListener("click",openScience);

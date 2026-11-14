@@ -129,7 +129,8 @@
   <div class="top-actions">
     <span class="cadet-pill">CADET <b id="cadet-level">LV 1</b> · <span id="cadet-xp">0/100 XP</span> · <span id="cadet-badges">0 badges</span></span>
     <button class="quiet-btn" id="science-open">⌁ Science & data</button>
-    <button class="quiet-btn" id="sound-toggle" aria-pressed="false">♫ Sound off</button>
+    <button class="quiet-btn" id="music-toggle" aria-pressed="false">♫ Music off</button>
+    <button class="quiet-btn" id="sound-toggle" aria-pressed="false">◖ Effects on</button>
     <button class="quiet-btn hidden" id="reset-btn">↻ Restart</button>
   </div>
 </header>
@@ -167,14 +168,17 @@
   <div class="setup-grid">
     <section class="panel">
       <div class="eyebrow">PRE-LAUNCH CONFIGURATION</div>
-      <h2 style="margin-top:7px">Choose two cargo upgrades</h2>
-      <p class="tiny muted">Your lander has room for only two specialist upgrades. Pick the systems you want to strengthen before landing.</p>
+      <h2 style="margin-top:7px">Pack the lander • 80 kg limit</h2>
+      <p class="tiny muted">Every kilogram matters. Select a useful mix of equipment without exceeding the payload capacity.</p>
       <div class="loadouts" id="loadouts">
-        <label class="loadout selected"><input type="checkbox" value="panels" checked><div class="symbol">☀</div><strong>Extra solar wings</strong><span>+3 power generation each Sol. Helps when dust reduces sunlight.</span></label>
-        <label class="loadout selected"><input type="checkbox" value="recycler" checked><div class="symbol">⟳</div><strong>Advanced water recycler</strong><span>Recovers more water from the habitat's life-support loop.</span></label>
-        <label class="loadout"><input type="checkbox" value="regolith"><div class="symbol">⬡</div><strong>Regolith storm berm</strong><span>Improves passive radiation protection around the shelter.</span></label>
+        <label class="loadout selected"><input type="checkbox" value="panels" checked data-mass="25"><div class="symbol">☀</div><strong>Extra solar wing · 25 kg</strong><span>Raises the outpost's daily electricity generation.</span></label>
+        <label class="loadout selected"><input type="checkbox" value="recycler" checked data-mass="25"><div class="symbol">⟳</div><strong>Advanced water recycler · 25 kg</strong><span>Improves water recovery through the life-support loop.</span></label>
+        <label class="loadout"><input type="checkbox" value="regolith" data-mass="35"><div class="symbol">⬡</div><strong>Regolith shielding blanket · 35 kg</strong><span>Adds passive mass shielding to the refuge module.</span></label>
+        <label class="loadout"><input type="checkbox" value="battery" data-mass="20"><div class="symbol">▣</div><strong>Battery bank · 20 kg</strong><span>Doubles the outpost's modeled stored-energy capacity.</span></label>
+        <label class="loadout"><input type="checkbox" value="growlight" data-mass="20"><div class="symbol">🌱</div><strong>Efficient grow lights · 20 kg</strong><span>Improves crop growth per unit of greenhouse electricity.</span></label>
       </div>
-      <div class="start-row"><span class="tiny muted" id="loadout-count">2 of 2 upgrades selected</span><button class="primary-btn" id="start-btn">Begin mission →</button></div>
+      <div class="coop-picker"><div><b>Mission crew</b><p class="tiny muted">Play solo or share the controls with a friend on the same device.</p></div><div class="coop-options"><button type="button" class="coop-option selected" data-coop="solo">🚀 Solo pilot</button><button type="button" class="coop-option" data-coop="coop">👩‍🚀👨‍🚀 Play with a friend</button></div></div>
+      <div class="start-row"><span class="tiny muted" id="loadout-count">50 / 80 kg packed</span><button class="primary-btn" id="start-btn">Begin mission →</button></div>
     </section>
     <section class="panel">
       <div class="eyebrow">YOUR MISSION BRIEF</div>
@@ -245,7 +249,7 @@
   </div>
 
   <section class="stats" aria-label="Outpost resource levels">
-    <div class="stat"><div class="stat-top"><span class="stat-label">POWER</span><span class="stat-icon">ϟ</span></div><div class="stat-value"><span id="v-power">2</span><span class="stat-unit"> / 8 battery</span></div><div class="meter"><i id="m-power"></i></div><div class="stat-note" id="n-power">Solar generation: 13 units</div></div>
+    <div class="stat"><div class="stat-top"><span class="stat-label">POWER</span><span class="stat-icon">ϟ</span></div><div class="stat-value"><span id="v-power">2</span><span class="stat-unit" id="power-capacity-unit"> / 800 kWh</span></div><div class="meter"><i id="m-power"></i></div><div class="stat-note" id="n-power">Solar generation: 1,200 kWh / Sol</div></div>
     <div class="stat"><div class="stat-top"><span class="stat-label">OXYGEN</span><span class="stat-icon">◌</span></div><div class="stat-value"><span id="v-oxygen">78</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-oxygen"></i></div><div class="stat-note">Crew breathing reserve</div></div>
     <div class="stat"><div class="stat-top"><span class="stat-label">WATER</span><span class="stat-icon">♒</span></div><div class="stat-value"><span id="v-water">74</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-water"></i></div><div class="stat-note">Storage + recycled water</div></div>
     <div class="stat"><div class="stat-top"><span class="stat-label">FOOD</span><span class="stat-icon">✿</span></div><div class="stat-value"><span id="v-food">68</span><span class="stat-unit">%</span></div><div class="meter"><i id="m-food"></i></div><div class="stat-note" id="n-food">Greenhouse crop cycle: 0%</div></div>
@@ -291,11 +295,25 @@
       <div class="scene-caption" id="scene-caption">GALE CRATER • HABITAT ARES-01 • SOLAR ARRAYS NOMINAL</div>
       <div class="component-inspector" id="component-inspector"><div><div class="inspector-kicker" id="inspector-kicker">SYSTEM INSPECTOR • SELECT A MODULE</div><h3 id="inspector-title">Your outpost is online</h3><p id="inspector-copy">Move your cursor over a highlighted module, or select it, to inspect its condition and available actions. Faults will pulse red.</p></div><div class="inspector-action" id="inspector-action"><span class="tiny muted">4 interactive systems</span></div></div>
       <div class="scene-hint">HOVER OR SELECT A MODULE TO INSPECT IT • RED PULSE = ACTIVE FAULT</div>
+      <div class="base-campus">
+        <div class="base-campus-heading"><div><div class="eyebrow">OUTPOST EXPANSION • CONSTRUCTION BAY</div><h3>Build the base that keeps the crew alive</h3></div><span class="tag" id="base-energy-readout">Stored energy: 200 kWh</span></div>
+        <div class="base-campus-art" id="base-campus-art">
+          <div class="base-core"><span>⌂</span><b>HABITAT CORE</b><small>PRESSURIZED MODULE</small></div>
+          <div class="base-module-slot" data-module-slot="greenhouse"><span>＋</span><b>GREENHOUSE</b><small>NOT BUILT</small></div>
+          <div class="base-module-slot" data-module-slot="laboratory"><span>＋</span><b>LABORATORY</b><small>NOT BUILT</small></div>
+          <div class="base-module-slot" data-module-slot="hangar"><span>＋</span><b>ROVER HANGAR</b><small>NOT BUILT</small></div>
+          <div class="base-module-slot" data-module-slot="quarters"><span>＋</span><b>CREW QUARTERS</b><small>NOT BUILT</small></div>
+        </div>
+        <div class="material-inventory" id="material-inventory"></div>
+        <div class="base-build-grid" id="base-build-grid"></div>
+        <div class="cosmetic-bay"><div><div class="eyebrow">CADET QUARTERMASTER</div><h3>Cosmetic locker</h3><p class="tiny muted">Advancement tokens unlock appearances only. They never buy power, repairs or survival upgrades.</p></div><span class="tag" id="style-token-readout">0 style tokens</span></div>
+        <div class="cosmetic-grid" id="cosmetic-grid"></div>
+      </div>
     </div>
   </section>
 <section class="panel field-ops-panel" id="field-ops-panel">
     <div class="panel-head"><div><div class="eyebrow">CREW FIELDWORK • SCIENCE & MAINTENANCE</div><h2>FIELD OPERATIONS</h2></div><span class="tag" id="ops-slots">2 FIELD OPS / SOL</span></div>
-    <p class="tiny muted">Your crew has two field-operation slots per Sol. Clean panels, repair the communications relay, collect rover samples or study samples in the lab. Successful jobs earn science and cadet XP.</p>
+    <p class="tiny muted">Choose up to three field operations each Sol. Clean the arrays, maintain life support, explore Mars, recover crew, prospect local resources, repair communications and study returned samples. Each operation costs electrical energy and EVA time.</p>
     <div class="field-task-grid" id="field-task-grid"></div>
     <div class="field-ops-footer"><span class="tiny muted" id="field-ops-note">Choose field jobs carefully. Each one uses one operation slot.</span><span class="tiny muted" id="field-ops-progress">0 operations completed</span></div>
   </section>
@@ -322,7 +340,7 @@
         <div class="slider-row"><label for="shelter-slider">⬡ Storm shelter <output id="shelter-output">1</output></label><input id="shelter-slider" type="range" min="0" max="3" value="1"><div class="slider-help">Shelter ventilation and storm procedures</div></div>
         <div class="slider-row"><label for="repair-slider">⚒ Maintenance <output id="repair-output">1</output></label><input id="repair-slider" type="range" min="0" max="2" value="1"><div class="slider-help">Clear dust and maintain equipment</div></div>
       </div>
-      <div class="power-summary"><span>Requested demand: <strong id="demand-value">12 units</strong></span><span>Available pool: <strong id="available-value">15 units</strong></span></div>
+      <div class="power-summary"><span>Daily demand: <strong id="demand-value">1,200 kWh / Sol</strong></span><span>Generation + reserve: <strong id="available-value">1,500 kWh / Sol</strong></span></div>
       <div class="power-summary"><span>Repair target: <strong id="repair-target-label">None selected</strong></span><span>Spare parts: <strong id="repair-parts-label">3 kits</strong></span></div>
     </div>
 
@@ -350,6 +368,14 @@
   </section></div></details>
 </main>
 
+<section class="story-stage finale-stage" id="final-evacuation-view">
+  <div class="story-card">
+    <div class="eyebrow">SOL 30 • CREW EXTRACTION & ASCENT</div>
+    <h1>Bring everyone home.</h1>
+    <p>The outpost has completed its surface campaign. Restore the launch power bus, recover the field team with the rover, then guide the ascent vehicle into its safe flight corridor.</p>
+    <div id="finale-content"></div>
+  </div>
+</section>
 <section class="debrief" id="debrief-view">
   <div class="debrief-card">
     <div class="eyebrow">MISSION REPORT • GALE CRATER</div><h1 id="debrief-title">Mission complete.</h1>
@@ -415,7 +441,13 @@ const state = {
   filterClogSeen:false,cropBlightSeen:false,pressureLeakSeen:false,heaterFaultSeen:false,
   spareParts:3,repairTarget:null,repairStarted:{},repairNoPartsNotified:{},
   science:0,siteKey:"gale",landing:null,incidentLog:[],
-  fieldOps:{slots:2,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraTiles:0,lastRoverSol:-10,relayAttempts:0}
+  powerCapacity:8,
+  materials:{metal:12,regolith:18,polymer:8,electronics:5,ice:0},
+  baseModules:{greenhouse:false,laboratory:false,hangar:false,quarters:false,solarWing:false,batteryBank:false},
+  coopMode:false,
+  fieldOps:{slots:3,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraTiles:0,lastRoverSol:-10,relayAttempts:0},
+  missionOps:{caveDone:false,rescueDone:false,prospectingDone:false,signalDone:false,evacuationDone:false},
+  finalEvacuation:{phase:0,gridRestored:0,crewRescued:0,launchFuel:100,altitude:0,offset:0,done:false}
 };
 const sliders = {life:$("life-slider"),green:$("green-slider"),shelter:$("shelter-slider"),repair:$("repair-slider")};
 const crewRoster=[
@@ -440,10 +472,10 @@ const BADGE_INFO={
  "science-scout":["✦","Science Scout","Earn 30 or more Science Data in one mission."],
  "systems-specialist":["⚙","Systems Specialist","Pass all four commissioning minigames."]
 };
-let cadetProgress={xp:0,missions:0,skills:{pilot:0,engineering:0,life:0,botany:0,science:0},badges:[]};
+let cadetProgress={xp:0,missions:0,skills:{pilot:0,engineering:0,life:0,botany:0,science:0},badges:[],styleTokens:0,cosmeticsOwned:["standard"],selectedCosmetic:"standard"};
 try{
   const saved=JSON.parse(localStorage.getItem("outpost-zero-cadet-v1")||"null");
-  if(saved)cadetProgress={...cadetProgress,...saved,skills:{...cadetProgress.skills,...(saved.skills||{})},badges:Array.isArray(saved.badges)?saved.badges:[]};
+  if(saved)cadetProgress={...cadetProgress,...saved,skills:{...cadetProgress.skills,...(saved.skills||{})},badges:Array.isArray(saved.badges)?saved.badges:[],cosmeticsOwned:Array.isArray(saved.cosmeticsOwned)?saved.cosmeticsOwned:["standard"]};
 }catch(e){}
 const SITES={
  gale:{name:"Gale Crater",tag:"BALANCED START",desc:"A balanced training location with no starting bonus or penalty.",water:82,battery:2,dust:0,science:0},
@@ -461,7 +493,7 @@ function updateCadetHeader(){
  if($("cadet-xp"))$("cadet-xp").textContent=(xp%100)+"/100 XP";
  if($("cadet-badges"))$("cadet-badges").textContent=(cadetProgress.badges||[]).length+" badges";
 }
-function addCadetBadge(id){if(!cadetProgress.badges.includes(id)){cadetProgress.badges.push(id);saveCadetProgress();return true;}return false;}
+function addCadetBadge(id){if(!cadetProgress.badges.includes(id)){cadetProgress.badges.push(id);cadetProgress.styleTokens=(cadetProgress.styleTokens||0)+1;saveCadetProgress();return true;}return false;}
 function awardCadetXP(amount,skill,skillPoints=0){
  cadetProgress.xp=(cadetProgress.xp||0)+amount;
  if(skill&&SKILLS.includes(skill))cadetProgress.skills[skill]=(cadetProgress.skills[skill]||0)+skillPoints;
@@ -493,7 +525,10 @@ updateCadetHeader();
 
 function values(){return {life:+sliders.life.value,green:+sliders.green.value,shelter:+sliders.shelter.value,repair:+sliders.repair.value};}
 function upgrades(){return new Set(state.upgrades);}
-function solarOutput(){return Math.max(2,Math.round((9+(upgrades().has("panels")?3:0)-state.arrayDamage)*(1-state.dust)*(state.dustStormSols>0?.82:1)));}
+function batteryCapacity(){return state.powerCapacity+(upgrades().has("battery")?8:0)+(state.baseModules?.batteryBank?8:0);}
+function solarOutput(){return Math.max(2,Math.round((9+(upgrades().has("panels")?3:0)+(state.baseModules?.solarWing?3:0)-state.arrayDamage)*(1-state.dust)*(state.dustStormSols>0?.82:1)));}
+function energyToKWh(units){return Math.round(units*100);}
+function canSpendStoredEnergy(units){return state.battery>=units;}
 function basePowerDemand(){return 4+state.heaterFault;}
 function requestedAllocations(v){return v.life+v.green+v.shelter+v.repair;}
 function totalDemand(v){return basePowerDemand()+requestedAllocations(v);}
@@ -517,8 +552,8 @@ function forecast(){
   setForecast("forecast-water",water>=-1?"↓ slowly":"↓ quickly",water>=-1);
   setForecast("forecast-food",cropPotential>=1.5?(state.cropBlight>.08?"↗ recovery growth":"↗ crop growing"):"↓ food consumed",cropPotential>=1.5);
   setForecast("forecast-power",power?"✓ fully supplied":"⚠ rationing required",power);
-  $("demand-value").textContent=demand+" units";
-  $("available-value").textContent=available+" units";
+  $("demand-value").textContent=energyToKWh(demand)+" kWh / Sol";
+  $("available-value").textContent=energyToKWh(available)+" kWh / Sol";
   const shortfall=Math.max(0,demand-available);
   let note=baseRatio<1?"WARNING: habitat essentials are underpowered. Crew safety will deteriorate.":ratio<1?"Over budget by "+shortfall.toFixed(1)+" units. Each allocation receives "+Math.round(ratio*100)+"% of its request. Raising every slider makes every system weaker.":"All requested loads fit. Unused power is stored in the battery.";
   const repairActual={filter:v.life*ratio,blight:v.green*ratio,leak:v.repair*ratio,heater:v.repair*ratio};
@@ -538,17 +573,18 @@ function render(){
   refreshComponentIndicators();
   $("sol-label").textContent=String(state.sol).padStart(2,"0")+" / 30";
   $("progress-fill").style.width=((state.sol-1)/30*100)+"%";
-  $("v-power").textContent=state.battery;
+  $("v-power").textContent=energyToKWh(state.battery);
+  $("power-capacity-unit").textContent=" / "+energyToKWh(batteryCapacity())+" kWh";
   $("v-oxygen").textContent=Math.round(state.oxygen);
   $("v-water").textContent=Math.round(state.water);
   $("v-food").textContent=Math.round(state.food);
   $("v-safety").textContent=Math.round(state.safety);
   $("v-spares").textContent=state.spareParts;
   $("v-science").textContent=state.science||0;
-  meter("power",state.battery/8*100);meter("oxygen",state.oxygen);meter("water",state.water);meter("food",state.food);meter("safety",state.safety);meter("spares",state.spareParts/3*100);meter("science",state.science||0);
+  meter("power",state.battery/batteryCapacity()*100);meter("oxygen",state.oxygen);meter("water",state.water);meter("food",state.food);meter("safety",state.safety);meter("spares",state.spareParts/3*100);meter("science",state.science||0);
   if($("n-science"))$("n-science").textContent="Samples studied: "+(state.fieldOps?.studied||0);
   $("n-spares").textContent=state.spareParts===0?"No repair kits remain":state.spareParts+" repair kits available";
-  $("n-power").textContent="Solar generation: "+solarOutput()+" units";
+  $("n-power").textContent="Solar generation: "+energyToKWh(solarOutput())+" kWh / Sol";
   $("n-food").textContent="Greenhouse crop cycle: "+Math.round(state.crop/20*100)+"%";
   $("n-safety").textContent=state.safety<50?"Crew needs attention":"Shelter procedures available";
   $("outpost-panel").classList.toggle("dusty",state.dust>.12);
@@ -830,21 +866,25 @@ function updateLoadouts(){
 }
 
 function showOnlyStage(id){
-  ["setup-view","preflight-view","landing-minigame-view","landing-view","assignment-view","task-view","game-view","debrief-view"].forEach(view=>{
+  ["setup-view","preflight-view","landing-minigame-view","landing-view","assignment-view","task-view","game-view","debrief-view","final-evacuation-view"].forEach(view=>{
     const el=$(view);if(el)el.style.display=view===id?"block":"none";
   });
 }
 function beginLanding(){
   const site=SITES[state.siteKey]||SITES.gale;
-  state.sol=1;state.battery=site.battery;state.oxygen=82;state.water=site.water;state.food=82;state.safety=100;state.crop=0;state.harvests=0;state.dust=site.dust;
+  state.sol=1;state.powerCapacity=8+(state.upgrades.includes("battery")?8:0);state.battery=site.battery+(state.upgrades.includes("battery")?2:0);state.oxygen=82;state.water=site.water;state.food=82;state.safety=100;state.crop=0;state.harvests=0;state.dust=site.dust;
   state.science=site.science;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];state.taskResults={};state.taskIndex=0;
   state.arrayDamage=0;state.recyclerDamage=0;state.cropEfficiency=1;state.shieldLoss=0;state.shieldBonus=0;
   state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
   state.filterClogSeen=false;state.cropBlightSeen=false;state.pressureLeakSeen=false;state.heaterFaultSeen=false;
   state.spareParts=3;state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
   state.incidentLog=[];
-  state.fieldOps={slots:2,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraTiles:0,lastRoverSol:-10,relayAttempts:0};
-  state.assignments={solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"};
+  state.fieldOps={slots:3,completed:0,successful:0,failedRuns:0,cleanedSol:-1,relayOnline:true,samples:0,studied:0,roverBattery:100,roverDamage:0,roverExtraTiles:0,lastRoverSol:-10,relayAttempts:0,doneToday:{}};
+  state.materials={metal:12,regolith:18,polymer:8,electronics:5,ice:0};
+  state.baseModules={greenhouse:false,laboratory:false,hangar:false,quarters:false,solarWing:false,batteryBank:false};
+  state.missionOps={caveDone:false,rescueDone:false,prospectingDone:false,signalDone:false,evacuationDone:false};
+  state.finalEvacuation={phase:0,gridRestored:0,crewRescued:0,launchFuel:100,altitude:0,offset:0,done:false};
+  state.assignments={solar:"nia",water:"elias",greenhouse:"sofia",shield:"pavel"};state.coopMode=false;
   state.landingSuccess=null;state.siteName=site.name;
   $("chosen-site-name").textContent=site.name;
   $("landing-report").textContent='Captain\'s log: "Site survey complete. We begin with the equipment we managed to land safely."';
@@ -914,7 +954,7 @@ function updateLandingFrame(now){
   $("landing-guidance").textContent=l.speed>l.maxSpeed?"Pulse the main engine to slow down.":Math.abs(l.offset)>l.maxOffset*.7?"Steer back toward the centre of the pad.":"Good approach — keep watching the wind.";
   if(l.altitude<=0){
     l.done=true;state.landingSuccess=l.speed<=l.maxSpeed&&Math.abs(l.offset)<=l.maxOffset&&l.fuel>5;
-    if(state.landingSuccess){state.battery=clamp(state.battery+2,0,8);awardCadetXP(12,"pilot",2);addCadetBadge("soft-landing");log("Soft touchdown • +2 starting battery reserve");}
+    if(state.landingSuccess){state.battery=clamp(state.battery+2,0,batteryCapacity());awardCadetXP(12,"pilot",2);addCadetBadge("soft-landing");log("Soft touchdown • +2 starting battery reserve");}
     else{state.arrayDamage=1.5;state.spareParts=Math.max(0,state.spareParts-1);state.battery=Math.max(0,state.battery-2);state.safety=92;awardCadetXP(4,"pilot",0);log("Rough touchdown • solar frame damaged and one spare kit used");}
     clearLandingControls();renderLandingChallenge();return;
   }
@@ -1117,7 +1157,7 @@ function finishTask(success,detail){
     if(task.id==="shield")state.shieldLoss=15*severity;
     log(task.title+" failed • captain must compensate");
   }else{
-    if(task.id==="solar")state.battery=clamp(state.battery+2,0,8);
+    if(task.id==="solar")state.battery=clamp(state.battery+2,0,batteryCapacity());
     if(task.id==="water")state.water=clamp(state.water+5,0,100);
     if(task.id==="greenhouse")state.crop=5;
     if(task.id==="shield")state.shieldBonus=10;
@@ -1293,7 +1333,7 @@ function advance(){
   const requested=requestedAllocations(v),baseRatio=Math.min(1,available/base),ratio=allocationRatio(v,available);
   const actualLife=v.life*ratio,actualGreen=v.green*ratio,actualShelter=v.shelter*ratio,actualRepair=v.repair*ratio;
   const delivered=requested*ratio,used=Math.min(available,base*baseRatio+delivered);
-  state.battery=clamp(available-used,0,8);
+  state.battery=clamp(available-used,0,batteryCapacity());
 
   // Habitat essentials are served first. Remaining power is shared between the player's selected jobs.
   const oxygenDelta=actualLife*3-10-state.pressureLeak-(1-baseRatio)*7;
@@ -1455,7 +1495,12 @@ document.querySelectorAll(".component-hotspot").forEach(el=>{
 inspectComponent("solar");
 Object.values(sliders).forEach(s=>s.addEventListener("input",()=>{forecast();}));
 $("start-btn").addEventListener("click",startAssessment);
-$("touchdown-btn").addEventListener("click",()=>{renderAssignments();showOnlyStage("assignment-view");});
+$("touchdown-btn").addEventListener("click",()=>{
+  state.fieldOps.slots=3;state.fieldOps.doneToday={};
+  $("game-view").style.display="block";$("debrief-view").style.display="none";
+  ["setup-view","preflight-view","landing-minigame-view","landing-view","assignment-view","task-view","debrief-view","final-evacuation-view"].forEach(id=>{if($(id))$(id).style.display="none";});
+  applyEventForSol(1);render();renderBaseBuilder();renderFieldOps();
+});
 $("assignments-confirm").addEventListener("click",startTaskSequence);
 $("advance-btn").addEventListener("click",advance);
 $("load-nasa").addEventListener("click",loadNasa);

@@ -279,7 +279,7 @@
     <h3>NASA data source</h3>
     <ul><li><a href="https://api.nasa.gov/" target="_blank" rel="noreferrer">NASA Open APIs — DONKI documentation</a></li><li><a href="https://ccmc.gsfc.nasa.gov/DONKI/" target="_blank" rel="noreferrer">NASA Community Coordinated Modeling Center — DONKI</a></li><li><a href="https://science.nasa.gov/resource/life-support-baseline-values-and-assumptions-document/" target="_blank" rel="noreferrer">NASA Life Support Baseline Values and Assumptions Document (BVAD)</a></li></ul>
     <h3>Model assumptions</h3>
-    <ul><li>Power, battery, oxygen, water, food and crop units are teaching-game units, not engineering specifications.</li><li>Life-support power influences oxygen production and water recovery in a simplified way.</li><li>Greenhouse power and water build crop progress over several Sols; harvests are not immediate.</li><li>Radiation protection combines a passive shelter-upgrade bonus with power allocated to shelter procedures. No active magnetic shield is modeled.</li><li>Solar-array dust and maintenance are simplified gameplay mechanics, not a forecast for a specific Mars location.</li></ul>
+    <ul><li>Power, battery, oxygen, water, food and crop units are teaching-game units, not engineering specifications.</li><li>Life-support power influences oxygen production and water recovery in a simplified way.</li><li>Greenhouse power and water build crop progress over several Sols; harvests are not immediate.</li><li>Radiation protection combines a passive shelter-upgrade bonus with power allocated to shelter procedures. No active magnetic shield is modeled.</li><li>Solar-array dust, multi-Sol dust storms, filter blockage, crop blight, habitat seal leaks and heater faults are simplified crisis mechanics, not a forecast for a specific Mars location or an engineering failure-rate model.</li><li>The campaign lasts 30 game Sols. Crisis timing and recovery rates are authored for learning about prioritization; they are not operational mission procedures.</li></ul>
     <p class="tiny">Before submission, verify that NASA Open APIs / DONKI appears in the Resources section of this exact 2026 challenge. Keep this source list in the final project description and README.</p>
   </div>
 </div>
@@ -514,9 +514,9 @@ function finishTask(success,detail){
 
 const componentInfo={
 solar:{title:"Solar array network",system:"POWER GENERATION",copy:"The solar wings collect energy for every outpost system. Dust and deployment damage reduce available generation.",slider:"repair",failed:()=>state.arrayDamage>0||state.dust>0.05,issue:()=>(state.arrayDamage>0?"Array bus damage: "+state.arrayDamage.toFixed(1)+" modeled units. ":"Dust is reducing solar generation. ")+"Increase Maintenance in the Command Console to clear dust and repair the bus over multiple Sols.",normal:"Arrays are tracking the Sun. Generation is within expected training range.",action:"Set maintenance to 2"},
-life:{title:"Habitat • life support",system:"OXYGEN & WATER RECOVERY",copy:"The habitat contains the air and water recycling equipment that keeps the crew supplied.",slider:"life",failed:()=>state.recyclerDamage>0||state.water<35||state.oxygen<35,issue:()=>(state.recyclerDamage>0?"Recycler fault: water recovery is degraded. ":"Habitat reserves are running low. ")+"Increase Life Support allocation to reduce the modeled water loss and stabilize reserves.",normal:"Air and water loops are operating. Watch the oxygen and water reserves.",action:"Set life support to 6"},
-green:{title:"Hydroponic greenhouse",system:"FOOD PRODUCTION",copy:"The greenhouse converts power, water and time into future harvests. Plants cannot replace all life-support equipment.",slider:"green",failed:()=>state.cropEfficiency<1,issue:()=>"Crop-bed calibration fault: growth efficiency is "+Math.round(state.cropEfficiency*100)+"%. Higher greenhouse allocation can partly compensate.",normal:"Grow beds are stable. Keep water and lighting available for the next harvest.",action:"Set greenhouse to 4"},
-shelter:{title:"Storm shelter",system:"RADIATION PROTECTION",copy:"The shelter gives the crew a protected place during the mission's simulated space-weather drill.",slider:"shelter",failed:()=>state.shieldLoss>0||(state.stormSeen&&state.sol===4),issue:()=>(state.shieldLoss>0?"Shield seam fault: modeled protection is reduced by "+Math.round(state.shieldLoss)+" points. ":"Solar-weather shelter drill is active. ")+"Increase Shelter allocation during the drill.",normal:"Shelter seals are intact. Keep some power available for a storm response.",action:"Set shelter to 3"}
+life:{title:"Habitat • life support",system:"OXYGEN, WATER & TEMPERATURE",copy:"The habitat contains the air and water recycling equipment and thermal controls that keep the crew supplied.",slider:"life",failed:()=>state.recyclerDamage>0||state.filterClog>0.08||state.pressureLeak>0.08||state.heaterFault>0||state.water<35||state.oxygen<35,issue:()=>[(state.recyclerDamage>0?"Recycler fault: recovery remains degraded. ":""),(state.filterClog>0.08?"Filter clog: "+state.filterClog.toFixed(1)+" modeled units remain. ":""),(state.pressureLeak>0.08?"Pressure leak: "+state.pressureLeak.toFixed(1)+" oxygen-loss units per Sol. ":""),(state.heaterFault>0?"Thermal controller fault: +"+state.heaterFault.toFixed(1)+" power demand. ":""),(state.water<35||state.oxygen<35?"Habitat reserves are running low. ":"")].join("")+"Increase Life Support to clear the water filter; use Maintenance to close leaks and repair the heater.",normal:"Air, water and temperature controls are operating. Watch the reserves.",action:"Set life support to 6"},
+green:{title:"Hydroponic greenhouse",system:"FOOD PRODUCTION",copy:"The greenhouse converts power, water and time into future harvests. Plants cannot replace all life-support equipment.",slider:"green",failed:()=>state.cropEfficiency<1||state.cropBlight>0.08,issue:()=>"Crop output is reduced by setup damage or blight. "+Math.round((1-state.cropBlight)*100)+"% of the normal growth rate remains before other penalties. Sustained Greenhouse allocation helps recovery.",normal:"Grow beds are stable. Keep water and lighting available for the next harvest.",action:"Set greenhouse to 4"},
+shelter:{title:"Storm shelter",system:"RADIATION PROTECTION",copy:"The shelter gives the crew a protected place during the mission's simulated space-weather drill.",slider:"shelter",failed:()=>state.shieldLoss>0||state.shelterDrillPending,issue:()=>(state.shieldLoss>0?"Shield seam fault: modeled protection is reduced by "+Math.round(state.shieldLoss)+" points. ":"Solar-weather shelter drill is active. ")+"Increase Shelter allocation during the drill.",normal:"Shelter seals are intact. Keep some power available for a storm response.",action:"Set shelter to 3"}
 };
 let selectedComponent="solar";
 function componentHasIssue(key){const c=componentInfo[key];return !!(c&&c.failed());}
@@ -594,7 +594,8 @@ function applyEventForSol(sol){
   render();
 }
 function startMission(){
-  state.sol=1;state.battery=clamp(state.battery,0,8);state.oxygen=78;state.food=68;state.safety=100;state.harvests=0;state.dust=0;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];
+  state.sol=1;state.battery=clamp(state.battery,0,8);state.oxygen=82;state.food=82;state.safety=100;state.harvests=0;state.dust=0;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];
+  state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
   showOnlyStage("game-view");$("reset-btn").classList.remove("hidden");
   sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
   log("Landing complete • crew assignments locked • Sol 1 begins");
@@ -605,53 +606,73 @@ function advance(){
   const ratio=Math.min(1,available/demand), actualLife=v.life*ratio, actualGreen=v.green*ratio, actualShelter=v.shelter*ratio, actualRepair=v.repair*ratio;
   const used=Math.min(available,demand);
   state.battery=clamp(available-used,0,8);
-  const oxygenDelta=actualLife*3-10;
+
+  // Daily resource balances: deliberately simplified teaching units, not engineering specifications.
+  const oxygenDelta=actualLife*3-10-state.pressureLeak;
   const recyclerPenalty=state.recyclerDamage*Math.max(.55,1-Math.max(0,actualLife-4)*.18);
-  const waterDelta=-5.5+actualLife*.85+(upgrades().has("recycler")?1.3:0)-actualGreen*.85-recyclerPenalty+Math.max(0,actualLife-4)*.4;
+  const waterDelta=-3.8+actualLife*.9+(upgrades().has("recycler")?1.4:0)-actualGreen*.55-recyclerPenalty-state.filterClog*.6;
   state.oxygen=clamp(state.oxygen+oxygenDelta,0,100);
   state.water=clamp(state.water+waterDelta,0,100);
   state.food=clamp(state.food-6.2,0,100);
-  const cropRecovery=actualGreen >= 3 ? 0.2 : 0;
-  state.crop+=actualGreen*1.8*Math.min(1,state.cropEfficiency+cropRecovery);
-  if(state.crop>=20){const harvests=Math.floor(state.crop/20);state.crop-=harvests*20;state.food=clamp(state.food+harvests*16,0,100);state.harvests+=harvests;log("Harvest collected • +"+(harvests*16)+" food");}
-  state.dust=clamp(state.dust-actualRepair*.08,0,.65);
+
+  const cropRate=Math.min(1,state.cropEfficiency)*(1-state.cropBlight);
+  state.crop+=actualGreen*1.8*cropRate;
+  if(state.crop>=20){
+    const harvests=Math.floor(state.crop/20);state.crop-=harvests*20;
+    state.food=clamp(state.food+harvests*16,0,100);state.harvests+=harvests;
+    log("Harvest collected • +"+(harvests*16)+" food");
+  }
+
+  // Different faults demand different kinds of attention; no single slider fixes everything.
+  state.dust=clamp(state.dust-actualRepair*.08,0,.8);
   state.arrayDamage=clamp(state.arrayDamage-actualRepair*.45,0,5);
-  if(state.sol===4){
+  state.pressureLeak=clamp(state.pressureLeak-actualRepair*.35,0,5);
+  state.heaterFault=clamp(state.heaterFault-actualRepair*.3,0,3);
+  if(actualLife>=5)state.filterClog=clamp(state.filterClog-(actualLife-4)*.2,0,2);
+  if(actualGreen>=3)state.cropBlight=clamp(state.cropBlight-(actualGreen-2)*.06,0,.7);
+  if(state.dustStormSols>0)state.dustStormSols--;
+
+  if(state.shelterDrillPending){
     const passive=upgrades().has("regolith")?45:20;
     const protection=clamp(passive+state.shieldBonus+actualShelter*12-state.shieldLoss,0,85);
     const hit=Math.max(3,24*(1-protection/100));
     state.safety=clamp(state.safety-hit,0,100);
+    state.shelterDrillPending=false;
     log("Shelter drill • simulated crew safety impact -"+Math.round(hit));
   }
   if(state.oxygen<25)state.safety=clamp(state.safety-6,0,100);
   if(state.water<18)state.safety=clamp(state.safety-4,0,100);
   if(state.food<18)state.safety=clamp(state.safety-4,0,100);
-  if(ratio<.999){log("Power shortfall • systems received "+Math.round(ratio*100)+"% of requested power");}
+  if(state.heaterFault>0&&ratio<.95)state.safety=clamp(state.safety-2,0,100);
+  if(ratio<.999)log("Power shortfall • systems received "+Math.round(ratio*100)+"% of requested power");
   log("Sol "+state.sol+" complete • solar "+solar+" / demand "+demand);
   beep(440,.09);
-  if(state.oxygen<=0||state.water<=0||state.food<=0||state.safety<=0){
-    endMission(false);return;
-  }
-  if(state.sol>=7){endMission(true);return;}
+
+  if(state.oxygen<=0||state.water<=0||state.food<=0||state.safety<=0){endMission(false);return;}
+  if(state.sol>=30){endMission(true);return;}
   state.sol++;
-  // Reset to a conservative preset for the next Sol; the commander can change it.
+  // The captain gets fresh priorities each Sol, but faults and damage persist.
   sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
   applyEventForSol(state.sol);render();
-  $("advance-btn").textContent=state.sol===7?"Complete Sol 07 →":"Advance to Sol "+String(state.sol+1).padStart(2,"0")+" →";
+  $("advance-btn").textContent=state.sol===30?"Complete Sol 30 →":"Advance to Sol "+String(state.sol+1).padStart(2,"0")+" →";
 }
 function endMission(completed){
   $("game-view").style.display="none";$("debrief-view").style.display="block";
   const success=completed&&state.safety>=50&&state.oxygen>10&&state.water>10&&state.food>5;
-  $("debrief-title").textContent=success?"OUTPOST STABLE. CREW SAFE.":"MISSION REVIEW: LESSONS LEARNED.";
-  $("debrief-lead").textContent=success?"Your crew completed the seven-Sol training mission. Your choices kept the outpost supplied while managing competing engineering needs.":"The outpost could not meet every mission need. That is the point of the debrief: identify the chain reaction and try a different plan.";
+  $("debrief-title").textContent=success?"30 SOLS. CREW SAFE — JUST.":"MISSION REVIEW: LESSONS LEARNED.";
+  $("debrief-lead").textContent=success?"Your crew completed the full 30-Sol campaign. That does not mean every system was perfect: review the damage, trade-offs and near-misses that made survival possible.":"The outpost could not meet every mission need. That is the point of the debrief: identify the chain reaction and decide what you would protect first next time.";
   $("d-o2").textContent=Math.round(state.oxygen)+"%";$("d-water").textContent=Math.round(state.water)+"%";$("d-food").textContent=Math.round(state.food)+"%";$("d-safety").textContent=Math.round(state.safety)+"%";$("d-harvests").textContent=state.harvests;$("d-sols").textContent=state.sol;
   const causes=[];
   taskDefinitions.forEach(task=>{
     const result=state.taskResults[task.id];
     if(result&&!result.success)causes.push(task.title+" failed during setup. "+result.detail+" The failure was not replayed; the captain had to manage its ongoing impact.");
   });
-  if(state.dustSeen)causes.push("A dust front reduced solar generation. Maintenance power could clear the arrays, but it competed with other needs.");
-  if(state.stormSeen)causes.push("The Sol 4 shelter drill tested the trade-off between shelter ventilation power and other outpost systems.");
+  if(state.dustSeen)causes.push("Dust front and regional storm: "+(state.dust<.08?"the arrays were mostly cleared by the end. ":"dust still reduced solar generation. ")+"Maintenance competed with life support and food production.");
+  if(state.filterClogSeen)causes.push("Water filter blockage: "+(state.filterClog<.08?"the crew cleared the clog. ":"the filter remained partly blocked, increasing water loss. ")+"Higher life-support allocation helped, but cost power.");
+  if(state.cropBlightSeen)causes.push("Greenhouse blight: "+(state.cropBlight<.08?"the crew recovered most crop capacity. ":"crop growth was still impaired. ")+"The recovery required sustained greenhouse power while food reserves were being consumed.");
+  if(state.pressureLeakSeen)causes.push("Habitat seal leak: "+(state.pressureLeak<.08?"maintenance closed the leak. ":"the leak continued to reduce oxygen reserves. ")+"The crew had to balance air generation against repair work.");
+  if(state.stormSeen)causes.push("The Sol 23 shelter drill tested the trade-off between shelter procedures and the outpost's other power needs.");
+  if(state.heaterFaultSeen)causes.push("Thermal-control failure: "+(state.heaterFault<.08?"the backup controller was repaired. ":"the heater fault still increased daily power demand. ")+"The extra demand forced the captain to reduce another system's allocation.");
   if(state.crop<10)causes.push("The greenhouse did not complete much crop progress. Food production needs steady inputs and time.");
   if(state.oxygen<45)causes.push("Oxygen reserves fell. Life-support power was not high enough to keep the simplified oxygen balance stable.");
   if(state.water<45)causes.push("Water reserves fell. Crew use, greenhouse demand and recycling efficiency all affected the balance.");
@@ -675,17 +696,17 @@ async function loadNasa(){
     state.donki=records.length?records[0]:null;state.donkiLoaded=true;
     if(state.donki){
       const r=state.donki;
-      $("nasa-summary").textContent="Latest SEP record in the queried window: "+(r.eventDate||"date not supplied")+". This real record can anchor the Sol 4 learning scenario.";
+      $("nasa-summary").textContent="Latest SEP record in the queried window: "+(r.eventDate||"date not supplied")+". This real record can anchor the Sol 23 learning scenario.";
       $("nasa-state").textContent="NASA record loaded";
       $("nasa-summary").innerHTML=escapeHtml("Latest SEP record: "+(r.eventDate||"date not supplied")+". ")+(r.link?'<a href="'+escapeHtml(r.link)+'" target="_blank" rel="noreferrer">Open NASA record ↗</a>':"");
       log("NASA DONKI SEP data loaded • "+(r.eventDate||"record found"));
     }else{
-      $("nasa-summary").textContent="NASA returned no SEP records in the last 30 days. The Sol 4 event will remain a clearly labelled fictional training scenario.";
+      $("nasa-summary").textContent="NASA returned no SEP records in the last 30 days. The Sol 23 event will remain a clearly labelled fictional training scenario.";
       $("nasa-state").textContent="No recent SEP records";
     }
   }catch(error){
     state.donki=null;state.donkiLoaded=true;
-    $("nasa-summary").textContent="NASA data could not be loaded ("+error.message+"). The mission remains playable offline; Sol 4 will use a simulated training event.";
+    $("nasa-summary").textContent="NASA data could not be loaded ("+error.message+"). The mission remains playable offline; Sol 23 will use a simulated training event.";
     $("nasa-state").textContent="Offline fallback";
   }finally{btn.disabled=false;btn.textContent="↻ Load NASA data";}
 }

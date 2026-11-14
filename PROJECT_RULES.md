@@ -68,7 +68,7 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 
 ## Play-first minigame rules
 - The training bay must not contain a knowledge test. Cadet skill tracks are earned through completed play.
-- The landing experience is a visual arcade with continuous feedback after each thrust/steering choice, not a numeric worksheet.
+- The landing experience is a live visual arcade with hold-to-control engine and steering inputs, continuously updating speed, crosswind, fuel and pad position. It is not a numeric worksheet or a flight-training tool.
 - The sample lab is a tactile scanner sweep. Do not turn scientific interpretation into a multiple-choice exam.
 
 ## Long-range rover expedition rules

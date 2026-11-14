@@ -38,8 +38,8 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 
 
 ## Mission progression and one-shot setup tasks
-- Preserve the knowledge preflight → selectable site → landing simulator → landing confirmation → crew assignment → four commissioning minigames → 30-Sol campaign.
-- The knowledge preflight is an adaptive game setting for practice/standard/advanced minigames. Do not label it a clinical, school or psychometric assessment.
+- Preserve the training bay → selectable site → visual landing arcade → landing confirmation → crew assignment → four commissioning minigames → 30-Sol campaign. The training bay is not a quiz or assessment.
+- Do not add knowledge quizzes, multiple-choice science tests, or scored preflight questions. Skill tiers begin with guided play and progress through XP earned by playing minigames.
 - Cadet XP, skill progress and badges may persist locally. Mission resources, incident outcomes and one-shot minigames reset on a new run.
 - The player is the captain; four specialists each have a distinct field and are assigned one task apiece.
 - A task has one submitted attempt per run. Never add an in-task retry or silently reset a failed result.
@@ -55,6 +55,27 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 - Keep seven major crisis beats on Sols 3, 7, 11, 15, 19, 23 and 27, plus seven choice incidents on Sols 5, 9, 13, 17, 21, 25 and 29. Choice effects must persist and be recorded in the debrief.
 - Field operations offer two EVA slots per Sol. Panel cleaning, rover sample collection, lab analysis and communications-relay repair each consume a slot; unsuccessful attempts also consume the slot.
 - Rover battery recharges slowly. Do not allow unlimited rover trips or unlimited fieldwork in one Sol.
-- Cadet skills can tune challenge length and number of choices, but never assume a correct quiz answer proves a student's real-world capability.
+- Cadet skills can tune challenge length and guidance, but must grow through actual play. Never use quiz correctness as a proxy for a student's real-world capability.
 - Open the mission alert briefing when a crisis begins and show active faults on the matching outpost hotspot.
 - Keep the minigames short, accessible, keyboard/touch friendly, and explain their objective before the one-shot submission.
+
+
+## PONYTAIL implementation discipline
+- Follow the uploaded PONYTAIL "lazy senior dev" guide: inspect the code and all affected paths before changes, reuse the existing single-file patterns, and make the smallest complete change.
+- Do not add frameworks, dependencies, speculative options or abstractions. Update every affected caller and document meaningful behavior changes.
+- Non-trivial route, energy, parser or simulation logic must include a small self-check. Keep accessibility and safe failure handling.
+- End a development update by stating what was not checked and any important risk; never claim a browser playtest unless it happened.
+
+## Play-first minigame rules
+- The training bay must not contain a knowledge test. Cadet skill tracks are earned through completed play.
+- The landing experience is a visual arcade with continuous feedback after each thrust/steering choice, not a numeric worksheet.
+- The sample lab is a tactile scanner sweep. Do not turn scientific interpretation into a multiple-choice exam.
+
+## Long-range rover expedition rules
+- Rover excursions must be procedural and substantially longer than a short tile puzzle. Include a full outbound and return drive.
+- Keyboard controls use arrow keys and WASD; on-screen directional controls provide an accessible touch alternative.
+- Terrain affects battery cost: uphill is more expensive than level terrain and downhill is cheaper. Sand/rubble may add resistance; boulder/crater impacts and repeated wandering add rover wear.
+- Generate a guaranteed traversable route and calculate its round-trip energy plus science-tool costs before enabling the expedition. Never make the designed safe route impossible for the available battery.
+- If battery is depleted or wear immobilizes the rover, switch to a guided EVA recovery walk along the path already travelled. Interrupting or aborting an expedition must not silently discard it.
+- A rover experiment not returned to base is recorded as failed for that Sol; add a four-tile longer follow-up traverse the next Sol.
+- Rover science can include terrain-camera imagery, wheel odometry/slip observations, environmental sensor readings, panorama, remote chemistry/mineralogy and a sealed/cached sample. Label every observation as simulated game data, never NASA telemetry.

@@ -1016,10 +1016,6 @@ function launchLabTask(){
  canvas.addEventListener("pointerdown",e=>{dragging=true;last=null;canvas.setPointerCapture(e.pointerId);scanAt(e);});canvas.addEventListener("pointermove",e=>{if(dragging)scanAt(e);});["pointerup","pointercancel","lostpointercapture"].forEach(name=>canvas.addEventListener(name,()=>{dragging=false;last=null;}));
  $("scan-cancel").onclick=closeOpsModal;paint();
 }
-function consumeStoredEnergy(units){
- if(state.battery<units){brief("POWER RESERVE","Not enough stored electricity","This operation needs "+energyToKWh(units)+" kWh, but the reserve is only "+energyToKWh(state.battery)+" kWh.","Protect the habitat first or wait for the next energy surplus.");return false;}
- state.battery=clamp(state.battery-units,0,batteryCapacity());return true;
-}
 function launchCaveTask(){
  const width=900,height=500,exit={x:78,y:250},player={x:exit.x,y:exit.y};
  const minerals=[{x:290,y:105,found:false},{x:575,y:365,found:false},{x:785,y:175,found:false}];

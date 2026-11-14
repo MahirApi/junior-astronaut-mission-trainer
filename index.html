@@ -833,15 +833,18 @@ function launchRoverTask(){
  };
  const list=missionSets[state.siteKey]||missionSets.gale,mission=list[(state.sol-1+(f.failedRuns||0))%list.length];
  const route=t=>({x:base.x+(target.x-base.x)*t+Math.sin(t*Math.PI*2)*145,y:base.y+(target.y-base.y)*t+Math.sin(t*Math.PI*3)*95});
+ const safeWaypoints=Array.from({length:45},(_,i)=>route(i/44));
  const samples=[.24,.49,.75].map((t,i)=>{const p=route(t);return{x:p.x+(rnd()-.5)*55,y:p.y+(rnd()-.5)*55,id:i+1,found:false};});
  const rocks=[],boulders=[],craters=[],dunes=[];
  for(let i=0;i<165;i++){
   const x=240+rnd()*(world.w-480),y=160+rnd()*(world.h-320);
   if(Math.hypot(x-base.x,y-base.y)<180||Math.hypot(x-target.x,y-target.y)<170)continue;
-  if([.12,.25,.4,.55,.7,.85].some(t=>{const p=route(t);return Math.hypot(x-p.x,y-p.y)<135;}))continue;
+  if(safeWaypoints.some(p=>Math.hypot(x-p.x,y-p.y)<135))continue;
   const q=rnd(),o={x,y,r:16+rnd()*28,a:rnd()*Math.PI*2};
   if(q<.11)craters.push({...o,r:45+rnd()*48});else if(q<.34)boulders.push(o);else if(q<.58)dunes.push({...o,rx:65+rnd()*95,ry:22+rnd()*32});else rocks.push(o);
  }
+ const corridorClear=safeWaypoints.every(p=>rocks.every(r=>Math.hypot(p.x-r.x,p.y-r.y)>=135)&&boulders.every(r=>Math.hypot(p.x-r.x,p.y-r.y)>=135)&&craters.every(r=>Math.hypot(p.x-r.x,p.y-r.y)>=135));
+ console.assert(corridorClear,"Procedural rover sample route must have a clear traversable corridor.");
  const heightAt=(x,y)=>Math.sin(x*.0027)*.34+Math.cos(y*.0034)*.28+Math.sin((x+y)*.0017)*.22+Math.cos((x-y)*.004)*.12;
  function terrainAt(x,y){
   const n=Math.sin(x*.011)*Math.cos(y*.015)+Math.sin((x-y)*.008)*.4;

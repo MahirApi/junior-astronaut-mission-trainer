@@ -35,3 +35,12 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 4. The app works on a clean desktop browser and a mobile-width viewport.
 5. Data sources, model assumptions, and AI usage are disclosed in the submission.
 6. Test all changed flows before declaring the work complete.
+
+
+## Mission progression and one-shot setup tasks
+- Preserve the landing → site confirmation → crew assignment → four commissioning minigames → seven-Sol command loop.
+- The player is the captain; four specialists each have a distinct field and are assigned one task apiece.
+- A task has one submitted attempt per run. Never add an in-task retry or silently reset a failed result.
+- A full mission restart may reset all task outcomes, but the debrief must explain failed tasks and their downstream resource consequences.
+- Failed commissioning must change later simulation state and expose a meaningful captain recovery choice. Do not present failure as cosmetic.
+- Keep the minigames short, accessible, keyboard/touch friendly, and explain their objective before the one-shot submission.

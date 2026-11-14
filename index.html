@@ -803,7 +803,7 @@ function beginLanding(){
 function startLandingChallenge(){
   const tier=skillTier("pilot");
   const cfg=[null,{maxSpeed:8,maxOffset:10,wind:0.55,label:"PRACTICE"},{maxSpeed:5.5,maxOffset:7,wind:0.85,label:"STANDARD"},{maxSpeed:3.5,maxOffset:4.5,wind:1.15,label:"ADVANCED"}][tier];
-  state.landing={turn:0,turns:6,altitude:1200,speed:12,offset:0,fuel:100,steer:0,steerStrength:cfg.wind,tier,...cfg,wind:(Math.random()-.5)*cfg.wind*2,done:false};
+  state.landing={turn:0,turns:6,altitude:1200,speed:12,offset:0,fuel:90,steer:0,steerStrength:cfg.wind,tier,...cfg,wind:(Math.random()-.5)*cfg.wind*2,done:false};
   showOnlyStage("landing-minigame-view");
   renderLandingChallenge();
 }
@@ -816,7 +816,7 @@ function renderLandingChallenge(){
     $("landing-continue").addEventListener("click",()=>showOnlyStage("landing-view"));
     return;
   }
-  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong id="landing-altitude">'+Math.round(l.altitude)+' m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong id="landing-speed">'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>LANDING PAD OFFSET</span><strong id="landing-offset">'+l.offset.toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL</span><strong id="landing-fuel">'+Math.round(l.fuel)+'%</strong></div></div><div class="landing-meter"><i id="landing-altitude-bar" style="width:'+Math.round(l.altitude/1200*100)+'%"></i></div><div class="landing-controls"><div class="landing-control"><label for="landing-throttle">MAIN ENGINE THRUST <output id="landing-throttle-value">90%</output></label><input id="landing-throttle" type="range" min="45" max="100" step="5" value="90"><p class="tiny muted">More thrust slows your descent, but uses more fuel.</p></div><div class="landing-control"><label>STEER INTO THE CROSSWIND</label><div class="steering-buttons"><button class="secondary-btn" data-steer="-1">← LEFT</button><button class="secondary-btn selected" data-steer="0">CENTER</button><button class="secondary-btn" data-steer="1">RIGHT →</button></div><p class="tiny muted" id="landing-wind-note">Crosswind: '+Math.abs(l.wind).toFixed(1)+' m/s, pushing '+(l.wind>0?"right":"left")+'. Choose a correction.</p></div></div><div class="power-summary"><span>DESCENT BURN <strong>'+(l.turn+1)+' / '+l.turns+'</strong></span><span>TRAINING <strong>'+l.label+'</strong></span></div><div class="puzzle-actions"><button class="primary-btn" id="landing-burn">Apply thrust & descend →</button></div>';
+  content.innerHTML='<div class="landing-status"><div class="landing-readout"><span>ALTITUDE</span><strong id="landing-altitude">'+Math.round(l.altitude)+' m</strong></div><div class="landing-readout"><span>DESCENT SPEED</span><strong id="landing-speed">'+l.speed.toFixed(1)+' m/s</strong></div><div class="landing-readout"><span>LANDING PAD OFFSET</span><strong id="landing-offset">'+l.offset.toFixed(1)+' m</strong></div><div class="landing-readout"><span>FUEL</span><strong id="landing-fuel">'+Math.round(l.fuel)+'%</strong></div></div><div class="landing-meter"><i id="landing-altitude-bar" style="width:'+Math.round(l.altitude/1200*100)+'%"></i></div><div class="landing-controls"><div class="landing-control"><label for="landing-throttle">MAIN ENGINE THRUST <output id="landing-throttle-value">90%</output></label><input id="landing-throttle" type="range" min="45" max="100" step="5" value="90"><p class="tiny muted">More thrust slows your descent, but uses more fuel. Keep a reserve for touchdown: holding 100% thrust for every burn can leave too little propellant.</p></div><div class="landing-control"><label>STEER INTO THE CROSSWIND</label><div class="steering-buttons"><button class="secondary-btn" data-steer="-1">← LEFT</button><button class="secondary-btn selected" data-steer="0">CENTER</button><button class="secondary-btn" data-steer="1">RIGHT →</button></div><p class="tiny muted" id="landing-wind-note">Crosswind: '+Math.abs(l.wind).toFixed(1)+' m/s, pushing '+(l.wind>0?"right":"left")+'. Choose a correction.</p></div></div><div class="power-summary"><span>DESCENT BURN <strong>'+(l.turn+1)+' / '+l.turns+'</strong></span><span>TRAINING <strong>'+l.label+'</strong></span></div><div class="puzzle-actions"><button class="primary-btn" id="landing-burn">Apply thrust & descend →</button></div>';
   $("landing-throttle").addEventListener("input",()=>{$("landing-throttle-value").textContent=$("landing-throttle").value+"%";});
   $("landing-burn").addEventListener("click",applyLandingBurn);
   content.querySelectorAll("[data-steer]").forEach(btn=>btn.addEventListener("click",()=>{
@@ -826,7 +826,7 @@ function renderLandingChallenge(){
 function applyLandingBurn(){
   const l=state.landing;if(!l||l.done)return;
   const throttle=+$("landing-throttle").value;
-  l.fuel=Math.max(0,l.fuel-(2+throttle*.065));
+  l.fuel=Math.max(0,l.fuel-(2+throttle*.12));
   l.speed=clamp(l.speed+1.8-throttle*.036,.5,30);
   l.offset=clamp(l.offset+l.wind+l.steer*l.steerStrength,-30,30);
   l.altitude=Math.max(0,l.altitude-200);l.turn++;

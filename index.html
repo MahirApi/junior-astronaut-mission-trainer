@@ -176,7 +176,7 @@
         <path d="M0 255 Q120 237 210 251 T430 249 T660 240" stroke="#ca8762" stroke-opacity=".35" fill="none" stroke-width="2"/>
         <g stroke="#a9c6d0" stroke-width="2">
           <path d="M26 214 L56 112 L183 112 L151 214Z" fill="#24404d"/><path d="M26 214 L56 112 L183 112 L151 214Z" fill="url(#panelgrid)"/><path d="M46 213 L77 218 M163 213 L177 218" stroke="#d0b59b"/>
-          <path d="M496 213 L521 128 L626 128 L605 213Z" fill="#24404d"/><path d="M496 213 L521 128 L626 128 L605 213Z" fill="url(#panelgrid)"/>
+          <path d="M500 230 V177 Q500 151 530 151 H598 Q628 151 628 177 V230Z" fill="#46545a" stroke="#d5c1a7"/><path d="M512 225 V180 Q512 163 532 163 H596 Q616 163 616 180 V225" fill="none" stroke="#a9b8b3"/><path d="M523 194 H605 M523 207 H605" stroke="#d2a17c" stroke-width="2"/>
         </g>
         <g stroke="#ddc8ad" stroke-width="2">
           <path d="M202 231 V152 Q202 76 296 76 Q390 76 390 152 V231Z" fill="url(#dome)"/>
@@ -188,7 +188,7 @@
         </g>
         <g fill="#f2a36d"><circle cx="296" cy="128" r="7"/><circle cx="260" cy="192" r="4"/><circle cx="333" cy="192" r="4"/></g>
         <g stroke="#d2a17c" stroke-width="2" fill="none"><path d="M193 232 H486 M226 232 V247 M365 232 V247 M413 232 V247 M454 232 V247"/></g>
-        <g fill="#e8c4a6" font-size="10" font-family="sans-serif" letter-spacing="1"><text x="77" y="98">SOLAR</text><text x="255" y="57">HABITAT</text><text x="412" y="126">GREENHOUSE</text><text x="528" y="115">ARRAY B</text></g>
+        <g fill="#e8c4a6" font-size="10" font-family="sans-serif" letter-spacing="1"><text x="77" y="98">SOLAR</text><text x="255" y="57">HABITAT</text><text x="412" y="126">GREENHOUSE</text><text x="526" y="143">SHELTER</text></g>
         <g class="dust-layer" fill="#c99a73"><path d="M0 0H660V300H0Z" opacity=".2"/><circle cx="108" cy="90" r="30"/><circle cx="548" cy="78" r="45"/></g>
         <g class="storm-lights"><path d="M296 76 Q390 76 390 152" stroke="#f06f68" stroke-width="6" opacity=".8" fill="none"/><circle cx="438" cy="151" r="9" fill="#f06f68"/></g>
 
@@ -198,9 +198,6 @@
         <g class="component-hotspot" data-component="shelter" tabindex="0" role="button" aria-label="Inspect storm shelter"><rect class="hit-area" x="492" y="120" width="145" height="116" rx="12"/><circle class="hotspot-dot" cx="615" cy="139" r="8"/></g>
       </svg>
       <div class="scene-caption" id="scene-caption">GALE CRATER • HABITAT ARES-01 • SOLAR ARRAYS NOMINAL</div>
-    </div>
-
-
       <div class="component-inspector" id="component-inspector"><div><div class="inspector-kicker" id="inspector-kicker">SYSTEM INSPECTOR • SELECT A MODULE</div><h3 id="inspector-title">Your outpost is online</h3><p id="inspector-copy">Move your cursor over a highlighted module, or select it, to inspect its condition and available actions. Faults will pulse red.</p></div><div class="inspector-action" id="inspector-action"><span class="tiny muted">4 interactive systems</span></div></div>
       <div class="scene-hint">HOVER OR SELECT A MODULE TO INSPECT IT • RED PULSE = ACTIVE FAULT</div>
     </div>
@@ -512,10 +509,10 @@ function finishTask(success,detail){
 }
 
 const componentInfo={
-solar:{title:"Solar array network",system:"POWER GENERATION",copy:"The solar wings collect energy for every outpost system. Dust and deployment damage reduce available generation.",slider:"repair",failed:()=>state.arrayDamage>0,issue:()=>"Array bus damage: "+state.arrayDamage.toFixed(1)+" modeled units. Increase Maintenance in the Command Console to repair it over multiple Sols.",normal:"Arrays are tracking the Sun. Generation is within expected training range.",action:"Set maintenance to 2"},
-life:{title:"Habitat • life support",system:"OXYGEN & WATER RECOVERY",copy:"The habitat contains the air and water recycling equipment that keeps the crew supplied.",slider:"life",failed:()=>state.recyclerDamage>0,issue:()=>"Recycler fault: water recovery is degraded. Increase Life Support allocation to reduce the modeled water loss.",normal:"Air and water loops are operating. Watch the oxygen and water reserves.",action:"Set life support to 6"},
+solar:{title:"Solar array network",system:"POWER GENERATION",copy:"The solar wings collect energy for every outpost system. Dust and deployment damage reduce available generation.",slider:"repair",failed:()=>state.arrayDamage>0||state.dust>0.05,issue:()=>(state.arrayDamage>0?"Array bus damage: "+state.arrayDamage.toFixed(1)+" modeled units. ":"Dust is reducing solar generation. ")+"Increase Maintenance in the Command Console to clear dust and repair the bus over multiple Sols.",normal:"Arrays are tracking the Sun. Generation is within expected training range.",action:"Set maintenance to 2"},
+life:{title:"Habitat • life support",system:"OXYGEN & WATER RECOVERY",copy:"The habitat contains the air and water recycling equipment that keeps the crew supplied.",slider:"life",failed:()=>state.recyclerDamage>0||state.water<35||state.oxygen<35,issue:()=>(state.recyclerDamage>0?"Recycler fault: water recovery is degraded. ":"Habitat reserves are running low. ")+"Increase Life Support allocation to reduce the modeled water loss and stabilize reserves.",normal:"Air and water loops are operating. Watch the oxygen and water reserves.",action:"Set life support to 6"},
 green:{title:"Hydroponic greenhouse",system:"FOOD PRODUCTION",copy:"The greenhouse converts power, water and time into future harvests. Plants cannot replace all life-support equipment.",slider:"green",failed:()=>state.cropEfficiency<1,issue:()=>"Crop-bed calibration fault: growth efficiency is "+Math.round(state.cropEfficiency*100)+"%. Higher greenhouse allocation can partly compensate.",normal:"Grow beds are stable. Keep water and lighting available for the next harvest.",action:"Set greenhouse to 4"},
-shelter:{title:"Storm shelter",system:"RADIATION PROTECTION",copy:"The shelter gives the crew a protected place during the mission's simulated space-weather drill.",slider:"shelter",failed:()=>state.shieldLoss>0,issue:()=>"Shield seam fault: modeled protection is reduced by "+Math.round(state.shieldLoss)+" points. Increase Shelter allocation during the drill.",normal:"Shelter seals are intact. Keep some power available for a storm response.",action:"Set shelter to 3"}
+shelter:{title:"Storm shelter",system:"RADIATION PROTECTION",copy:"The shelter gives the crew a protected place during the mission's simulated space-weather drill.",slider:"shelter",failed:()=>state.shieldLoss>0||(state.stormSeen&&state.sol===4),issue:()=>(state.shieldLoss>0?"Shield seam fault: modeled protection is reduced by "+Math.round(state.shieldLoss)+" points. ":"Solar-weather shelter drill is active. ")+"Increase Shelter allocation during the drill.",normal:"Shelter seals are intact. Keep some power available for a storm response.",action:"Set shelter to 3"}
 };
 let selectedComponent="solar";
 function componentHasIssue(key){const c=componentInfo[key];return !!(c&&c.failed());}
@@ -527,7 +524,7 @@ function inspectComponent(key){
  $("inspector-title").textContent=info.title;$("inspector-copy").textContent=failed?info.issue():info.normal+" "+info.copy;
  const action=$("inspector-action");
  if(failed){action.innerHTML='<button class="secondary-btn" id="inspector-fix">'+info.action+" →</button>";
-  $("inspector-fix").addEventListener("click",()=>{const slider=sliders[info.slider];slider.value=info.slider==="repair"?2:info.slider==="life"?6:info.slider==="green"?4:3;forecast();$("forecast-note").textContent="Priority updated. Review the forecast, then advance the Sol to apply it.";action.innerHTML='<span class="tiny" style="color:var(--green)">Priority updated in Command Console ✓</span>';});
+  $("inspector-fix").addEventListener("click",()=>{const slider=sliders[info.slider];slider.value=info.slider==="repair"?2:info.slider==="life"?6:info.slider==="green"?4:3;forecast();$("forecast-note").textContent="Priority updated. Review the forecast, then advance the Sol to apply it.";document.querySelector(".command-console").open=true;action.innerHTML='<span class="tiny" style="color:var(--green)">Priority updated in Command Console ✓</span>';});
  }else action.innerHTML='<span class="tiny muted">No active fault detected</span>';
 }
 function refreshComponentIndicators(){

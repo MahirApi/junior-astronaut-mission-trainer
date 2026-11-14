@@ -1068,6 +1068,40 @@ function launchProspectingTask(){
  paint();
 }
 
+function launchEmergencyRepairTask(){
+ const issues=[
+  {id:"solar",label:"Solar array bus",active:()=>state.arrayDamage>.05||state.dust>.1,fix:()=>{state.arrayDamage=clamp(state.arrayDamage-.8,0,5);state.dust=clamp(state.dust-.06,0,.85);}},
+  {id:"filter",label:"Water recycler filter",active:()=>state.filterClog>.05,fix:()=>state.filterClog=clamp(state.filterClog-.45,0,2)},
+  {id:"blight",label:"Greenhouse grow beds",active:()=>state.cropBlight>.05||state.cropEfficiency<1,fix:()=>{state.cropBlight=clamp(state.cropBlight-.1,0,.7);state.cropEfficiency=clamp(state.cropEfficiency+.06,0,1);}},
+  {id:"leak",label:"Habitat pressure seal",active:()=>state.pressureLeak>.05,fix:()=>state.pressureLeak=clamp(state.pressureLeak-.55,0,5)},
+  {id:"heater",label:"Thermal controller",active:()=>state.heaterFault>.05,fix:()=>state.heaterFault=clamp(state.heaterFault-.5,0,3)}
+ ].filter(x=>x.active());
+ if(!issues.length||state.spareParts<=0)return;
+ const fault=issues[0];let done=false;
+ openOpsModal("Emergency base repair • "+fault.label,'<p class="tiny muted">The crew has isolated the damaged component. Balance repair torque, coolant and sealant pressure, then run the stabilization cycle. A successful repair consumes one spare kit.</p><div class="recycler-gauges"><div class="recycler-gauge"><span>THERMAL LOAD</span><strong id="repair-thermal">—</strong><div class="mini-progress"><i id="repair-thermal-bar"></i></div></div><div class="recycler-gauge"><span>SEAL PRESSURE</span><strong id="repair-seal">—</strong><div class="mini-progress"><i id="repair-seal-bar"></i></div></div></div><label class="slider-row">REPAIR TORQUE <output id="repair-torque-value">48%</output><input id="repair-torque" type="range" min="10" max="90" value="48"></label><label class="slider-row">COOLANT BYPASS <output id="repair-coolant-value">50%</output><input id="repair-coolant" type="range" min="0" max="100" value="50"></label><label class="slider-row">SEALANT PRESSURE <output id="repair-seal-value">42%</output><input id="repair-seal-control" type="range" min="0" max="100" value="42"></label><p class="tiny muted" id="repair-hint">Watch both gauges. The green bands show a stable repair window.</p><button class="primary-btn" id="repair-cycle">Stabilize and repair</button>');
+ const controls={torque:$("repair-torque"),coolant:$("repair-coolant"),seal:$("repair-seal-control")};
+ function update(){
+  const torque=+controls.torque.value,coolant=+controls.coolant.value,seal=+controls.seal.value;
+  const thermal=Math.round(clamp(torque*.55+seal*.12-coolant*.32,0,100));
+  const pressure=Math.round(clamp(seal*.75+coolant*.12,0,100));
+  $("repair-thermal").textContent=thermal+"%";$("repair-seal").textContent=pressure+"%";
+  $("repair-thermal-bar").style.width=thermal+"%";$("repair-seal-bar").style.width=pressure+"%";
+  $("repair-torque-value").textContent=torque+"%";$("repair-coolant-value").textContent=coolant+"%";$("repair-seal-value").textContent=seal+"%";
+  const stable=thermal>=25&&thermal<=58&&pressure>=45&&pressure<=75;
+  $("repair-hint").textContent=stable?"Both gauges are stable. The service cycle can be applied.":"Ease torque if thermal load is high, or adjust coolant and sealant to stabilize pressure.";
+  return stable;
+ }
+ Object.values(controls).forEach(control=>control.addEventListener("input",update));
+ $("repair-cycle").onclick=()=>{
+  if(done)return;
+  if(!update()){$("repair-hint").textContent="Service cycle paused. Rebalance both gauges before applying the repair kit.";return;}
+  if(state.spareParts<=0){$("repair-hint").textContent="No spare repair kits remain.";return;}
+  state.spareParts--;fault.fix();done=true;
+  finishFieldTask("emergency",true,"The crew stabilized and repaired the "+fault.label+". One spare kit was used; inspect the component after the next dust event.");
+ };
+ update();
+}
+
 function startFieldTask(id){
  if(state.fieldOps.slots<=0)return;
  const costs={clean:.03,relay:.08,lab:.02,signal:.06,cave:.08,rescue:.07,prospect:.12,emergency:.06,

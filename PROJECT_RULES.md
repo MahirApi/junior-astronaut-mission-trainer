@@ -72,12 +72,12 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 - The sample lab is a tactile scanner sweep. Do not turn scientific interpretation into a multiple-choice exam.
 
 ## Long-range rover expedition rules
-- Rover excursions must be procedural and substantially longer than a short tile puzzle. Include a full outbound and return drive.
+- Rover excursions must use continuous open-world movement, not a grid or tile-step controls. Include a full outbound and return drive across a procedural visual terrain field.
 - Keyboard controls use arrow keys and WASD; on-screen directional controls provide an accessible touch alternative.
 - Terrain affects battery cost: uphill is more expensive than level terrain and downhill is cheaper. Sand/rubble may add resistance; boulder/crater impacts and repeated wandering add rover wear.
 - Generate a guaranteed traversable route and calculate its round-trip energy plus science-tool costs before enabling the expedition. Never make the designed safe route impossible for the available battery.
 - If battery is depleted or wear immobilizes the rover, switch to a guided EVA recovery walk along the path already travelled. Interrupting or aborting an expedition must not silently discard it.
-- A rover experiment not returned to base is recorded as failed for that Sol; add a four-tile longer follow-up traverse the next Sol.
+- A rover experiment not returned to base is recorded as failed for that Sol; add 400 metres to the next generated follow-up traverse. The displayed distance is a game-scale unit, not surveyed Mars mileage.
 - Rover science can include terrain-camera imagery, wheel odometry/slip observations, environmental sensor readings, panorama, remote chemistry/mineralogy and a sealed/cached sample. Label every observation as simulated game data, never NASA telemetry.
 
 

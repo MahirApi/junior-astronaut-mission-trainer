@@ -2,7 +2,7 @@
 
 A browser-playable Mars outpost management game for the 2026 NASA Space Apps Challenge.
 
-**Status:** Early playable prototype. The mission loop, resource controls, simplified system interactions, debrief, and optional NASA DONKI SEP lookup are implemented in `index.html`.
+**Status:** Early playable prototype. The landing and crew-assignment sequence, four one-shot commissioning minigames, resource controls, captain recovery panel, debrief, and optional NASA DONKI SEP lookup are implemented in `index.html`.
 
 ## Run locally
 Open `index.html` in a modern browser. No build step, package install, or server is required. The game works offline; the optional NASA DONKI lookup requires an internet connection.

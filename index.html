@@ -498,7 +498,9 @@ function render(){
   $("v-food").textContent=Math.round(state.food);
   $("v-safety").textContent=Math.round(state.safety);
   $("v-spares").textContent=state.spareParts;
-  meter("power",state.battery/8*100);meter("oxygen",state.oxygen);meter("water",state.water);meter("food",state.food);meter("safety",state.safety);meter("spares",state.spareParts/3*100);
+  $("v-science").textContent=state.science||0;
+  meter("power",state.battery/8*100);meter("oxygen",state.oxygen);meter("water",state.water);meter("food",state.food);meter("safety",state.safety);meter("spares",state.spareParts/3*100);meter("science",state.science||0);
+  if($("n-science"))$("n-science").textContent="Samples studied: "+(state.fieldOps?.studied||0);
   $("n-spares").textContent=state.spareParts===0?"No repair kits remain":state.spareParts+" repair kits available";
   $("n-power").textContent="Solar generation: "+solarOutput()+" units";
   $("n-food").textContent="Greenhouse crop cycle: "+Math.round(state.crop/20*100)+"%";
@@ -506,9 +508,10 @@ function render(){
   $("outpost-panel").classList.toggle("dusty",state.dust>.12);
   $("outpost-panel").classList.toggle("storm",state.dustStormSols>0||state.shelterDrillPending);
   $("habitat-status").textContent=state.safety<50?"CREW ALERT":state.shelterDrillPending?"SHELTER ALERT":state.heaterFault>0?"HEATER FAULT":state.pressureLeak>0?"PRESSURE LEAK":state.filterClog>.08?"FILTER CLOG":state.cropBlight>.08?"CROP BLIGHT":state.dust>.12?"DUST ON ARRAYS":"ALL SYSTEMS ONLINE";
-  $("scene-caption").textContent="GALE CRATER • "+(state.dustStormSols>0?"REGIONAL DUST STORM":state.dust>.12?"DUST ACCUMULATING ON ARRAYS":"HABITAT ARES-01 • SYSTEMS UNDER WATCH");
+  $("scene-caption").textContent=(state.siteName||"GALE CRATER").toUpperCase()+" • "+(state.dustStormSols>0?"REGIONAL DUST STORM":state.dust>.12?"DUST ACCUMULATING ON ARRAYS":"HABITAT ARES-01 • SYSTEMS UNDER WATCH");
   $("brief-tag").textContent="SOL "+String(state.sol).padStart(2,"0");
   $("mission-meta").textContent="Crew of 5 • "+(state.safety<50?"Crew safety needs attention":"30-Sol campaign active")+" • "+state.upgrades.length+" cargo upgrades";
+  renderFieldOps();
   forecast();
 }
 function meter(name,value){const el=$("m-"+name);el.style.width=clamp(value,0,100)+"%";el.style.background=value<25?"var(--red)":value<50?"var(--yellow)":"var(--green)";}
@@ -700,7 +703,7 @@ function beginLanding(){
 function startLandingChallenge(){
   const tier=skillTier("pilot");
   const cfg=[null,{maxSpeed:8,maxOffset:10,wind:0.55,label:"PRACTICE"},{maxSpeed:5.5,maxOffset:7,wind:0.85,label:"STANDARD"},{maxSpeed:3.5,maxOffset:4.5,wind:1.15,label:"ADVANCED"}][tier];
-  state.landing={turn:0,turns:6,altitude:1200,speed:17,offset:0,fuel:100,wind:(Math.random()-.5)*cfg.wind*2,steer:0,tier,...cfg,done:false};
+  state.landing={turn:0,turns:6,altitude:1200,speed:17,offset:0,fuel:100,steer:0,tier,...cfg,wind:(Math.random()-.5)*cfg.wind*2,done:false};
   showOnlyStage("landing-minigame-view");
   renderLandingChallenge();
 }
@@ -985,13 +988,15 @@ function applyEventForSol(sol){
   render();
 }
 function startMission(){
-  state.sol=1;state.battery=clamp(state.battery,0,8);state.oxygen=82;state.food=82;state.safety=100;state.harvests=0;state.dust=0;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];
+  // Preserve the landing challenge, chosen site bonuses and commissioning outcomes.
+  state.sol=1;state.battery=clamp(state.battery,0,8);state.harvests=0;state.crop=state.crop||0;state.stormSeen=false;state.dustSeen=false;state.failed=false;state.history=[];
   state.filterClog=0;state.cropBlight=0;state.pressureLeak=0;state.heaterFault=0;state.dustStormSols=0;state.shelterDrillPending=false;
   state.repairTarget=null;state.repairStarted={};state.repairNoPartsNotified={};
+  state.fieldOps.slots=2;state.fieldOps.doneToday={};state.fieldOps.completed=0;
   showOnlyStage("game-view");$("reset-btn").classList.remove("hidden");
   sliders.life.value=4;sliders.green.value=2;sliders.shelter.value=1;sliders.repair.value=1;
-  log("Landing complete • crew assignments locked • Sol 1 begins");
-  renderIssues();applyEventForSol(1);render();
+  log("Landing complete at "+(state.siteName||"Gale Crater")+" • crew assignments locked • Sol 1 begins");
+  renderIssues();applyEventForSol(1);render();renderFieldOps();
 }
 function beginRepair(key,actual,threshold){
   if(state.repairStarted[key])return true;
@@ -1077,8 +1082,11 @@ function advance(){
   if(state.oxygen<=0||state.water<=0||state.food<=0||state.safety<=0){endMission(false);return;}
   if(state.sol>=30){endMission(true);return;}
   state.sol++;
+  // Daily field-operation opportunities refresh; rover recharge is slow, not instant.
+  state.fieldOps.slots=2;state.fieldOps.doneToday={};
+  state.fieldOps.roverBattery=clamp(state.fieldOps.roverBattery+12,0,100);
   // Power priorities and the selected repair target carry forward until the captain changes them.
-  applyEventForSol(state.sol);render();
+  applyEventForSol(state.sol);render();renderFieldOps();
   $("advance-btn").textContent=state.sol===30?"Complete Sol 30 →":"Advance to Sol "+String(state.sol+1).padStart(2,"0")+" →";
 }
 function endMission(completed){
@@ -1154,6 +1162,9 @@ $("assignments-confirm").addEventListener("click",startTaskSequence);
 $("advance-btn").addEventListener("click",advance);
 $("load-nasa").addEventListener("click",loadNasa);
 $("science-open").addEventListener("click",openScience);
+$("ops-modal-close").addEventListener("click",closeOpsModal);
+$("ops-modal").addEventListener("click",e=>{if(e.target===$("ops-modal"))closeOpsModal();});
+$("incident-modal").addEventListener("click",e=>{if(e.target===$("incident-modal"))return;});
 $("science-close").addEventListener("click",closeScience);
 $("science-modal").addEventListener("click",e=>{if(e.target===$("science-modal"))closeScience();});
 $("debrief-science").addEventListener("click",openScience);

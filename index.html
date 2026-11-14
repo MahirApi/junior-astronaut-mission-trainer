@@ -100,6 +100,26 @@
 #sample-scan{width:100%;height:auto;touch-action:none;cursor:crosshair}
 @media(max-width:650px){.rover-readouts{grid-template-columns:repeat(2,1fr)}.landing-guidance{flex-direction:column;gap:4px}.landing-sky{height:190px}}
 
+
+/* Hands-on commissioning instruments */
+.wire-port-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}
+.wire-port-list button{text-align:left;display:flex;align-items:center;gap:8px}
+.wire-swatch{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #fff8}
+.recycler-gauges{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:13px 0}
+.recycler-gauge,.grow-preview{border:1px solid var(--line);border-radius:12px;background:#10191f;padding:13px}
+.recycler-gauge span{display:block;font-size:9px;color:var(--muted);letter-spacing:.1em}.recycler-gauge strong{font-size:23px}
+.recycler-controls,.grow-controls{display:grid;gap:11px;margin:14px 0}
+.recycler-controls label,.grow-controls label{display:grid;grid-template-columns:1fr auto;gap:6px;font-size:11px;font-weight:800}
+.recycler-controls output,.grow-controls output{color:var(--orange)}
+.recycler-controls input,.grow-controls input{grid-column:1/-1;width:100%;accent-color:var(--orange)}
+.grow-preview{min-height:136px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.grow-lamp{font-size:24px;color:#f2ca77;transition:opacity .2s}
+.grow-plant{font-size:52px;transition:transform .2s;transform-origin:bottom}
+.grow-preview strong{font-size:10px;color:var(--muted)}
+.shield-readouts{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:9px 0;font-size:10px;color:var(--muted)}
+.shield-readouts strong{color:var(--orange)}
+@media(max-width:650px){.recycler-gauges{grid-template-columns:1fr}.wire-port-list{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -406,9 +426,9 @@ const crewRoster=[
 ];
 const taskDefinitions=[
 {id:"solar",title:"Deploy & connect the solar arrays",role:"POWER SYSTEMS",recommended:"nia",brief:"Route three power connectors from the array output to the habitat bus. Each connector must match the live cable colour."},
-{id:"water",title:"Commission the water recycler",role:"LIFE SUPPORT",recommended:"elias",brief:"The recycler valves must open in the correct startup sequence. Memorize the pressure-control pattern, then repeat it."},
-{id:"greenhouse",title:"Calibrate the greenhouse",role:"FOOD PRODUCTION",recommended:"sofia",brief:"Select the three essentials for the first crop beds: water, full-spectrum light and nutrient mix. Avoid the contaminant trays."},
-{id:"shield",title:"Seal the radiation shelter",role:"RADIATION PROTECTION",recommended:"pavel",brief:"Inspect six wall sections and reinforce the three seams where shielding is incomplete."}
+{id:"water",title:"Commission the water recycler",role:"LIFE SUPPORT",recommended:"elias",brief:"Tune the intake, pump and filter controls until the pressure gauge and water flow stabilize."},
+{id:"greenhouse",title:"Calibrate the greenhouse",role:"FOOD PRODUCTION",recommended:"sofia",brief:"Balance the grow-bed water delivery, light intensity and nutrient mix, then start the first growth cycle."},
+{id:"shield",title:"Seal the radiation shelter",role:"RADIATION PROTECTION",recommended:"pavel",brief:"Drag the sealant tool across each highlighted seam until the storm shelter wall is sealed."}
 ];
 let soundOn=false, audioContext=null, landingRAF=0, landingCleanup=null, landingKeys={left:false,right:false,engine:false}, activeOpsCleanup=null;
 const SKILLS=["pilot","engineering","life","botany","science"];
@@ -927,7 +947,7 @@ function renderTask(){
   $("task-count").textContent="TASK "+(state.taskIndex+1)+" / "+taskDefinitions.length;
   $("task-progress-fill").style.width=((state.taskIndex+1)/taskDefinitions.length*100)+"%";
   const skillForTask={solar:"engineering",water:"life",greenhouse:"botany",shield:"science"}[task.id],tier=skillTier(skillForTask);
-  $("task-content").innerHTML='<div class="task-kicker">'+task.role+' • ONE ATTEMPT • '+(tier===1?"PRACTICE MODE":tier===2?"STANDARD MODE":"ADVANCED MODE")+'</div><h2 style="font-size:23px;margin:8px 0">'+task.title+'</h2><div class="task-person">Assigned to '+person.name+' · '+person.role+(isSpecialistMatched(task)?" · SPECIALTY MATCH":" · OUTSIDE SPECIALTY")+'</div><div class="task-box"><p>'+task.brief+'</p><div id="puzzle-area"></div><div class="puzzle-status" id="puzzle-status" role="status"></div></div>';
+  $("task-content").innerHTML='<div class="task-kicker">'+task.role+' • HANDS-ON OPERATION • '+(tier===1?"PRACTICE MODE":tier===2?"STANDARD MODE":"ADVANCED MODE")+'</div><h2 style="font-size:23px;margin:8px 0">'+task.title+'</h2><div class="task-person">Assigned to '+person.name+' · '+person.role+(isSpecialistMatched(task)?" · SPECIALTY MATCH":" · OUTSIDE SPECIALTY")+'</div><div class="task-box"><p>'+task.brief+'</p><div id="puzzle-area"></div><div class="puzzle-status" id="puzzle-status" role="status"></div></div>';
   if(task.id==="solar")renderSolarPuzzle();
   if(task.id==="water")renderWaterPuzzle();
   if(task.id==="greenhouse")renderGreenhousePuzzle();
@@ -936,77 +956,146 @@ function renderTask(){
 function renderSolarPuzzle(){
   const area=$("puzzle-area"),tier=skillTier("engineering");
   const stages=[
-    {from:"AMBER",right:"CYAN",options:[["AMBER","CYAN"],["AMBER","VIOLET"],["MINT","CYAN"]]},
-    {from:"CYAN",right:"MINT",options:[["CYAN","MINT"],["CYAN","GOLD"],["VIOLET","MINT"]]},
-    {from:"MINT",right:"WHITE",options:[["MINT","WHITE"],["MINT","RED"],["BLUE","WHITE"]]},
-    {from:"WHITE",right:"GOLD",options:[["WHITE","GOLD"],["WHITE","AMBER"],["BLUE","GOLD"],["MINT","GOLD"]]}
+    {from:"AMBER",to:"CYAN",ports:["VIOLET","CYAN","MINT"]},
+    {from:"CYAN",to:"MINT",ports:["GOLD","RED","MINT","CYAN"]},
+    {from:"MINT",to:"WHITE",ports:["WHITE","BLUE","RED","GOLD"]},
+    {from:"WHITE",to:"GOLD",ports:["RED","GOLD","VIOLET","CYAN"]}
   ].slice(0,tier===1?2:tier===2?3:4);
-  let step=0;
+  const colors={AMBER:"#f5bd62",CYAN:"#63d5e4",MINT:"#83d6a5",VIOLET:"#b89be8",GOLD:"#ecd16f",RED:"#e47c6c",BLUE:"#77a9eb",WHITE:"#e7edf0"};
+  let step=0,dragging=false,point=null,done=false;
+  function resolveConnection(index){
+    if(done)return;
+    const item=stages[step];
+    if(item.ports[index]!==item.to){done=true;finishTask(false,"A live cable was connected to the wrong bus. The array protection cut-out tripped during deployment.");return;}
+    step++;
+    if(step===stages.length){done=true;finishTask(true,"All "+stages.length+" live cables were routed to their matching bus sockets. The solar array is online.");return;}
+    $("puzzle-status").textContent="Cable secured. The next live connector is ready.";draw();
+  }
   function draw(){
     const item=stages[step];
-    area.innerHTML='<div class="tiny muted">'+(tier===1?"GUIDED PRACTICE":tier===2?"STANDARD WIRING":"ADVANCED BUS ROUTING")+' · CONNECTOR '+(step+1)+' OF '+stages.length+' · LIVE CABLE: <strong style="color:var(--orange)">'+item.from+'</strong></div><div class="puzzle-grid" style="margin-top:10px">'+item.options.map(pair=>'<button class="puzzle-choice" data-wire="'+pair[1]+'">'+pair[0]+' → '+pair[1]+'</button>').join("")+'</div>';
-    area.querySelectorAll("[data-wire]").forEach(button=>button.addEventListener("click",()=>{
-      if(button.dataset.wire!==item.right){finishTask(false,"The connector did not match the live cable. The array bus shorted during deployment.");return;}
-      step++;if(step===stages.length){finishTask(true,"All "+stages.length+" connectors matched. The solar array bus is online.");return;}
-      $("puzzle-status").textContent="Connection locked. Follow the new cable colour.";draw();
-    }));
+    area.innerHTML='<div class="tiny muted">DRAG THE LIVE '+item.from+' CABLE TO ITS MATCHING SOCKET · CONNECTION '+(step+1)+' / '+stages.length+'</div><canvas id="solar-wire-canvas" width="460" height="220" role="img" aria-label="Drag the live cable from the left plug to its matching colored socket on the right." style="width:100%;height:auto;touch-action:none"></canvas><div class="wire-port-list">'+item.ports.map((p,i)=>'<button class="secondary-btn" data-wire-port="'+i+'"><span class="wire-swatch" style="background:'+colors[p]+'"></span>SOCKET '+(i+1)+' · '+p+'</button>').join("")+'</div><p class="tiny muted">Mouse or touch: pull the glowing cable from the left plug to the matching socket. Keyboard: activate a socket button.</p>';
+    const canvas=$("solar-wire-canvas"),ctx=canvas.getContext("2d"),portY=i=>45+i*(130/(item.ports.length-1));
+    function paint(pointer){
+      ctx.clearRect(0,0,460,220);ctx.fillStyle="#10191f";ctx.fillRect(0,0,460,220);
+      ctx.strokeStyle="#35464e";ctx.lineWidth=3;ctx.strokeRect(22,22,416,176);
+      ctx.fillStyle="#dbe5e1";ctx.font="11px system-ui";ctx.textAlign="left";ctx.fillText("ARRAY CONNECTOR",30,14);ctx.textAlign="right";ctx.fillText("HABITAT POWER BUS",430,14);
+      ctx.beginPath();ctx.arc(70,110,19,0,Math.PI*2);ctx.fillStyle=colors[item.from];ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.stroke();
+      ctx.fillStyle="#10191f";ctx.font="bold 10px system-ui";ctx.textAlign="center";ctx.fillText("IN",70,113);
+      item.ports.forEach((p,i)=>{
+        ctx.beginPath();ctx.arc(390,portY(i),17,0,Math.PI*2);ctx.fillStyle=colors[p];ctx.fill();ctx.strokeStyle=p===item.to?"#ffffff":"#829096";ctx.lineWidth=p===item.to?4:2;ctx.stroke();
+        ctx.fillStyle="#10191f";ctx.font="bold 9px system-ui";ctx.textAlign="center";ctx.fillText(String(i+1),390,portY(i)+3);
+        ctx.fillStyle="#dbe5e1";ctx.textAlign="left";ctx.fillText(p,420,portY(i)+3);
+      });
+      if(dragging&&pointer){ctx.beginPath();ctx.moveTo(88,110);ctx.lineTo(pointer.x,pointer.y);ctx.strokeStyle=colors[item.from];ctx.lineWidth=8;ctx.lineCap="round";ctx.stroke();}
+    }
+    canvas.addEventListener("pointerdown",e=>{
+      const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*canvas.width/r.width,y=(e.clientY-r.top)*canvas.height/r.height;
+      if(Math.hypot(x-70,y-110)<30){dragging=true;point={x:x,y:y};canvas.setPointerCapture(e.pointerId);paint(point);}
+    });
+    canvas.addEventListener("pointermove",e=>{
+      if(!dragging)return;const r=canvas.getBoundingClientRect();point={x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height};paint(point);
+    });
+    canvas.addEventListener("pointerup",e=>{
+      if(!dragging)return;dragging=false;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*canvas.width/r.width,y=(e.clientY-r.top)*canvas.height/r.height;
+      let index=-1;item.ports.forEach((p,i)=>{if(Math.hypot(x-390,y-portY(i))<25)index=i;});
+      point=null;if(index>=0)resolveConnection(index);else paint(null);
+    });
+    area.querySelectorAll("[data-wire-port]").forEach(btn=>btn.addEventListener("click",()=>resolveConnection(+btn.dataset.wirePort)));
+    paint(null);
   }
   draw();
 }
+
 function renderWaterPuzzle(){
-  const tier=skillTier("life"),base=["💧","〰","◈","💧"],sequence=tier===1?base.slice(0,3):tier===2?base:base.concat(["〰"]),area=$("puzzle-area");
-  area.innerHTML='<div class="tiny muted">'+(tier===1?"GUIDED VALVE CHECK":tier===2?"STANDARD VALVE SEQUENCE":"ADVANCED PRESSURE-LOOP SEQUENCE")+' · STUDY THE ORDER, THEN ENTER IT</div><div class="puzzle-sequence" id="water-preview">'+sequence.map(s=>'<span class="sequence-token">'+s+'</span>').join("")+'</div><div class="tiny muted" style="text-align:center">Press “I memorized it” when ready. The pattern will disappear.</div><div class="puzzle-actions"><button class="secondary-btn" id="water-ready">I memorized it</button></div>';
-  $("water-ready").addEventListener("click",()=>{
-    let position=0;
-    area.innerHTML='<div class="tiny muted">REPEAT THE '+sequence.length+'-STEP VALVE SEQUENCE '+(tier===1?"(INTAKE → PRESSURE → FILTER)":"")+'</div><div class="puzzle-sequence" id="water-entry"></div><div class="puzzle-grid"><button class="puzzle-choice" data-valve="💧">💧 Intake</button><button class="puzzle-choice" data-valve="〰">〰 Pressure</button><button class="puzzle-choice" data-valve="◈">◈ Filter</button></div>';
-    area.querySelectorAll("[data-valve]").forEach(button=>button.addEventListener("click",()=>{
-      const choice=button.dataset.valve;
-      if(choice!==sequence[position]){finishTask(false,"The valve order was incorrect. The recycler's startup cycle contaminated the recovery loop.");return;}
-      $("water-entry").innerHTML+='<span class="sequence-token">'+choice+'</span>';position++;
-      if(position===sequence.length)finishTask(true,"Correct "+sequence.length+"-step sequence. The water recovery loop is circulating cleanly.");
-    }));
-  });
+  const tier=skillTier("life"),area=$("puzzle-area");
+  const start=tier===1?{intake:58,pump:55,filter:60}:tier===2?{intake:40,pump:48,filter:64}:{intake:30,pump:42,filter:72};
+  area.innerHTML='<div class="tiny muted">TUNE THE THREE VALVES UNTIL PRESSURE AND RECOVERY FLOW BOTH SETTLE IN THE GREEN ZONE. ADJUSTMENTS ARE LIVE.</div><div class="recycler-gauges"><div class="recycler-gauge"><span>LOOP PRESSURE</span><strong id="recycler-pressure">—</strong><div class="mini-progress"><i id="recycler-pressure-bar"></i></div></div><div class="recycler-gauge"><span>WATER FLOW</span><strong id="recycler-flow">—</strong><div class="mini-progress"><i id="recycler-flow-bar"></i></div></div></div><div class="recycler-controls"><label>INTAKE VALVE <output id="intake-value"></output><input id="intake-control" type="range" min="0" max="100" value="'+start.intake+'"></label><label>RECIRCULATION PUMP <output id="pump-value"></output><input id="pump-control" type="range" min="0" max="100" value="'+start.pump+'"></label><label>FILTER BYPASS <output id="filter-value"></output><input id="filter-control" type="range" min="0" max="100" value="'+start.filter+'"></label></div><p class="tiny muted" id="recycler-status" role="status"></p><div class="puzzle-actions"><button class="primary-btn" id="recycler-start">Start water recovery loop</button></div>';
+  const controls={intake:$("intake-control"),pump:$("pump-control"),filter:$("filter-control")};
+  function update(){
+    const v={intake:+controls.intake.value,pump:+controls.pump.value,filter:+controls.filter.value};
+    const pressure=Math.round(clamp(v.intake*.25+v.pump*.85-v.filter*.10,0,100));
+    const flow=Math.round((v.intake+v.filter)/2),pressureOk=pressure>=55&&pressure<=70,flowOk=flow>=48&&flow<=82;
+    $("recycler-pressure").textContent=pressure+"%";$("recycler-flow").textContent=flow+"%";
+    $("recycler-pressure-bar").style.width=pressure+"%";$("recycler-flow-bar").style.width=flow+"%";
+    ["intake","pump","filter"].forEach(k=>$(k+"-value").textContent=v[k]+"%");
+    $("recycler-status").textContent=pressureOk&&flowOk?"✓ Pressure is steady and the recovery flow is clear. Ready to circulate.":!pressureOk?(pressure<55?"Pressure is low. Increase pump drive or intake.":"Pressure is too high. Ease the pump or intake."):(flow<48?"Flow is too weak. Open intake or filter bypass.":"Flow is too fast. Reduce intake or bypass.");
+    return pressureOk&&flowOk;
+  }
+  Object.values(controls).forEach(el=>el.addEventListener("input",update));
+  $("recycler-start").addEventListener("click",()=>finishTask(update(),"The water recycler reached a stable pressure and flow setting. The loop is circulating."));
+  update();
 }
+
 function renderGreenhousePuzzle(){
-  const tier=skillTier("botany"),correct=["water","light","nutrients"];
-  const base=[["water","💧 Water supply"],["light","☀ Full-spectrum light"],["nutrients","✿ Nutrient mix"],["salt","▧ Salty soil"],["dust","◌ Dust sample"],["metal","⬡ Metal fragments"]];
-  if(tier===1)base.splice(3,3,["salt","▧ Salty soil"]);
-  if(tier===3)base.push(["acid","◍ Acidic residue"],["shade","◒ Deep shade"]);
-  const options=base,area=$("puzzle-area");
-  area.innerHTML='<div class="tiny muted">'+(tier===1?"GUIDED GROW-BED SETUP":tier===2?"STANDARD HYDROPONIC RECIPE":"ADVANCED GREENHOUSE CALIBRATION")+' · SELECT EXACTLY THREE INPUTS</div><div class="puzzle-grid" id="green-choices" style="margin-top:10px">'+options.map(([id,label])=>'<button class="puzzle-choice" data-green="'+id+'">'+label+'</button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="green-submit" disabled>Lock greenhouse recipe</button></div>';
-  const selected=new Set();
-  area.querySelectorAll("[data-green]").forEach(button=>button.addEventListener("click",()=>{
-    const id=button.dataset.green;
-    if(selected.has(id)){selected.delete(id);button.classList.remove("selected");}
-    else if(selected.size<3){selected.add(id);button.classList.add("selected");}
-    $("green-submit").disabled=selected.size!==3;
-  }));
-  $("green-submit").addEventListener("click",()=>{
-    const success=correct.every(id=>selected.has(id))&&selected.size===3;
-    finishTask(success,success?"The correct water, light and nutrient inputs are calibrated.":"The crop beds received an unsuitable mix. The first growth cycle will be weak.");
-  });
+  const tier=skillTier("botany"),area=$("puzzle-area");
+  const start=tier===1?{water:58,light:55,nutrients:52}:tier===2?{water:36,light:62,nutrients:40}:{water:30,light:45,nutrients:82};
+  area.innerHTML='<div class="tiny muted">WAKE UP THE FIRST GROW BEDS. BALANCE WATER, LIGHT AND NUTRIENTS WHILE WATCHING THE PLANT RESPOND.</div><div class="grow-preview"><div class="grow-lamp" id="grow-lamp">☀</div><div class="grow-plant" id="grow-plant">🌱</div><strong id="grow-status">Seedling waiting for its first cycle</strong></div><div class="grow-controls"><label>WATER DELIVERY <output id="grow-water-value"></output><input id="grow-water" type="range" min="0" max="100" value="'+start.water+'"></label><label>GROW LIGHT <output id="grow-light-value"></output><input id="grow-light" type="range" min="0" max="100" value="'+start.light+'"></label><label>NUTRIENT MIX <output id="grow-nutrients-value"></output><input id="grow-nutrients" type="range" min="0" max="100" value="'+start.nutrients+'"></label></div><p class="tiny muted" id="grow-hint">Watch the seedling: too little or too much of a resource slows growth. Find a balanced growing environment.</p><div class="puzzle-actions"><button class="primary-btn" id="grow-start">Start the first growth cycle</button></div>';
+  const controls={water:$("grow-water"),light:$("grow-light"),nutrients:$("grow-nutrients")};
+  function update(){
+    const v={water:+controls.water.value,light:+controls.light.value,nutrients:+controls.nutrients.value};
+    const ok=v.water>=55&&v.water<=85&&v.light>=50&&v.light<=85&&v.nutrients>=45&&v.nutrients<=80;
+    ["water","light","nutrients"].forEach(k=>$("grow-"+k+"-value").textContent=v[k]+"%");
+    const plant=$("grow-plant");plant.textContent=ok?"🌿":v.water<38?"🥀":v.light<38?"🌱":"🌿";
+    plant.style.transform="scale("+(0.78+Math.min(v.water,v.light,v.nutrients)/250)+")";
+    $("grow-lamp").style.opacity=String(.25+v.light/130);
+    $("grow-status").textContent=ok?"The leaves look strong. Grow bed ready.":v.water<55?"The bed needs more water.":v.water>85?"The bed is waterlogged.":v.light<50?"The grow light needs more power.":v.light>85?"The grow light is too intense.":v.nutrients<45?"The nutrient mix is too weak.":"The nutrient mix is too concentrated.";
+    return ok;
+  }
+  Object.values(controls).forEach(el=>el.addEventListener("input",update));
+  $("grow-start").addEventListener("click",()=>finishTask(update(),"The grow-bed environment is balanced. The first seedlings are growing."));
+  update();
 }
+
 function renderShieldPuzzle(){
-  const tier=skillTier("science");
-  const count=tier===1?4:tier===2?6:8,exposedCount=tier===1?2:tier===2?3:4;
-  const exposed=Array.from({length:exposedCount},(_,i)=>String.fromCharCode(65+i*2));
-  const sections=Array.from({length:count},(_,i)=>{
-    const id=String.fromCharCode(65+i),gap=exposed.includes(id);
-    return [id,gap?"╱  ╲":"━━━━",gap?"Hairline gap":"Seam sealed"];
-  }),area=$("puzzle-area");
-  area.innerHTML='<div class="tiny muted">'+(tier===1?"GUIDED SHIELD INSPECTION":tier===2?"STANDARD SEAM SCAN":"ADVANCED MULTI-SECTION INSPECTION")+' · SELECT THE '+exposedCount+' SECTIONS WITH BROKEN SEAMS</div><div class="puzzle-grid" id="shield-choices" style="margin-top:10px">'+sections.map(([id,mark,note])=>'<button class="puzzle-choice" data-shield="'+id+'"><strong>SECTION '+id+'</strong><br><span style="font-size:18px;color:'+(exposed.includes(id)?"var(--yellow)":"var(--green)")+'">'+mark+'</span><br><span class="tiny">'+note+'</span></button>').join("")+'</div><div class="puzzle-actions"><button class="primary-btn" id="shield-submit" disabled>Seal selected sections</button></div>';
-  const selected=new Set();
-  area.querySelectorAll("[data-shield]").forEach(button=>button.addEventListener("click",()=>{
-    const id=button.dataset.shield;
-    if(selected.has(id)){selected.delete(id);button.classList.remove("selected");}
-    else if(selected.size<exposedCount){selected.add(id);button.classList.add("selected");}
-    $("shield-submit").disabled=selected.size!==exposedCount;
-  }));
-  $("shield-submit").addEventListener("click",()=>{
-    const success=exposed.every(id=>selected.has(id))&&selected.size===exposedCount;
-    finishTask(success,success?"All "+exposedCount+" exposed seams are reinforced with regolith shielding.":"One or more exposed seams were missed. The storm shelter has a permanent weak point.");
+  const tier=skillTier("science"),count=tier===1?4:tier===2?6:8,crackCount=tier===1?2:tier===2?3:4;
+  const cols=count/2,cellW=460/cols,cracks=Array.from({length:crackCount},(_,i)=>{
+    const section=(i*2)%count,col=section%cols,row=Math.floor(section/cols),cx=col*cellW+cellW/2,cy=28+row*88+44;
+    return {points:[{x:cx-16,y:cy-17},{x:cx+4,y:cy-5},{x:cx-7,y:cy+7},{x:cx+16,y:cy+18}],sealed:false};
   });
+  let sealant=crackCount*11+12,last=null,done=false;
+  const area=$("puzzle-area");
+  area.innerHTML='<div class="tiny muted">DRAG THE SEALANT BRUSH OVER EACH GLOWING SHELTER SEAM. EVERY PATCH USES A LITTLE OF THE CREW SEALANT SUPPLY.</div><canvas id="shield-seal-canvas" width="460" height="200" role="img" aria-label="Shelter wall with glowing cracks. Drag the sealant brush over each glowing seam to patch it." style="width:100%;height:auto;touch-action:none"></canvas><div class="shield-readouts"><span>SEALANT REMAINING <strong id="sealant-left">'+sealant+'</strong></span><span>SEAMS PATCHED <strong id="seams-fixed">0 / '+crackCount+'</strong></span></div><div class="mini-progress"><i id="shield-progress" style="width:0%"></i></div><p class="tiny muted" id="shield-status">Follow the zig-zag seams with the brush. Keyboard: use the patch button to seal the next seam.</p><button class="secondary-btn" id="shield-patch-next">Apply sealant to next seam</button>';
+  const canvas=$("shield-seal-canvas"),ctx=canvas.getContext("2d");
+  function paint(){
+    ctx.clearRect(0,0,460,200);ctx.fillStyle="#18252b";ctx.fillRect(0,0,460,200);
+    ctx.strokeStyle="#75858a";ctx.lineWidth=3;ctx.strokeRect(12,12,436,176);
+    for(let row=0;row<2;row++)for(let col=0;col<cols;col++){ctx.strokeStyle="#53636a";ctx.lineWidth=2;ctx.strokeRect(col*cellW+12,row*88+12,cellW-1,88);}
+    cracks.forEach(crack=>{
+      ctx.beginPath();crack.points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+      ctx.strokeStyle=crack.sealed?"#6bc99a":"#f1b75e";ctx.lineWidth=crack.sealed?12:5;ctx.lineCap="round";ctx.stroke();
+      if(crack.sealed){ctx.fillStyle="#b9f0cf";ctx.font="bold 12px system-ui";ctx.fillText("✓",crack.points[1].x+8,crack.points[1].y-8);}
+    });
+    if(last){ctx.beginPath();ctx.arc(last.x,last.y,13,0,Math.PI*2);ctx.strokeStyle="#9fe6ff";ctx.lineWidth=3;ctx.stroke();}
+  }
+  function refresh(){
+    const fixed=cracks.filter(c=>c.sealed).length;
+    $("sealant-left").textContent=Math.max(0,Math.floor(sealant));$("seams-fixed").textContent=fixed+" / "+crackCount;
+    $("shield-progress").style.width=(fixed/crackCount*100)+"%";
+    if(fixed===crackCount&&!done){done=true;finishTask(true,"The sealant brush patched every exposed seam. The storm shelter is sealed.");}
+    else if(sealant<=0&&!done){done=true;finishTask(false,"The sealant supply ran out before every exposed seam was patched. The shelter retains a weak point.");}
+    paint();
+  }
+  function applyAt(x,y){
+    if(done)return;
+    cracks.forEach(crack=>{if(!crack.sealed&&crack.points.some(p=>Math.hypot(x-p.x,y-p.y)<20))crack.sealed=true;});
+  }
+  canvas.addEventListener("pointerdown",e=>{
+    const r=canvas.getBoundingClientRect();last={x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height};
+    canvas.setPointerCapture(e.pointerId);applyAt(last.x,last.y);refresh();
+  });
+  canvas.addEventListener("pointermove",e=>{
+    if(!last||done)return;
+    const r=canvas.getBoundingClientRect(),p={x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height};
+    sealant-=Math.hypot(p.x-last.x,p.y-last.y)/5;last=p;applyAt(p.x,p.y);refresh();
+  });
+  ["pointerup","pointercancel","lostpointercapture"].forEach(name=>canvas.addEventListener(name,()=>{last=null;}));
+  $("shield-patch-next").addEventListener("click",()=>{
+    const crack=cracks.find(c=>!c.sealed);if(!crack||done)return;
+    sealant-=9;crack.sealed=true;refresh();
+  });
+  paint();
 }
+
 function finishTask(success,detail){
   const task=taskDefinitions[state.taskIndex];if(state.taskResults[task.id])return;
   const matched=isSpecialistMatched(task),severity=matched?1:1.25;

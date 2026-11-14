@@ -79,3 +79,11 @@ Build a polished, browser-playable educational Mars outpost simulator for the 20
 - If battery is depleted or wear immobilizes the rover, switch to a guided EVA recovery walk along the path already travelled. Interrupting or aborting an expedition must not silently discard it.
 - A rover experiment not returned to base is recorded as failed for that Sol; add a four-tile longer follow-up traverse the next Sol.
 - Rover science can include terrain-camera imagery, wheel odometry/slip observations, environmental sensor readings, panorama, remote chemistry/mineralogy and a sealed/cached sample. Label every observation as simulated game data, never NASA telemetry.
+
+
+## Commissioning interactions are play, not quizzes
+- Solar array: route each live cable by dragging it to its matching bus socket; accessible socket controls are also provided.
+- Water recycler: adjust the intake, recirculation pump and filter bypass while watching live pressure and flow gauges.
+- Greenhouse: tune water, light and nutrient dials while the seedling responds visually.
+- Radiation shelter: drag the sealant brush across exposed seams; the limited supply rewards careful strokes, with a keyboard-accessible patch action.
+- Keep feedback inside the activity. Do not ask players to memorize a pattern, choose the correct answer from a list, or submit a multiple-choice assessment.
